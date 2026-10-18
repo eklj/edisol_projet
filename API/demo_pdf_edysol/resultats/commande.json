@@ -1,0 +1,10 @@
+{
+  "numero_commande": "DEMO-001",
+  "client": "Camille Exemple",
+  "adresse": "12 rue Fictive, La Foa, Nouvelle-Calédonie",
+  "telephone": "00 00 00 (fictif)",
+  "date_intervention": "20/10/2026",
+  "horaire": "08:00 - 10:00",
+  "prestation": "Nettoyage des locaux",
+  "consignes": "Prévenir le client avant l'arrivée."
+}

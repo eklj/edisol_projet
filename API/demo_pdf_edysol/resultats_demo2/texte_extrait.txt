@@ -1,0 +1,14 @@
+ÉDYSOL / DÉMONSTRATION 02
+Bon de commande - intervention chez un client
+DOCUMENT FICTIF - AUCUNE COMMANDE RÉELLE
+Commande : DEMO-002
+Client : Alex Exemple
+Adresse : 25 allée Imaginaire, Bourail, Nouvelle-Calédonie
+Téléphone : 00 00 00 (fictif)
+Date d'intervention : 22/10/2026
+Horaire : 13:30 - 15:30
+Prestation : Nettoyage des vitres et de la terrasse
+Consignes : Accès par le portail bleu. Appeler avant l'arrivée.
+Deuxième jeu de données pour tester le même script Python.
+Les noms, coordonnées et informations de cette commande sont inventés.
+Démonstration locale - extraction de texte PDF 1 / 1

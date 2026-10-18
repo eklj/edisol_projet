@@ -1,0 +1,10 @@
+{
+  "numero_commande": "DEMO-002",
+  "client": "Alex Exemple",
+  "adresse": "25 allée Imaginaire, Bourail, Nouvelle-Calédonie",
+  "telephone": "00 00 00 (fictif)",
+  "date_intervention": "22/10/2026",
+  "horaire": "13:30 - 15:30",
+  "prestation": "Nettoyage des vitres et de la terrasse",
+  "consignes": "Accès par le portail bleu. Appeler avant l'arrivée."
+}
