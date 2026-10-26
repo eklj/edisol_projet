@@ -154,5 +154,23 @@
     "title": "Mes notifications",
     "group": "Employés",
     "mobile": true
+  },
+  {
+    "id": "su-accueil",
+    "title": "Mes activités",
+    "group": "Superviseuses",
+    "mobile": true
+  },
+  {
+    "id": "su-chantier",
+    "title": "Coordination chantier",
+    "group": "Superviseuses",
+    "mobile": true
+  },
+  {
+    "id": "e-solo",
+    "title": "Intervention en solo",
+    "group": "Employés",
+    "mobile": true
   }
 ]
