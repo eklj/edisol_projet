@@ -1,0 +1,26 @@
+ÉDYSOL : correction officielle du rôle contrôleuse — 28 octobre 2026
+
+Choisir UNE méthode selon votre état local :
+
+1. Précédent patch documentaire déjà appliqué : edysol_intitule_controleuse.patch
+2. Dépôt encore au commit 88365040cb0f7df057e1f9edde10d30d7272f6cb :
+   edysol_documentation_et_controleuses.patch (remplace la livraison précédente)
+
+Depuis la racine du dépôt :
+   git status
+   git apply --check /chemin/vers/LE_PATCH_CHOISI.patch
+   git apply /chemin/vers/LE_PATCH_CHOISI.patch
+   git diff --check
+   git diff
+
+Adapter le chemin. Si le contrôle échoue, ne pas forcer : transmettre l’erreur.
+Aucun patch ne fait de commit, push ou envoi réel.
+
+Le dossier fichiers/ contient également les fichiers finaux à leurs chemins relatifs.
+Les copier est une autre méthode : cela remplace les fichiers locaux. Sauvegarder son
+travail et ne pas cumuler cette méthode avec l’application du patch.
+
+Voir Docs/CHANGEMENT_INTITULE_ROLE.md : périmètre, compatibilité et limites.
+Les identifiants de navigation sont préservés ; les droits restent inchangés.
+39 contrôles réussis. Aucun compte/base serveur présent : aucune migration nécessaire
+sur les fichiers examinés. Binaires historiques et Figma distant inchangés.

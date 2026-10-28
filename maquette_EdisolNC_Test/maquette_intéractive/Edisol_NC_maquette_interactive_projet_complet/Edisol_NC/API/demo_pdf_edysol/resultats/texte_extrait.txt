@@ -1,0 +1,14 @@
+ÉDYSOL / DÉMONSTRATION
+Bon de commande - exemple d'intervention
+DOCUMENT FICTIF - AUCUNE COMMANDE RÉELLE
+Commande : DEMO-001
+Client : Camille Exemple
+Adresse : 12 rue Fictive, La Foa, Nouvelle-Calédonie
+Téléphone : 00 00 00 (fictif)
+Date d'intervention : 20/10/2026
+Horaire : 08:00 - 10:00
+Prestation : Nettoyage des locaux
+Consignes : Prévenir le client avant l'arrivée.
+Chaque information occupe une ligne au format « Libellé : valeur ».
+Ce modèle permet de tester le script extraire_pdf.py fourni.
+Données inventées pour un test local. 1 / 1

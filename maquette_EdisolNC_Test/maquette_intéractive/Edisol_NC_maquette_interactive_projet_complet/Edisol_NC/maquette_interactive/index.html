@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#082d52">
+  <meta name="description" content="ÉDYSOL, entreprise de nettoyage à Nouméa (Nouvelle-Calédonie) : entretien, nettoyage et services pour particuliers et professionnels. Maquette de démonstration.">
+  <title>ÉDYSOL NC · Entretien, nettoyage, services</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo/favicon.svg">
+  <!-- Préchargement de la première image du carrousel d'accueil -->
+  <link rel="preload" as="image" type="image/webp" imagesrcset="assets/images/edysol-interieur-640.webp 640w, assets/images/edysol-interieur-1024.webp 1024w, assets/images/edysol-interieur-1600.webp 1600w" imagesizes="100vw">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/public.css">
+</head>
+<body class="page-publique">
+  <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+
+  <!-- Bandeau de maquette : distingue clairement la démonstration d'un site en ligne -->
+  <div class="bandeau-demo" role="note">
+    <span class="badge badge--demo">Maquette</span>
+    <span>Visuels provisoires et formulaires simulés : aucune demande n’est transmise.</span>
+  </div>
+
+  <!-- En-tête commun injecté par js/public/gabarit.js -->
+  <header class="entete" id="entete-site" data-page="accueil"></header>
+
+  <main id="contenu">
+    <!-- ============ ACCUEIL ============ -->
+    <section class="hero" id="accueil" aria-labelledby="hero-titre">
+      <div class="hero__media" id="carrousel-accueil"></div>
+      <div class="hero__texte">
+        <p class="surtitre surtitre--clair">Nouméa · Nouvelle-Calédonie</p>
+        <h1 id="hero-titre">Le nettoyage soigné, <span class="souligne">du bureau à la maison.</span></h1>
+        <p class="hero__intro">Entretien, nettoyage et services pour les particuliers et les professionnels. Décrivez votre besoin en quelques minutes&nbsp;: l’équipe vous recontacte pour confirmer la date et les modalités.</p>
+        <div class="hero__actions">
+          <a class="bouton bouton--principal" href="commande.html" data-icone="commandes">Demander une prestation</a>
+          <a class="bouton bouton--contour-clair" href="tel:+687453812" data-icone="telephone">Appeler le 45&nbsp;38&nbsp;12</a>
+        </div>
+        <ul class="hero__faits" aria-label="En bref">
+          <li>Particuliers et professionnels</li>
+          <li>Demande en ligne ou par téléphone</li>
+          <li>Basée à Normandie, Nouméa</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============ L'ENTREPRISE ============ -->
+    <section class="section section--blanche" id="entreprise" aria-labelledby="entreprise-titre">
+      <div class="conteneur grille-entreprise">
+        <div class="entreprise__visuels">
+          <div id="carrousel-entreprise" class="carrousel-cadre tuile-1"></div>
+        </div>
+        <div class="entreprise__texte">
+          <p class="surtitre">L’entreprise</p>
+          <h2 id="entreprise-titre" class="titre-section">Une entreprise locale, une organisation claire.</h2>
+          <span class="filet" aria-hidden="true"></span>
+          <p class="chapeau">ÉDYSOL est une entreprise de nettoyage installée à Normandie, Nouméa. Elle accompagne les particuliers et les professionnels, pour une intervention ponctuelle ou un entretien régulier.</p>
+          <ul class="organisation" aria-label="Organisation de l’entreprise">
+            <li class="organisation__item tuile-1"><b>2</b><span><strong>cogérants</strong> pilotent l’activité et suivent chaque commande.</span></li>
+            <li class="organisation__item organisation__item--vert tuile-2"><b>1</b><span><strong>secrétaire</strong>, votre interlocutrice pour les demandes et le planning.</span></li>
+            <li class="organisation__item organisation__item--vert tuile-3"><b>2</b><span><strong>contrôleuses</strong> encadrent les équipes sur le terrain.</span></li>
+            <li class="organisation__item tuile-4"><b>4</b><span><strong>binômes fixes</strong>, complétés par des intervenants seuls selon le chantier.</span></li>
+          </ul>
+          <p class="a-completer" role="note"><span>À compléter</span> Histoire, valeurs et présentation de l’entreprise, à rédiger avec les deux cogérants.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PRESTATIONS ============ -->
+    <section class="section section--bleue" id="prestations" aria-labelledby="prestations-titre">
+      <div class="conteneur">
+        <div class="prestations__entete">
+          <div>
+            <p class="surtitre surtitre--clair">Nos prestations</p>
+            <h2 id="prestations-titre" class="titre-section">Entretien, nettoyage, services.</h2>
+            <span class="filet" aria-hidden="true"></span>
+            <p class="chapeau chapeau--clair">Les quatre métiers représentés par les pictogrammes du logo ÉDYSOL. Chaque demande est étudiée avant confirmation&nbsp;: aucun tarif n’est affiché en ligne.</p>
+            <p class="a-completer a-completer--sombre" role="note"><span>À confirmer</span> Intitulés et descriptions du catalogue, à valider par ÉDYSOL.</p>
+          </div>
+          <div id="carrousel-prestations" class="carrousel-cadre tuile-4"></div>
+        </div>
+        <ul class="cartes-prestations" id="cartes-prestations" aria-label="Liste des prestations"></ul>
+        <div class="bandeau-clients">
+          <div class="bandeau-clients__bloc">
+            <span class="bandeau-clients__icone" data-icone="maison"></span>
+            <div><h3>Particuliers</h3><p>Pour votre logement, ponctuellement ou régulièrement.</p></div>
+          </div>
+          <div class="bandeau-clients__bloc">
+            <span class="bandeau-clients__icone" data-icone="bureau"></span>
+            <div><h3>Professionnels</h3><p>Bureaux et locaux, avec un contrat d’entretien à étudier ensemble.</p></div>
+          </div>
+          <a class="bouton bouton--principal" href="commande.html?prestation=specifique" data-icone="etoile">Un autre besoin&nbsp;?</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PARCOURS ============ -->
+    <section class="section section--verte" id="parcours" aria-labelledby="parcours-titre">
+      <div class="conteneur">
+        <p class="surtitre surtitre--clair">Comment ça se passe</p>
+        <h2 id="parcours-titre" class="titre-section">Trois étapes, un seul interlocuteur.</h2>
+        <ol class="etapes">
+          <li class="etape"><span class="etape__num" aria-hidden="true">1</span><h3>Vous décrivez votre besoin</h3><p>En ligne en quatre écrans, ou par téléphone avec la secrétaire.</p></li>
+          <li class="etape"><span class="etape__num" aria-hidden="true">2</span><h3>Nous confirmons les détails</h3><p>La date souhaitée n’est pas encore une réservation : elle est confirmée avec vous.</p></li>
+          <li class="etape"><span class="etape__num" aria-hidden="true">3</span><h3>L’équipe intervient</h3><p>L’équipe prévue reçoit les consignes et rend compte de l’intervention.</p></li>
+        </ol>
+        <a class="bouton bouton--clair" href="commande.html" data-icone="commandes">Commencer ma demande</a>
+      </div>
+    </section>
+
+    <!-- ============ GALERIE ============ -->
+    <section class="section section--claire" id="galerie" aria-labelledby="galerie-titre">
+      <div class="conteneur">
+        <div class="galerie__entete">
+          <div>
+            <p class="surtitre">En images</p>
+            <h2 id="galerie-titre" class="titre-section">Galerie</h2>
+          </div>
+          <div class="filtres" role="group" aria-label="Filtrer la galerie" id="filtres-galerie">
+            <button type="button" class="filtre" aria-pressed="true" data-filtre="">Tout</button>
+            <button type="button" class="filtre" aria-pressed="false" data-filtre="sols">Sols</button>
+            <button type="button" class="filtre" aria-pressed="false" data-filtre="vitres">Vitres</button>
+            <button type="button" class="filtre" aria-pressed="false" data-filtre="bureaux">Bureaux</button>
+            <button type="button" class="filtre" aria-pressed="false" data-filtre="domicile">Domicile</button>
+          </div>
+        </div>
+        <p class="notice notice--info galerie__notice" role="note"><span class="notice__icone" data-icone="info"></span><span>Ces visuels sont provisoires. Ils seront remplacés par des photos de chantiers ÉDYSOL dont la publication est autorisée.</span></p>
+        <ul class="galerie" id="galerie-grille" aria-label="Visuels"></ul>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section class="section section--blanche" id="contact" aria-labelledby="contact-titre">
+      <div class="conteneur grille-contact">
+        <div class="contact__carte tuile-2">
+          <p class="surtitre surtitre--clair">Contact</p>
+          <h2 id="contact-titre" class="titre-section">Parlons de votre besoin.</h2>
+          <dl class="coordonnees">
+            <div><dt data-icone="telephone">Téléphone</dt><dd><a href="tel:+687453812">45 38 12</a></dd></div>
+            <div><dt data-icone="lieu">Adresse</dt><dd>13 route du Sud RP1<br>Normandie, 98800 Nouméa</dd></div>
+            <div><dt data-icone="mail">E-mail</dt><dd><span class="a-completer a-completer--sombre a-completer--inline"><span>À compléter</span></span></dd></div>
+            <div><dt data-icone="horloge">Horaires</dt><dd><span class="a-completer a-completer--sombre a-completer--inline"><span>À compléter</span></span></dd></div>
+          </dl>
+          <a class="bouton bouton--principal" href="commande.html" data-icone="commandes">Demander une prestation</a>
+        </div>
+        <form class="formulaire-rappel" id="formulaire-rappel" novalidate aria-labelledby="rappel-titre">
+          <h3 id="rappel-titre">Être rappelé par la secrétaire</h3>
+          <p class="aide-formulaire">Vous préférez en parler ? Laissez vos coordonnées. <strong>Simulation&nbsp;:</strong> rien n’est envoyé.</p>
+          <div class="champ">
+            <label for="rappel-nom">Nom et prénom <span class="obligatoire" aria-hidden="true">*</span></label>
+            <input id="rappel-nom" name="nom" autocomplete="name" required>
+            <p class="message-erreur" id="rappel-nom-erreur" hidden></p>
+          </div>
+          <div class="champ">
+            <label for="rappel-tel">Téléphone <span class="obligatoire" aria-hidden="true">*</span></label>
+            <input id="rappel-tel" name="telephone" type="tel" inputmode="tel" autocomplete="tel" required>
+            <p class="message-erreur" id="rappel-tel-erreur" hidden></p>
+          </div>
+          <div class="champ">
+            <label for="rappel-objet">Objet</label>
+            <select id="rappel-objet" name="objet">
+              <option>Question sur une prestation</option>
+              <option>Prendre rendez-vous avec la secrétaire</option>
+              <option>Suivi d’une demande</option>
+              <option>Autre</option>
+            </select>
+          </div>
+          <button type="submit" class="bouton bouton--bleu">Demander à être rappelé</button>
+          <div class="formulaire-rappel__retour" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- Pied de page commun injecté par js/public/gabarit.js -->
+  <footer class="pied" id="pied-site"></footer>
+
+  <!-- Barre d'action mobile : apparaît après l'accueil -->
+  <div class="barre-mobile" id="barre-mobile" hidden>
+    <a class="bouton bouton--principal" href="commande.html">Demander une prestation</a>
+    <a class="bouton-icone barre-mobile__appel" href="tel:+687453812" aria-label="Appeler ÉDYSOL au 45 38 12" data-icone="telephone"></a>
+  </div>
+
+  <!-- Scripts classiques (fonctionnent aussi en ouvrant le fichier sans serveur) -->
+  <script src="js/commun/utilitaires.js"></script>
+  <script src="js/commun/catalogue.js"></script>
+  <script src="js/commun/visuels.js"></script>
+  <script src="js/commun/carrousel.js"></script>
+  <script src="js/commun/visionneuse.js"></script>
+  <script src="js/metier/suivi_metier.js"></script>
+  <script src="js/metier/organisation.js"></script>
+  <script src="js/demo/donnees-demo.js"></script>
+  <script src="js/demo/depot-demo.js"></script>
+  <script src="js/demo/api.js"></script>
+  <script src="js/public/gabarit.js"></script>
+  <script src="js/public/accueil.js"></script>
+</body>
+</html>

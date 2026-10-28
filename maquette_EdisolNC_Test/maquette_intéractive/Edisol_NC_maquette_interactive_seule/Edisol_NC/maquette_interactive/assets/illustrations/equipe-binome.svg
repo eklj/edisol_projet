@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="t">
+  <title id="t">Illustration provisoire : une équipe de deux personnes arrive sur un chantier avec son chariot</title>
+  <!-- Illustration vectorielle de démonstration (maquette ÉDYSOL) : ce n'est pas une photo de chantier. -->
+  <defs><linearGradient id="couloir" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0b3a66"/><stop offset="1" stop-color="#1956a7"/></linearGradient></defs>
+  <rect width="1600" height="1000" fill="url(#couloir)"/>
+  <!-- Perspective de couloir -->
+  <path d="M0 0 L560 300 L1040 300 L1600 0 Z" fill="#ffffff" opacity=".06"/>
+  <rect x="560" y="300" width="480" height="320" fill="#d6ecf7"/>
+  <path d="M560 560 L760 470 L880 510 L1040 450 L1040 620 L560 620 Z" fill="#4e8c63"/>
+  <rect x="560" y="560" width="480" height="60" fill="#2fb0c4"/>
+  <rect x="560" y="300" width="480" height="320" fill="none" stroke="#ffffff" stroke-width="14"/>
+  <path d="M0 1000 L560 620 L1040 620 L1600 1000 Z" fill="#cfd9df"/>
+  <path d="M0 1000 L560 620 L1040 620 L1600 1000" fill="none" stroke="#f9dd18" stroke-width="10"/>
+  <g fill="#ffffff" opacity=".18"><rect x="120" y="140" width="160" height="380" transform="skewY(18)"/><rect x="1320" y="-280" width="160" height="380" transform="skewY(-18)"/></g>
+  <!-- Chariot -->
+  <g transform="translate(1110 640)">
+    <rect x="0" y="40" width="220" height="200" rx="16" fill="#e9eef1"/>
+    <rect x="20" y="70" width="80" height="150" rx="10" fill="#1956a7"/><rect x="120" y="70" width="80" height="150" rx="10" fill="#4fb748"/>
+    <path d="M0 40 V-60 h-40" stroke="#9aa9b4" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <circle cx="30" cy="255" r="22" fill="#1d2a33"/><circle cx="190" cy="255" r="22" fill="#1d2a33"/>
+    <rect x="130" y="0" width="34" height="50" rx="8" fill="#f9dd18"/>
+  </g>
+  <!-- Deux personnes (binôme) -->
+  <g id="p1" transform="translate(560 520)">
+    <ellipse cx="0" cy="410" rx="130" ry="16" fill="#000000" opacity=".15"/>
+    <g stroke-linecap="round" fill="none"><path d="M-20 230 L-30 400" stroke="#0e2f52" stroke-width="40"/><path d="M20 230 L35 400" stroke="#0e2f52" stroke-width="40"/><path d="M-30 400 h-34 M35 400 h36" stroke="#1d2a33" stroke-width="24"/>
+      <path d="M50 80 C80 140 90 180 90 220" stroke="#7a5236" stroke-width="24"/><path d="M-50 80 C-80 140 -88 180 -86 220" stroke="#7a5236" stroke-width="24"/></g>
+    <path d="M-55 70 C-55 30 55 30 55 70 L60 240 L-60 240 Z" fill="#f4f7f9"/>
+    <rect x="-55" y="70" width="110" height="24" fill="#4fb748"/>
+    <circle cx="0" cy="0" r="46" fill="#6b4630"/>
+    <path d="M-46 -6 C-40 -62 46 -62 48 -4 C30 -30 -24 -32 -46 -6 Z" fill="#1a110b"/>
+  </g>
+  <g transform="translate(830 540) scale(.95)">
+    <ellipse cx="0" cy="410" rx="130" ry="16" fill="#000000" opacity=".15"/>
+    <g stroke-linecap="round" fill="none"><path d="M-20 230 L-35 400" stroke="#0e2f52" stroke-width="40"/><path d="M20 230 L30 400" stroke="#0e2f52" stroke-width="40"/><path d="M-35 400 h-34 M30 400 h36" stroke="#1d2a33" stroke-width="24"/>
+      <path d="M50 80 C100 120 150 120 200 100" stroke="#7a5236" stroke-width="24"/><path d="M-50 80 C-80 140 -88 180 -86 220" stroke="#7a5236" stroke-width="24"/></g>
+    <path d="M-55 70 C-55 30 55 30 55 70 L60 240 L-60 240 Z" fill="#f4f7f9"/>
+    <rect x="-55" y="70" width="110" height="24" fill="#1956a7"/>
+    <circle cx="0" cy="0" r="46" fill="#9a6a45"/>
+    <path d="M-48 10 C-56 -60 52 -66 50 0 C46 -40 -30 -40 -48 10 Z M30 -40 C70 -30 70 20 52 40 Z" fill="#2a1a10"/>
+  </g>
+</svg>

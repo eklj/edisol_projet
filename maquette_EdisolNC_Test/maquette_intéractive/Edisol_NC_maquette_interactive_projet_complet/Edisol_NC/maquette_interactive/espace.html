@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#082d52">
+  <meta name="robots" content="noindex">
+  <title>Espaces internes · ÉDYSOL NC (maquette)</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo/favicon.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/espace.css">
+</head>
+<body class="page-espace">
+  <!-- Application des espaces internes : contenu rendu par js/espace/app.js -->
+  <div id="app" class="app">
+    <noscript><p style="padding:24px">La maquette des espaces internes nécessite JavaScript.</p></noscript>
+  </div>
+
+  <!-- Socle commun -->
+  <script src="js/commun/utilitaires.js"></script>
+  <script src="js/commun/catalogue.js"></script>
+  <script src="js/commun/visuels.js"></script>
+  <script src="js/commun/formulaire-commande.js"></script>
+  <!-- Règles métier de référence (fonctions pures, testées avec Node) -->
+  <script src="js/metier/suivi_metier.js"></script>
+  <script src="js/metier/organisation.js"></script>
+  <!-- Mode démonstration : données fictives séparées + dépôt local + point d'accès unique -->
+  <script src="js/demo/donnees-demo.js"></script>
+  <script src="js/demo/depot-demo.js"></script>
+  <script src="js/demo/api.js"></script>
+  <!-- Interface des espaces -->
+  <script src="js/espace/composants.js"></script>
+  <script src="js/espace/vues/bureau.js"></script>
+  <script src="js/espace/vues/planning.js"></script>
+  <script src="js/espace/vues/comptabilite.js"></script>
+  <script src="js/espace/vues/terrain.js"></script>
+  <script src="js/espace/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+[
+  {
+    "variante": "Bleue",
+    "routes_publiques_adaptees": [
+      "p-accueil",
+      "p-entreprise",
+      "p-prestations"
+    ],
+    "vues_svg_et_modules_metier_conserves": true
+  },
+  {
+    "variante": "Verte",
+    "routes_publiques_adaptees": [
+      "p-accueil",
+      "p-entreprise",
+      "p-prestations"
+    ],
+    "vues_svg_et_modules_metier_conserves": true
+  },
+  {
+    "variante": "Mixte",
+    "routes_publiques_adaptees": [
+      "p-accueil",
+      "p-entreprise",
+      "p-prestations"
+    ],
+    "vues_svg_et_modules_metier_conserves": true
+  }
+]

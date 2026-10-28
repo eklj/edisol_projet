@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="t">
+  <title id="t">Illustration provisoire : entretien du mobilier et des postes de travail</title>
+  <!-- Illustration vectorielle de démonstration (maquette ÉDYSOL) : ce n'est pas une photo de chantier. -->
+  <rect width="1600" height="1000" fill="#eaf5e4"/>
+  <rect x="0" y="0" width="1600" height="640" fill="#2f8a3e"/>
+  <rect x="0" y="0" width="1600" height="640" fill="#4fb748" opacity=".55"/>
+  <!-- Étagères et tableaux en fond -->
+  <g fill="#ffffff" opacity=".9">
+    <rect x="120" y="140" width="320" height="22" rx="6"/><rect x="120" y="290" width="320" height="22" rx="6"/>
+  </g>
+  <g><rect x="140" y="80" width="50" height="60" fill="#f9dd18"/><rect x="200" y="95" width="40" height="45" fill="#1956a7"/><rect x="250" y="70" width="36" height="70" fill="#ffffff"/>
+    <rect x="300" y="230" width="60" height="60" rx="30" fill="#ffffff"/><rect x="150" y="225" width="44" height="65" fill="#0b3a66"/></g>
+  <rect x="1060" y="120" width="380" height="240" rx="14" fill="#0b3a66"/>
+  <rect x="1090" y="150" width="320" height="180" rx="6" fill="#bfe3f5"/>
+  <path d="M1090 290 L1190 220 L1270 270 L1340 200 L1410 260 L1410 330 L1090 330 Z" fill="#2fb0c4"/>
+  <rect x="0" y="626" width="1600" height="14" fill="#f9dd18"/>
+  <rect x="0" y="640" width="1600" height="360" fill="#dde6eb"/>
+  <!-- Bureau -->
+  <rect x="380" y="560" width="760" height="40" rx="10" fill="#f4f7f9"/>
+  <rect x="420" y="600" width="26" height="300" fill="#9aa9b4"/><rect x="1074" y="600" width="26" height="300" fill="#9aa9b4"/>
+  <rect x="560" y="430" width="230" height="130" rx="10" fill="#1d2a33"/><rect x="575" y="445" width="200" height="100" rx="4" fill="#5fa8d8"/>
+  <rect x="655" y="560" width="40" height="10" fill="#1d2a33"/>
+  <rect x="820" y="540" width="120" height="20" rx="4" fill="#ffffff"/>
+  <!-- Traces brillantes : surface essuyée -->
+  <g stroke="#ffffff" stroke-width="6" stroke-linecap="round" opacity=".9"><path d="M420 575 h90 M980 575 h60"/></g>
+  <!-- Chaise -->
+  <rect x="300" y="500" width="40" height="200" rx="16" fill="#1956a7"/><rect x="260" y="690" width="140" height="30" rx="12" fill="#1956a7"/><path d="M330 720 V880 M270 890 h120" stroke="#1d2a33" stroke-width="14" stroke-linecap="round"/>
+  <!-- Personne essuyant le bureau -->
+  <g transform="translate(1250 400)">
+    <ellipse cx="0" cy="510" rx="150" ry="18" fill="#0b3a66" opacity=".14"/>
+    <g stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M-10 300 L-40 495" stroke="#0b3a66" stroke-width="40"/>
+      <path d="M30 300 L50 495" stroke="#0b3a66" stroke-width="40"/>
+      <path d="M-40 495 h-36 M50 495 h36" stroke="#1d2a33" stroke-width="26"/>
+      <path d="M-40 140 C-90 160 -140 170 -170 168" stroke="#0b3a66" stroke-width="30"/>
+      <path d="M-170 168 L-200 170" stroke="#7a5236" stroke-width="26"/>
+    </g>
+    <rect x="-250" y="150" width="70" height="26" rx="8" fill="#4fb748"/>
+    <path d="M-60 120 C-50 70 60 70 60 120 L60 310 L-60 310 Z" fill="#0b3a66" transform="rotate(-14 0 200)"/>
+    <circle cx="-30" cy="50" r="48" fill="#7a5236"/>
+    <path d="M-76 40 C-78 -18 14 -24 18 32 C10 0 -50 -2 -76 40 Z" fill="#23170f"/>
+    <!-- Flacon pulvérisateur -->
+    <g transform="translate(-900 120)"><rect x="0" y="40" width="44" height="80" rx="10" fill="#ffffff"/><rect x="8" y="20" width="28" height="24" fill="#1956a7"/><path d="M36 26 h22" stroke="#1956a7" stroke-width="8"/></g>
+  </g>
+</svg>

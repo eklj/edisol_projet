@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#082d52">
+  <meta name="description" content="Demander une prestation de nettoyage à ÉDYSOL en quatre étapes. Maquette de démonstration : aucune donnée n'est transmise.">
+  <title>Demander une prestation · ÉDYSOL NC</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo/favicon.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/public.css">
+  <link rel="stylesheet" href="css/commande.css">
+</head>
+<body class="page-commande">
+  <a class="lien-evitement" href="#contenu">Aller au formulaire</a>
+  <div class="bandeau-demo" role="note">
+    <span class="badge badge--demo">Maquette</span>
+    <span>Formulaire simulé : la demande reste dans votre navigateur, rien n’est envoyé.</span>
+  </div>
+  <header class="entete" id="entete-site" data-page="commande"></header>
+
+  <main id="contenu" class="commande">
+    <div class="conteneur commande__grille">
+      <section class="commande__carte" aria-labelledby="commande-titre">
+        <div class="commande__entete">
+          <p class="surtitre">Demande de prestation</p>
+          <h1 id="commande-titre">Décrivez votre besoin</h1>
+          <!-- Indicateur d'étapes : liste ordonnée, l'étape courante porte aria-current -->
+          <ol class="etapier" id="etapier" aria-label="Étapes de la demande"></ol>
+          <div class="progression" aria-hidden="true"><span id="progression-barre"></span></div>
+        </div>
+
+        <form id="formulaire-commande" novalidate>
+          <div class="etape-formulaire" id="zone-etape" tabindex="-1" aria-live="polite"></div>
+          <div class="commande__nav">
+            <button type="button" class="bouton bouton--clair" id="bouton-precedent">Précédent</button>
+            <button type="submit" class="bouton bouton--principal" id="bouton-suivant">Continuer</button>
+          </div>
+        </form>
+
+        <!-- Confirmation affichée après l'enregistrement simulé -->
+        <div class="confirmation" id="confirmation" hidden tabindex="-1"></div>
+      </section>
+
+      <aside class="commande__resume" aria-labelledby="resume-titre">
+        <div class="resume__visuel tuile-4" id="resume-visuel"></div>
+        <div class="resume__corps">
+          <h2 id="resume-titre">Votre demande</h2>
+          <dl class="resume__liste" id="resume-liste"></dl>
+          <ul class="resume__garanties">
+            <li>La date choisie reste un souhait, confirmé ensuite avec vous.</li>
+            <li>Le tarif et le règlement sont définis avec ÉDYSOL.</li>
+            <li>Vous préférez parler à quelqu’un&nbsp;? <a href="tel:+687453812">45 38 12</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="pied" id="pied-site"></footer>
+
+  <script src="js/commun/utilitaires.js"></script>
+  <script src="js/commun/catalogue.js"></script>
+  <script src="js/commun/visuels.js"></script>
+  <script src="js/commun/formulaire-commande.js"></script>
+  <script src="js/metier/suivi_metier.js"></script>
+  <script src="js/metier/organisation.js"></script>
+  <script src="js/demo/donnees-demo.js"></script>
+  <script src="js/demo/depot-demo.js"></script>
+  <script src="js/demo/api.js"></script>
+  <script src="js/public/gabarit.js"></script>
+  <script src="js/public/commande.js"></script>
+</body>
+</html>

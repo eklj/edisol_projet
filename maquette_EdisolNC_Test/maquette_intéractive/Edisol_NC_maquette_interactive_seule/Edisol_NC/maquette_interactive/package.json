@@ -1,0 +1,16 @@
+{
+  "name": "edysol-maquette-interactive",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Maquette interactive ÉDYSOL NC : site public, parcours de commande et espaces internes (mode démonstration, données fictives).",
+  "scripts": {
+    "start": "node outils/serveur.js 8000",
+    "test": "node ../maquette_EdisolNC/Edysol_NC_Maquette_V1/reference/verifier_metier.js && node outils/tester_organisation.js",
+    "verifier": "node outils/verifier_maquette.js",
+    "apercus": "node outils/verifier_maquette.js --captures"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  },
+  "license": "UNLICENSED"
+}

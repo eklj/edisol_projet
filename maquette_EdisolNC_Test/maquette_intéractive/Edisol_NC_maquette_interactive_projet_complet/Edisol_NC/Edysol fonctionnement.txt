@@ -1,0 +1,13 @@
+Edysol fonctionnement : 
+
+- EDT annuel 
+- suivie prestation journalière
+- planification mensuel 
+- contrat particulier/professionnelle
+
+type de presta: 
+- nettoyage
+- 
+
+IMPORTANT !! 
+ajout de la partie conta et de suivi de presta
