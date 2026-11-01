@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="t">
+  <title id="t">Illustration provisoire : entretien des sols par aspiration dans un bureau lumineux</title>
+  <!-- Illustration vectorielle de démonstration (maquette ÉDYSOL) : ce n'est pas une photo de chantier. -->
+  <defs>
+    <linearGradient id="ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fd6f0"/><stop offset="1" stop-color="#e6f5fb"/></linearGradient>
+    <linearGradient id="lagon" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#36b3c6"/><stop offset="1" stop-color="#1b86a6"/></linearGradient>
+    <linearGradient id="sol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dfe7ec"/><stop offset="1" stop-color="#c3d0d8"/></linearGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="#f2f6f8"/>
+  <!-- Grande baie vitrée avec vue sur le lagon -->
+  <rect x="120" y="90" width="900" height="560" fill="url(#ciel)"/>
+  <path d="M120 470 L330 360 L470 420 L640 330 L820 430 L1020 380 L1020 520 L120 520 Z" fill="#5f9a72"/>
+  <rect x="120" y="500" width="900" height="150" fill="url(#lagon)"/>
+  <path d="M120 560 h900" stroke="#bff0f5" stroke-width="6" opacity=".6"/>
+  <g fill="#2e6a46">
+    <path d="M860 650 C870 560 880 470 905 400" stroke="#6b4f35" stroke-width="16" fill="none"/>
+    <path d="M905 400 C850 380 800 400 770 440 C830 420 870 420 905 405 Z"/>
+    <path d="M905 400 C960 370 1010 385 1030 420 C980 405 940 405 905 405 Z"/>
+    <path d="M905 400 C890 350 900 310 940 290 C925 330 915 365 907 402 Z"/>
+    <path d="M905 400 C870 360 830 350 800 360 C840 370 875 385 905 405 Z"/>
+  </g>
+  <g stroke="#ffffff" stroke-width="18"><path d="M420 90 V650 M720 90 V650"/></g>
+  <rect x="120" y="90" width="900" height="560" fill="none" stroke="#ffffff" stroke-width="22"/>
+  <!-- Mur et plante -->
+  <rect x="1080" y="90" width="420" height="560" fill="#e4edf2"/>
+  <rect x="1160" y="170" width="260" height="170" rx="10" fill="#1956a7"/>
+  <rect x="1160" y="170" width="260" height="20" fill="#f9dd18"/>
+  <rect x="1360" y="470" width="110" height="180" rx="12" fill="#ffffff"/>
+  <path d="M1415 470 C1380 400 1340 380 1310 390 C1350 410 1385 440 1410 470 Z M1415 470 C1450 390 1490 370 1520 380 C1480 400 1445 440 1420 470 Z M1415 470 C1410 400 1420 350 1445 330 C1432 380 1425 420 1418 470 Z" fill="#4fb748"/>
+  <!-- Sol brillant -->
+  <rect x="0" y="650" width="1600" height="350" fill="url(#sol)"/>
+  <g stroke="#ffffff" stroke-width="3" opacity=".55"><path d="M0 760 H1600 M0 880 H1600 M260 650 L120 1000 M620 650 L560 1000 M980 650 L1010 1000 M1340 650 L1460 1000"/></g>
+  <path d="M200 700 L520 700 L470 760 L160 760 Z" fill="#ffffff" opacity=".35"/>
+  <!-- Personne avec aspirateur traîneau (style pictogramme) -->
+  <g transform="translate(860 470)">
+    <ellipse cx="40" cy="455" rx="190" ry="18" fill="#0b3a66" opacity=".12"/>
+    <g stroke-linecap="round" stroke-linejoin="round" fill="none">
+      <path d="M10 260 L-20 440" stroke="#0b3a66" stroke-width="40"/>
+      <path d="M50 260 L90 440" stroke="#0b3a66" stroke-width="40"/>
+      <path d="M-20 440 h-34 M90 440 h36" stroke="#1d2a33" stroke-width="26"/>
+      <path d="M30 90 C70 150 120 190 175 230" stroke="#7a5236" stroke-width="26"/>
+      <path d="M175 230 L330 430" stroke="#9aa9b4" stroke-width="12"/>
+      <path d="M300 432 h80" stroke="#1956a7" stroke-width="22"/>
+    </g>
+    <path d="M-25 80 C-25 40 85 40 85 80 L95 270 L-35 270 Z" fill="#0b3a66"/>
+    <circle cx="30" cy="10" r="48" fill="#7a5236"/>
+    <path d="M-12 -10 C0 -60 70 -60 76 -6 C60 -30 20 -36 -12 -10 Z" fill="#23170f"/>
+    <path d="M60 110 C100 160 140 200 172 230" stroke="#0b3a66" stroke-width="30" stroke-linecap="round" fill="none"/>
+    <!-- Aspirateur -->
+    <rect x="-290" y="360" width="170" height="95" rx="40" fill="#1956a7"/>
+    <rect x="-270" y="340" width="110" height="40" rx="18" fill="#4fb748"/>
+    <circle cx="-260" cy="455" r="18" fill="#1d2a33"/><circle cx="-150" cy="455" r="18" fill="#1d2a33"/>
+    <path d="M-125 400 C-60 380 -10 300 30 250" stroke="#2161a1" stroke-width="12" fill="none" stroke-linecap="round"/>
+  </g>
+</svg>
