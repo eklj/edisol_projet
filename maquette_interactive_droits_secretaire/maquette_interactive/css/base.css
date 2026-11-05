@@ -1,0 +1,280 @@
+/* =========================================================================
+   ÉDYSOL NC — Socle visuel commun (site public + espaces internes)
+   Rôle : variables de couleurs, typographies locales, remise à zéro,
+   boutons, champs de formulaire, badges et utilitaires partagés.
+   Couleurs prélevées dans le logo fourni (LOGO EDYSOL HR.jpg) :
+   bleu #2161A1 / #1956A7, vert #4FB748, jaune #F9DD18.
+   Le jaune sert uniquement aux accents (filets, puces, focus).
+   ========================================================================= */
+
+/* --- Polices locales (licence OFL, voir assets/fonts) : aucun appel réseau --- */
+@font-face {
+  font-family: "Outfit";
+  src: url("../assets/fonts/outfit-latin-wght-normal.woff2") format("woff2-variations");
+  font-weight: 100 900; font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Outfit";
+  src: url("../assets/fonts/outfit-latin-ext-wght-normal.woff2") format("woff2-variations");
+  font-weight: 100 900; font-display: swap;
+  unicode-range: U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("../assets/fonts/inter-latin-wght-normal.woff2") format("woff2-variations");
+  font-weight: 100 900; font-display: swap;
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("../assets/fonts/inter-latin-ext-wght-normal.woff2") format("woff2-variations");
+  font-weight: 100 900; font-display: swap;
+  unicode-range: U+0100-02AF,U+0304,U+0308,U+0329,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
+:root {
+  /* Bleus : du plus profond (grandes surfaces) au plus clair (fonds doux) */
+  --bleu-950: #061f38;
+  --bleu-900: #082d52;
+  --bleu-800: #0b3a66;
+  --bleu-700: #134c84;
+  --bleu-logo: #2161a1;
+  --bleu-tuile: #1956a7;
+  --bleu-200: #c9dcef;
+  --bleu-100: #e8f1fa;
+  --bleu-50: #f3f8fc;
+
+  /* Verts : vert du logo pour les accents, verts foncés pour textes et grandes surfaces */
+  --vert-logo: #4fb748;
+  --vert-900: #123f1c;
+  --vert-800: #1b5a28;
+  --vert-700: #2a7a30;
+  --vert-200: #cbeac4;
+  --vert-100: #ebf7e8;
+
+  /* Jaune : accents uniquement (jamais en texte sur fond clair) */
+  --jaune: #f9dd18;
+  --jaune-doux: #fff6bf;
+
+  /* Neutres et états */
+  --encre: #0f1f2d;
+  --texte-2: #4a5b6a;
+  --texte-3: #5d6d7a;
+  --ligne: #d9e2ea;
+  --fond: #f5f8fa;
+  --blanc: #ffffff;
+  --succes: #2a7a30;
+  --alerte: #8a4b00;
+  --alerte-fond: #fff4e0;
+  --erreur: #b42318;
+  --erreur-fond: #fdecea;
+
+  /* Typographie */
+  --police-titre: "Outfit", "Inter", Arial, sans-serif;
+  --police-texte: "Inter", Arial, sans-serif;
+
+  /* Rayons inspirés des quatre tuiles du logo (un seul coin arrondi) */
+  --rayon: 14px;
+  --rayon-tuile: 34px;
+  --ombre-1: 0 1px 2px rgba(6, 31, 56, .06), 0 2px 8px rgba(6, 31, 56, .06);
+  --ombre-2: 0 10px 30px rgba(6, 31, 56, .14);
+  --transition: 180ms cubic-bezier(.2, .7, .2, 1);
+  --cible-tactile: 48px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--police-texte);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--encre);
+  background: var(--fond);
+  overflow-x: hidden; /* sécurité contre tout débordement horizontal */
+}
+img, svg, video { max-width: 100%; display: block; }
+h1, h2, h3, h4 { font-family: var(--police-titre); line-height: 1.12; margin: 0; letter-spacing: -.02em; }
+p { margin: 0; }
+a { color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+
+/* Lien d'évitement pour la navigation au clavier */
+.lien-evitement {
+  position: absolute; left: 12px; top: -60px; z-index: 1000;
+  background: var(--jaune); color: var(--bleu-950); padding: 10px 16px;
+  border-radius: 8px; font-weight: 700; text-decoration: none;
+}
+.lien-evitement:focus { top: 12px; }
+
+/* Focus visible et homogène : anneau jaune + contour bleu pour tout fond */
+:focus-visible {
+  outline: 3px solid var(--jaune);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px var(--bleu-800);
+  border-radius: 6px;
+}
+
+/* Les titres reçoivent le focus par programme (changement de vue) : pas d'anneau visible */
+[tabindex="-1"]:focus { outline: none; box-shadow: none; }
+
+.visuellement-cache {
+  position: absolute !important; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; margin: -1px; padding: 0; border: 0;
+}
+
+/* --- Boutons --- */
+.bouton {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: var(--cible-tactile); padding: 12px 22px;
+  border: 2px solid transparent; border-radius: 12px;
+  font-weight: 700; font-size: 15.5px; line-height: 1.2; text-decoration: none; cursor: pointer;
+  transition: background var(--transition), color var(--transition), transform var(--transition), border-color var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+.bouton:active { transform: translateY(1px); }
+.bouton[disabled], .bouton[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
+.bouton--principal { background: var(--vert-logo); color: var(--vert-900); }
+.bouton--principal:hover { background: #63c65b; }
+.bouton--bleu { background: var(--bleu-800); color: #fff; }
+.bouton--bleu:hover { background: var(--bleu-700); }
+.bouton--clair { background: #fff; color: var(--bleu-800); border-color: var(--ligne); }
+.bouton--clair:hover { border-color: var(--bleu-logo); }
+.bouton--contour-clair { background: transparent; color: #fff; border-color: rgba(255,255,255,.55); }
+.bouton--contour-clair:hover { background: rgba(255,255,255,.1); border-color: #fff; }
+.bouton--discret { background: transparent; color: var(--bleu-800); padding-inline: 12px; }
+.bouton--discret:hover { background: var(--bleu-100); }
+.bouton--danger { background: var(--erreur); color: #fff; }
+.bouton--petit { min-height: 40px; padding: 8px 14px; font-size: 14px; border-radius: 10px; }
+.bouton svg { width: 20px; height: 20px; flex: none; }
+
+/* Bouton rond à icône (carrousels, fermeture) */
+.bouton-icone {
+  display: inline-grid; place-items: center; width: var(--cible-tactile); height: var(--cible-tactile);
+  border-radius: 50%; border: 2px solid transparent; cursor: pointer; background: #fff; color: var(--bleu-800);
+  transition: background var(--transition), transform var(--transition);
+}
+.bouton-icone:hover { background: var(--bleu-100); }
+.bouton-icone svg { width: 22px; height: 22px; }
+
+/* --- Champs de formulaire --- */
+.champ { display: grid; gap: 6px; }
+.champ > label, .champ > .libelle { font-weight: 650; font-size: 14.5px; color: var(--encre); }
+.champ .aide { font-size: 13.5px; color: var(--texte-2); }
+.obligatoire { color: var(--erreur); font-weight: 700; }
+.saisie, .champ input:not([type="checkbox"]):not([type="radio"]), .champ select, .champ textarea {
+  width: 100%; min-height: var(--cible-tactile);
+  padding: 11px 14px; border: 1.5px solid #b9c7d3; border-radius: 10px; background: #fff;
+  font-size: 16px; /* 16 px : évite le zoom automatique sur téléphone */
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.champ textarea { min-height: 120px; resize: vertical; }
+.champ input:focus, .champ select:focus, .champ textarea:focus, .saisie:focus {
+  outline: none; border-color: var(--bleu-logo); box-shadow: 0 0 0 4px rgba(33, 97, 161, .18);
+}
+.champ [aria-invalid="true"] { border-color: var(--erreur); background: #fffafa; }
+.message-erreur { color: var(--erreur); font-size: 13.5px; font-weight: 600; }
+.champ > label.case { font-weight: 500; }
+.case { display: flex; gap: 12px; align-items: flex-start; font-size: 14.5px; cursor: pointer; }
+.case input { width: 22px; height: 22px; margin-top: 1px; accent-color: var(--bleu-tuile); flex: none; }
+
+/* --- Badges d'état : la couleur n'est jamais le seul indicateur (libellé toujours présent) --- */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px;
+  font-size: 12.5px; font-weight: 700; line-height: 1.5; white-space: nowrap;
+  background: var(--bleu-100); color: var(--bleu-800);
+}
+.badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.badge--a-confirmer { background: var(--alerte-fond); color: var(--alerte); }
+.badge--planifiee { background: var(--bleu-100); color: var(--bleu-700); }
+.badge--en-cours { background: #e6f4f7; color: #0d5e70; }
+.badge--terminee { background: var(--vert-100); color: var(--vert-800); }
+.badge--a-reprogrammer { background: var(--erreur-fond); color: var(--erreur); }
+.badge--demo { background: var(--jaune-doux); color: #5c4a00; }
+.badge--demo::before { display: none; }
+
+/* Pastille « visuel provisoire » posée sur les illustrations */
+.pastille-provisoire {
+  position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+  background: rgba(6, 31, 56, .82); color: #fff; backdrop-filter: blur(4px);
+}
+.pastille-provisoire::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--jaune); }
+
+/* Filet jaune, rappel de la barre du logo sous « EDYSOL » */
+.filet { display: block; width: 64px; height: 5px; border-radius: 3px; background: var(--jaune); }
+
+/* Formes de tuiles du logo : un coin arrondi différent selon la position */
+.tuile-1 { border-radius: 6px 6px 6px var(--rayon-tuile); }
+.tuile-2 { border-radius: 6px 6px var(--rayon-tuile) 6px; }
+.tuile-3 { border-radius: var(--rayon-tuile) 6px 6px 6px; }
+.tuile-4 { border-radius: 6px var(--rayon-tuile) 6px 6px; }
+
+/* Plaque blanche pour le logo : le logo garde ses couleurs sur fond foncé */
+.plaque-logo { display: inline-flex; background: #fff; border-radius: 10px; padding: 6px 10px; }
+.plaque-logo img { height: 100%; width: auto; }
+
+/* Notice de démonstration */
+.notice {
+  display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 12px;
+  background: var(--jaune-doux); color: #4a3c00; font-size: 14.5px; border: 1px solid #efd96a;
+}
+.notice--info { background: var(--bleu-50); color: var(--bleu-800); border-color: var(--bleu-200); }
+.notice--alerte { background: var(--alerte-fond); color: var(--alerte); border-color: #f2c98b; }
+.notice--erreur { background: var(--erreur-fond); color: var(--erreur); border-color: #f3b9b3; }
+.notice--succes { background: var(--vert-100); color: var(--vert-800); border-color: var(--vert-200); }
+.notice svg { width: 20px; height: 20px; flex: none; margin-top: 2px; }
+.notice__icone { display: flex; flex: none; }
+
+/* Réduction des animations : on coupe transitions et défilements doux */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* --- Composants de formulaire partagés (commande client et secrétariat) --- */
+.facultatif { font-weight: 500; color: var(--texte-3); font-size: 13.5px; }
+.groupe-choix { border: 0; padding: 0; margin: 0; display: grid; gap: 10px; min-width: 0; }
+.groupe-choix legend { padding: 0; margin-bottom: 10px; font-weight: 650; font-size: 14.5px; }
+.grille-champs { display: grid; gap: 18px; }
+@media (min-width: 640px) { .grille-champs { grid-template-columns: 1fr 1fr; } .champ--large { grid-column: 1 / -1; } }
+
+/* Cartes de choix (boutons radio illustrés) : toute la carte est cliquable */
+.choix-cartes { display: grid; gap: 10px; }
+@media (min-width: 640px) { .choix-cartes { grid-template-columns: 1fr 1fr; } }
+.choix-carte {
+  position: relative; display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; min-height: 64px;
+  border: 1.5px solid var(--ligne); border-radius: 12px; background: #fff; cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+.choix-carte:hover { border-color: var(--bleu-logo); }
+.choix-carte input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.choix-carte__icone { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 6px 6px 6px 16px; background: var(--bleu-100); color: var(--bleu-tuile); }
+.choix-carte__icone svg { width: 22px; height: 22px; }
+.choix-carte__texte { display: grid; gap: 2px; }
+.choix-carte__texte strong { font-size: 15.5px; }
+.choix-carte__texte small { font-size: 13.5px; color: var(--texte-2); line-height: 1.45; }
+.choix-carte:has(input:checked) { border-color: var(--bleu-tuile); background: var(--bleu-50); box-shadow: inset 0 0 0 1.5px var(--bleu-tuile); }
+.choix-carte:has(input:checked) .choix-carte__icone { background: var(--bleu-tuile); color: #fff; }
+.choix-carte:has(input:checked)::after {
+  content: ""; position: absolute; top: 10px; right: 10px; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--vert-logo) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23123f1c' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / 12px no-repeat;
+}
+.choix-carte:has(input:focus-visible) { outline: 3px solid var(--jaune); outline-offset: 2px; box-shadow: 0 0 0 6px var(--bleu-800); }
+.choix-carte:has(input[aria-invalid="true"]) { border-color: var(--erreur); }
+
+/* Segments (petits choix exclusifs) */
+.segments { display: flex; flex-wrap: wrap; gap: 8px; }
+.segments--colonne { flex-direction: column; }
+.segment { position: relative; }
+.segment input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.segment span {
+  display: inline-flex; align-items: center; min-height: 46px; padding: 10px 16px; border-radius: 10px;
+  border: 1.5px solid var(--ligne); background: #fff; font-weight: 600; font-size: 15px; cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+.segments--colonne .segment span { width: 100%; }
+.segment span:hover { border-color: var(--bleu-logo); }
+.segment input:checked + span { background: var(--bleu-800); border-color: var(--bleu-800); color: #fff; }
+.segment input:focus-visible + span { outline: 3px solid var(--jaune); outline-offset: 2px; box-shadow: 0 0 0 6px var(--bleu-800); }
