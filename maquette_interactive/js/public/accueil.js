@@ -35,7 +35,7 @@
       <li class="carte-prestation tuile-${p.tuile} ${p.tuile % 2 ? 'carte-prestation--bleue' : 'carte-prestation--verte'}">
         <button type="button" class="carte-prestation__media" data-visuel="${esc(v.id)}" aria-label="Agrandir l’illustration : ${esc(p.titre)}">
           ${E.baliseImage(v, { tailles: '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw' })}
-          <span class="pastille-provisoire">Illustration provisoire</span>
+          <span class="pastille-provisoire">${esc(E.libelleStatut(v))}</span>
         </button>
         <div class="carte-prestation__corps">
           <span class="carte-prestation__icone">${icone(p.icone)}</span>
