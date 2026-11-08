@@ -1,0 +1,164 @@
+[
+  {
+    "id": "aspiration",
+    "sujet": "Aspiration et entretien des sols",
+    "origine": "Illustration générée avec image_gen le 6 novembre 2026 ; image edysol-interieur-1024.jpg utilisée comme référence de style. Personnes et lieux fictifs.",
+    "alt": "Visuel d’illustration : une agente passe un aspirateur professionnel sur le sol d’un bureau lumineux.",
+    "fichiers": [
+      {
+        "fichier": "assets/images/generees/aspiration-640.webp",
+        "largeur": 640,
+        "hauteur": 400,
+        "octets": 34504
+      },
+      {
+        "fichier": "assets/images/generees/aspiration-1024.webp",
+        "largeur": 1024,
+        "hauteur": 640,
+        "octets": 65306
+      },
+      {
+        "fichier": "assets/images/generees/aspiration-1600.webp",
+        "largeur": 1600,
+        "hauteur": 1000,
+        "octets": 113812
+      }
+    ],
+    "instruction_scene": "Une agente fictive vue de dos ou de trois quarts passe un aspirateur professionnel traîneau compact, tuyau et tube raccordés, tête posée sur un sol de bureau. Bureau lumineux, fauteuils rangés. Corps et matériel centrés pour recadrage carré."
+  },
+  {
+    "id": "monobrosse",
+    "sujet": "Lavage mécanisé des sols",
+    "origine": "Illustration générée avec image_gen le 6 novembre 2026 ; image edysol-interieur-1024.jpg utilisée comme référence de style. Personnes et lieux fictifs.",
+    "alt": "Visuel d’illustration : un agent lave le carrelage d’un hall à la monobrosse, avec signalisation du sol humide.",
+    "fichiers": [
+      {
+        "fichier": "assets/images/generees/monobrosse-640.webp",
+        "largeur": 640,
+        "hauteur": 400,
+        "octets": 33540
+      },
+      {
+        "fichier": "assets/images/generees/monobrosse-1024.webp",
+        "largeur": 1024,
+        "hauteur": 640,
+        "octets": 63000
+      },
+      {
+        "fichier": "assets/images/generees/monobrosse-1600.webp",
+        "largeur": 1600,
+        "hauteur": 1000,
+        "octets": 110678
+      }
+    ],
+    "instruction_scene": "Un agent fictif vu de dos manie une monobrosse professionnelle réaliste à disque unique sur le carrelage d'un hall vide. Deux mains sur le guidon, disque à plat, chaussures fermées antidérapantes, pantalon et polo marine. Un petit panneau jaune uni sans texte signale le sol humide. Composition centrale entière."
+  },
+  {
+    "id": "vitres",
+    "sujet": "Nettoyage des vitres",
+    "origine": "Illustration générée avec image_gen le 6 novembre 2026 ; image edysol-interieur-1024.jpg utilisée comme référence de style. Personnes et lieux fictifs.",
+    "alt": "Visuel d’illustration : une agente nettoie une baie vitrée accessible à la raclette et au mouilleur.",
+    "fichiers": [
+      {
+        "fichier": "assets/images/generees/vitres-640.webp",
+        "largeur": 640,
+        "hauteur": 400,
+        "octets": 45902
+      },
+      {
+        "fichier": "assets/images/generees/vitres-1024.webp",
+        "largeur": 1024,
+        "hauteur": 640,
+        "octets": 91512
+      },
+      {
+        "fichier": "assets/images/generees/vitres-1600.webp",
+        "largeur": 1600,
+        "hauteur": 1000,
+        "octets": 163704
+      }
+    ],
+    "instruction_scene": "Une agente fictive vue de dos nettoie une baie vitrée accessible depuis le sol avec une raclette professionnelle, autre main tenant un mouilleur. Gants, tenue marine, chaussures fermées. Pas d'échelle. Vue extérieure sur végétation et bâtiments de Nouvelle-Calédonie, mer discrète et non obligatoire. Geste de travail crédible, matériel et sujet au centre."
+  },
+  {
+    "id": "bureaux",
+    "sujet": "Mobilier et postes de travail",
+    "origine": "Illustration générée avec image_gen le 6 novembre 2026 ; image edysol-interieur-1024.jpg utilisée comme référence de style. Personnes et lieux fictifs.",
+    "alt": "Visuel d’illustration : une agente gantée essuie un bureau à la microfibre verte.",
+    "fichiers": [
+      {
+        "fichier": "assets/images/generees/bureaux-640.webp",
+        "largeur": 640,
+        "hauteur": 400,
+        "octets": 38544
+      },
+      {
+        "fichier": "assets/images/generees/bureaux-1024.webp",
+        "largeur": 1024,
+        "hauteur": 640,
+        "octets": 73238
+      },
+      {
+        "fichier": "assets/images/generees/bureaux-1600.webp",
+        "largeur": 1600,
+        "hauteur": 1000,
+        "octets": 135382
+      }
+    ],
+    "instruction_scene": "Une agente fictive de profil non identifiable essuie une table de bureau avec une microfibre verte, gants adaptés, polo et pantalon marine. Écran éteint sans texte, aucune pulvérisation sur électronique, autre main tenant un flacon uni sans marque. Sujet et geste centraux, office vitré lumineux."
+  },
+  {
+    "id": "equipe",
+    "sujet": "Organisation du binôme",
+    "origine": "Illustration générée avec image_gen le 6 novembre 2026 ; image edysol-interieur-1024.jpg utilisée comme référence de style. Personnes et lieux fictifs.",
+    "alt": "Visuel d’illustration : un binôme en tenue marine déplace un chariot de nettoyage dans un couloir.",
+    "fichiers": [
+      {
+        "fichier": "assets/images/generees/equipe-640.webp",
+        "largeur": 640,
+        "hauteur": 400,
+        "octets": 33282
+      },
+      {
+        "fichier": "assets/images/generees/equipe-1024.webp",
+        "largeur": 1024,
+        "hauteur": 640,
+        "octets": 62548
+      },
+      {
+        "fichier": "assets/images/generees/equipe-1600.webp",
+        "largeur": 1600,
+        "hauteur": 1000,
+        "octets": 112774
+      }
+    ],
+    "instruction_scene": "Deux agents de nettoyage fictifs vus de dos, portant tenues marine, chaussures fermées, avancent avec un chariot de nettoyage équipé de microfibres et seaux bleu et vert dans un couloir de bureaux lumineux. Ne pas reproduire l'identité de la personne de référence. Sujet de coordination d'un binôme, pas un portrait des vrais salariés. Chariot et binôme au centre."
+  },
+  {
+    "id": "domicile",
+    "sujet": "Entretien chez les particuliers",
+    "origine": "Illustration générée avec image_gen le 6 novembre 2026 ; image edysol-interieur-1024.jpg utilisée comme référence de style. Personnes et lieux fictifs.",
+    "alt": "Visuel d’illustration : une agente entretient une table basse dans un salon lumineux.",
+    "fichiers": [
+      {
+        "fichier": "assets/images/generees/domicile-640.webp",
+        "largeur": 640,
+        "hauteur": 400,
+        "octets": 33810
+      },
+      {
+        "fichier": "assets/images/generees/domicile-1024.webp",
+        "largeur": 1024,
+        "hauteur": 640,
+        "octets": 66868
+      },
+      {
+        "fichier": "assets/images/generees/domicile-1600.webp",
+        "largeur": 1600,
+        "hauteur": 1000,
+        "octets": 121596
+      }
+    ],
+    "instruction_scene": "Une agente fictive vue de dos essuie une table basse avec une microfibre dans un salon de particulier lumineux et plausible en Nouvelle-Calédonie, sol carrelé, canapé sobre, stores, végétation discrète à l'extérieur. Tenue marine, gants, chaussures fermées. Scène d'entretien courant du mobilier, sans nouveau service. Sujet et geste au centre."
+  }
+]
