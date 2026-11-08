@@ -29,7 +29,10 @@
       { id: 'F', nom: 'Agent F', role: 'employe' }, { id: 'G', nom: 'Agent G', role: 'employe' },
       { id: 'H', nom: 'Agent H', role: 'employe' }, { id: 'K', nom: 'Agent K', role: 'employe' },
       { id: 'C', nom: 'Agent C', role: 'employe' }, { id: 'J', nom: 'Agent J', role: 'employe' }, { id: 'L', nom: 'Agent L', role: 'employe' },
-      { id: 'CT1', nom: 'Contrôleuse 1', role: 'controleuse' }, { id: 'CT2', nom: 'Contrôleuse 2', role: 'controleuse' }
+      { id: 'CT1', nom: 'Contrôleuse 1', role: 'controleuse' }, { id: 'CT2', nom: 'Contrôleuse 2', role: 'controleuse' },
+      // Direction et secrétariat : une personne = une boîte de réception (lectures indépendantes).
+      { id: 'SEC', nom: 'Secrétaire', role: 'secretaire' },
+      { id: 'COG1', nom: 'Cogérant 1', role: 'cogerant' }, { id: 'COG2', nom: 'Cogérant 2', role: 'cogerant' }
     ];
 
     // --- Équipes : 4 binômes fixes, employés solos, contrôleuses pour leurs prestations de ménage ---
@@ -87,8 +90,15 @@
       { id: 'INT-6', commandeId: 'EDY-2026-045', date: j(3), debut: '07:30', fin: '12:00', equipeId: 'B4', statut: 'planifiee' },
       { id: 'INT-7', commandeId: 'EDY-2026-041', date: j(4), debut: '13:30', fin: '15:30', equipeId: 'M-CT2', statut: 'planifiee' },
       // Prestation de ménage de la contrôleuse 1, distincte de sa mission de coordination.
-      { id: 'INT-8', commandeId: 'EDY-2026-044', date: ajouterJours(jour, 1), debut: '08:00', fin: '09:30', equipeId: 'M-CT1', statut: 'planifiee' }
+      { id: 'INT-8', commandeId: 'EDY-2026-044', date: ajouterJours(jour, 1), debut: '08:00', fin: '09:30', equipeId: 'M-CT1', statut: 'planifiee' },
+      // Interventions de démonstration pour le glisser-déposer (demain, relatif à aujourd'hui).
+      { id: 'INT-9', commandeId: 'EDY-2026-044', date: ajouterJours(jour, 1), debut: '10:00', fin: '12:00', equipeId: 'B2', statut: 'planifiee' },
+      { id: 'INT-10', commandeId: 'EDY-2026-045', date: ajouterJours(jour, 1), debut: '13:00', fin: '15:00', equipeId: 'S-J', statut: 'planifiee' }
     ];
+    // Créneau communiqué au client : 'confirme' ou 'non-confirme' (exemples fictifs).
+    // Les règles d'autorisation et d'information du client en cas de changement restent à définir.
+    const confirmes = ['INT-3', 'INT-5', 'INT-6', 'INT-9'];
+    for (const i of interventions) i.creneauClient = confirmes.includes(i.id) ? 'confirme' : 'non-confirme';
     // Coordination des gros chantiers : distincte des prestations de ménage.
     const coordinations = [{ id: 'CO-1', commandeId: 'EDY-2026-045', controleuseId: 'CT1', date: j(3), note: 'Coordination des binômes 3 et 4 (exemple fictif).' }];
 
@@ -108,7 +118,10 @@
     }
     const vehicules = [
       { id: 'V-DÉMO-01', libelle: 'V-DÉMO-01 · 000001 NC (fictif)' },
-      { id: 'V-DÉMO-02', libelle: 'V-DÉMO-02 · 000002 NC (fictif)' }
+      { id: 'V-DÉMO-02', libelle: 'V-DÉMO-02 · 000002 NC (fictif)' },
+      // Véhicules ajoutés pour la carte de démonstration (fictifs).
+      { id: 'V-DÉMO-03', libelle: 'V-DÉMO-03 · 000003 NC (fictif)' },
+      { id: 'V-DÉMO-04', libelle: 'V-DÉMO-04 · 000004 NC (fictif)' }
     ];
 
     // --- Stocks : articles et mouvements append-only (quantités en milli-unités) ---
@@ -128,16 +141,32 @@
     ];
 
     // --- Notifications internes (affichées dans les espaces, AUCUN envoi externe) ---
+    // Une notification = un contenu + des destinataires INDIVIDUELS + une lecture par destinataire.
+    // recueLe : date de réception ; lectures : { destinataire: date de lecture }.
+    // Dates calculées avant « maintenant » pour qu'aucune réception ne soit dans le futur.
+    const ilYA = heures => new Date(Date.now() - heures * 3600 * 1000).toISOString();
+    const SEC = 'personne:SEC', COG1 = 'personne:COG1', COG2 = 'personne:COG2';
+    const direction = [SEC, COG1, COG2]; // la secrétaire et les deux cogérants
     const notifications = [
-      { id: 'N-1', pour: ['secretariat', 'cogerance'], titre: 'Nouvelle commande EDY-2026-042', texte: 'Client : Camille Exemple · à vérifier', date: horo(j(-1), '08:42'), lu: [], lien: 'commande/EDY-2026-042' },
-      { id: 'N-2', pour: ['secretariat', 'cogerance'], titre: 'EDY-2026-041 : affectation enregistrée', texte: 'Binôme fixe 1 · Agent A + Agent B', date: horo(j(-2), '15:10'), lu: [], lien: 'commande/EDY-2026-041' },
-      { id: 'N-3', pour: ['secretariat', 'cogerance'], titre: 'EDY-2026-039 : intervention terminée', texte: 'Compte rendu de l’équipe disponible', date: horo(j(-3), '11:20'), lu: [], lien: 'commande/EDY-2026-039' },
-      { id: 'N-4', pour: ['personne:A', 'personne:B'], titre: 'Planning mis à jour', texte: 'EDY-2026-041 : ' + j(2) + ', 08:00 · Binôme fixe 1', date: horo(j(-2), '15:10'), lu: [], lien: 'intervention/INT-3' },
-      { id: 'N-5', pour: ['personne:CT1'], titre: 'Coordination prévue', texte: 'EDY-2026-045 : gros chantier à coordonner', date: horo(j(-1), '10:00'), lu: [], lien: 'coordination/EDY-2026-045' }
+      // Scénario de vérification (vu par Cogérant 1) : C = N-2 lue ; A = N-1 non lue ancienne ; B = N-6 non lue récente.
+      { id: 'N-3', pour: direction, titre: 'EDY-2026-039 : intervention terminée', texte: 'Compte rendu de l’équipe disponible.', recueLe: ilYA(72),
+        lectures: { [SEC]: ilYA(70), [COG1]: ilYA(69), [COG2]: ilYA(60) }, lien: 'commande/EDY-2026-039' },
+      { id: 'N-2', pour: direction, titre: 'EDY-2026-041 : affectation enregistrée', texte: 'Binôme fixe 1 · Agent A + Agent B.', recueLe: ilYA(48),
+        lectures: { [SEC]: ilYA(47), [COG1]: ilYA(46) }, lien: 'commande/EDY-2026-041' }, // non lue pour Cogérant 2
+      { id: 'N-7', pour: [SEC], titre: 'Demande de rappel', texte: 'Client Démo H souhaite être rappelé : question sur une prestation (message fictif, sans détail associé).',
+        recueLe: ilYA(30), lectures: {}, lien: '' },
+      { id: 'N-1', pour: direction, titre: 'Nouvelle commande EDY-2026-042', texte: 'Client : Camille Exemple · à vérifier.', recueLe: ilYA(26), lectures: {}, lien: 'commande/EDY-2026-042' },
+      { id: 'N-6', pour: direction, titre: 'Nouvelle commande EDY-2026-043', texte: 'Saisie par la secrétaire · Client Démo E.', recueLe: ilYA(3), lectures: {}, lien: 'commande/EDY-2026-043' },
+      // Terrain : la lecture d'Agent B ne change rien pour Agent A.
+      { id: 'N-4', pour: ['personne:A', 'personne:B'], titre: 'Planning mis à jour', texte: 'EDY-2026-041 : ' + j(2) + ', 08:00 · Binôme fixe 1.', recueLe: ilYA(40),
+        lectures: { 'personne:B': ilYA(38) }, lien: 'intervention/INT-3' },
+      { id: 'N-5', pour: ['personne:CT1'], titre: 'Coordination prévue', texte: 'EDY-2026-045 : gros chantier à coordonner.', recueLe: ilYA(20), lectures: {}, lien: 'coordination/EDY-2026-045' }
     ];
 
     return {
-      version: 1, creeLe: new Date().toISOString(), sequenceCommande: 45, sequence: 100,
+      // Version 2 : notifications par personne (les données locales de la version 1 sont recréées).
+      // Version 3 : créneaux client et véhicules supplémentaires (données locales antérieures recréées).
+      version: 3, creeLe: new Date().toISOString(), sequenceCommande: 45, sequence: 100,
       personnes, equipes, commandes, interventions, coordinations, comptesRendus,
       releves, vehicules, articles, mouvements, inventaires: [], notifications, renforts: [], demandesRappel: [],
       // Permissions d'écriture SIMULÉES : fermées par défaut (politique de référence inchangée).

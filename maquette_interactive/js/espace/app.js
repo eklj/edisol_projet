@@ -17,11 +17,13 @@
   /** Définition des espaces : libellé, type de mise en page et menu. */
   const ESPACES = {
     cogerance: {
-      libelle: 'Cogérance', type: 'bureau', destinataire: 'cogerance', description: 'Pilotage de l’activité par les deux cogérants.',
+      // Espace commun aux deux cogérants ; chacun garde sa propre boîte de réception (role: 'cogerant').
+      libelle: 'Cogérance', type: 'bureau', role: 'cogerant', description: 'Espace commun aux deux cogérants : suivi de l’activité et concertation.',
       menu: [
         { vue: 'tableau', texte: 'Vue d’ensemble', icone: 'accueil' },
         { vue: 'commandes', texte: 'Commandes', icone: 'commandes', actifPour: ['commande', 'pdf'] },
-        { vue: 'planning', texte: 'Planning', icone: 'planning' },
+        { vue: 'planning', texte: 'Planning et affectations', icone: 'planning' },
+        { vue: 'carte', texte: 'Suivi des véhicules', icone: 'vehicule' },
         { vue: 'equipe', texte: 'Équipe', icone: 'equipe' },
         { vue: 'documents', texte: 'Documents', icone: 'documents' },
         { vue: 'notifications', texte: 'Notifications', icone: 'cloche', compteur: true },
@@ -29,12 +31,13 @@
       ]
     },
     secretariat: {
-      libelle: 'Secrétariat', type: 'bureau', destinataire: 'secretariat', description: 'Saisie des commandes, planning et suivi administratif.',
+      libelle: 'Secrétariat', type: 'bureau', role: 'secretaire', description: 'Saisie des commandes, planning et suivi administratif.',
       menu: [
         { vue: 'tableau', texte: 'Tableau de bord', icone: 'accueil' },
         { vue: 'commandes', texte: 'Commandes', icone: 'commandes', actifPour: ['commande', 'pdf'] },
         { vue: 'nouvelle', texte: 'Nouvelle commande', icone: 'plus' },
-        { vue: 'planning', texte: 'Planning', icone: 'planning' },
+        { vue: 'planning', texte: 'Planning et affectations', icone: 'planning' },
+        { vue: 'carte', texte: 'Suivi des véhicules', icone: 'vehicule' },
         { vue: 'clients', texte: 'Clients', icone: 'utilisateur' },
         { vue: 'notifications', texte: 'Notifications', icone: 'cloche', compteur: true },
         { vue: 'comptabilite', texte: 'Comptabilité', icone: 'comptabilite', actifPour: ['stocks', 'mouvements', 'inventaire', 'vehicules', 'releves'] }
@@ -75,26 +78,37 @@
   const PERSONNE_ALIAS = { 'e-detail': 'A', 'e-compterendu': 'A', 'e-jour': 'A', 'e-solo': 'C', 'su-accueil': 'CT1', 'su-chantier': 'CT1' };
 
   const app = document.getElementById('app');
+  let vueCourante = null; // { rendu, ctx } de la vue affichée
 
-  /** Personne fictive consultée dans les espaces terrain (mémorisée pour la session de démo). */
+  /**
+   * Personne fictive consultée dans un espace (mémorisée dans ce navigateur).
+   * SÉLECTEUR DE DÉMONSTRATION : en production, l'identité viendra de la session serveur.
+   */
+  function personnesDe(espace) {
+    return E.api.charger().personnes.filter(p => p.role === ESPACES[espace].role);
+  }
   function personneCourante(espace) {
-    const cle = 'edysol-personne-' + espace;
-    const etat = E.api.charger();
-    const role = ESPACES[espace].role;
-    const choix = E.stockage.lire(cle);
-    const possibles = etat.personnes.filter(p => p.role === role || (role === 'employe' && p.role === 'employe'));
+    const choix = E.stockage.lire('edysol-personne-' + espace);
+    const possibles = personnesDe(espace);
     return possibles.find(p => p.id === choix) || possibles[0];
   }
   function choisirPersonne(espace, id) { E.stockage.ecrire('edysol-personne-' + espace, id); }
 
-  /** Nombre de notifications non lues pour un destinataire. */
+  /** Nombre de notifications non lues pour un destinataire (simple lecture : aucun statut modifié). */
   function nonLues(destinataire) {
-    return E.api.charger().notifications.filter(n => n.pour.includes(destinataire) && !n.lu.includes(destinataire)).length;
+    return E.api.nonLues(destinataire);
   }
 
-  /** Destinataire des notifications pour le contexte courant (espace ou personne). */
+  /** Destinataire des notifications : toujours une personne (plus de boîte partagée par espace). */
   function destinataire(espace, personne) {
-    return ESPACES[espace].destinataire || ('personne:' + personne.id);
+    return 'personne:' + personne.id;
+  }
+
+  /** Sélecteur de personne (démonstration) ; une seule option si l'espace n'a qu'une personne. */
+  function selecteurPersonne(espace, personne, classe) {
+    return `<label class="${classe}"><span>Personne (démo)</span>
+        <select data-action="changer-personne">${personnesDe(espace).map(p => `<option value="${esc(p.id)}" ${p.id === personne.id ? 'selected' : ''}>${esc(p.nom)}</option>`).join('')}</select>
+      </label>`;
   }
 
   /** Analyse l'adresse courante. Retour : { espace, vue, param } ou null pour l'accueil des espaces. */
@@ -106,13 +120,19 @@
       racine.location.replace('#' + ALIAS_V1[hash]);
       return 'redirection';
     }
-    const [espace, vue, ...reste] = hash.replace(/^\//, '').split('/');
+    // « ?lecture=N-12 » : la vue est ouverte depuis une notification à enregistrer comme lue
+    // UNIQUEMENT si la vue se charge correctement (voir afficher()).
+    const [chemin, requete = ''] = hash.split('?');
+    const lecture = new URLSearchParams(requete).get('lecture');
+    const [espace, vue, ...reste] = chemin.replace(/^\//, '').split('/');
     if (!ESPACES[espace]) return null;
-    return { espace, vue: vue || ESPACES[espace].menu[0].vue, param: reste.join('/') };
+    return { espace, vue: vue || ESPACES[espace].menu[0].vue, param: reste.join('/'), lecture };
   }
 
   /** Page d'accueil des espaces : choix du rôle (sélecteur de démonstration, pas une connexion). */
   function afficherAccueil() {
+    if (vueCourante && vueCourante.rendu.detruire) { try { vueCourante.rendu.detruire(); } catch (e) { console.error(e); } }
+    vueCourante = null;
     document.title = 'Espaces internes · ÉDYSOL NC (maquette)';
     app.className = 'app app--accueil';
     app.innerHTML = `
@@ -121,7 +141,7 @@
           <a href="index.html" class="plaque-logo accueil-espaces__logo" aria-label="Retour au site public"><img src="assets/logo/edysol-logo.svg" alt="ÉDYSOL Prestige nettoyage" width="819" height="425"></a>
           <h1>Espaces internes</h1>
           <p>Choisissez un espace pour parcourir la maquette.</p>
-          ${ui.notice('<strong>Sélecteur de démonstration.</strong> Il remplace l’écran de connexion : aucun compte, aucun mot de passe, aucune vérification des droits. Toutes les données sont fictives et restent dans ce navigateur.', 'demo', 'bouclier')}
+          ${ui.notice('<strong>Sélecteur de démonstration.</strong> Il remplace l’écran de connexion : aucun compte, aucun mot de passe, aucune vérification des droits. Dans chaque espace, une liste permet de choisir la personne (par exemple Cogérant 1 ou Cogérant 2), chacune avec sa boîte de réception. Toutes les données sont fictives et restent dans ce navigateur.', 'demo', 'bouclier')}
         </div>
         <ul class="choix-espaces">
           ${Object.entries(ESPACES).map(([id, e], i) => `
@@ -146,22 +166,27 @@
       const actif = m.vue === vueActive || (m.actifPour || []).includes(vueActive);
       const n = m.compteur ? nonLues(cible) : 0;
       return `<li><a class="menu__lien" href="#/${espace}/${m.vue}" ${actif ? 'aria-current="page"' : ''}>
-          ${icone(m.icone)}<span class="menu__texte">${esc(m.texte)}</span>${n ? `<span class="menu__compteur" aria-label="${n} non lue${n > 1 ? 's' : ''}">${n}</span>` : ''}
+          ${icone(m.icone)}<span class="menu__texte">${esc(m.texte)}</span>${n ? `<span class="menu__compteur"><span aria-hidden="true">${n}</span><span class="visuellement-cache">, ${n} non lue${n > 1 ? 's' : ''}</span></span>` : ''}
         </a></li>`;
     }).join('');
   }
 
   /** Affiche une vue dans la mise en page de son espace. */
   function afficher(route) {
+    // La vue précédente libère ses ressources (carte, minuteries, abonnements).
+    if (vueCourante && vueCourante.rendu.detruire) {
+      try { vueCourante.rendu.detruire(); } catch (e) { console.error(e); }
+    }
+    vueCourante = null;
     const conf = ESPACES[route.espace];
     const fabrique = vues[route.vue];
-    const personne = conf.type === 'terrain' ? personneCourante(route.espace) : null;
+    const personne = personneCourante(route.espace);
     const ctx = {
       espace: route.espace, vue: route.vue, param: route.param, conf, personne,
       role: route.espace, destinataire: destinataire(route.espace, personne),
       lien: chemin => `#/${route.espace}/${chemin}`,
       naviguer: chemin => { racine.location.hash = `#/${route.espace}/${chemin}`; },
-      rafraichir: () => afficher(route)
+      rafraichir: () => afficher({ ...route, lecture: null })
     };
     let rendu;
     try {
@@ -185,6 +210,7 @@
           <p class="laterale__espace">${esc(conf.libelle)}</p>
           <nav aria-label="Navigation de l’espace"><ul class="menu">${menuHtml(route.espace, route.vue, personne)}</ul></nav>
           <div class="laterale__bas">
+            ${selecteurPersonne(route.espace, personne, 'laterale__changer')}
             <label class="laterale__changer"><span>Espace (démo)</span>
               <select data-action="changer-espace">${autresEspaces}</select>
             </label>
@@ -199,15 +225,14 @@
             <p class="barre-haute__date">${icone('calendrier')}<span>${esc(E.formaterDate(E.aujourdhui()))}</span><span class="barre-haute__fuseau">· heure de Nouvelle-Calédonie</span></p>
             <div class="barre-haute__droite">
               ${ui.badgeDemo('Données fictives')}
-              <a class="bouton-icone barre-haute__cloche" href="#/${route.espace}/notifications" aria-label="Notifications (${nonLues(ctx.destinataire)} non lues)">${icone('cloche')}${nonLues(ctx.destinataire) ? `<span class="pastille-compteur">${nonLues(ctx.destinataire)}</span>` : ''}</a>
-              <span class="compte-demo">${icone('utilisateur')}<span>Compte de démonstration</span></span>
+              <a class="bouton-icone barre-haute__cloche" id="cloche" href="#/${route.espace}/notifications">${clocheHtml(ctx.destinataire)}</a>
+              <span class="compte-demo">${icone('utilisateur')}<span>${esc(personne.nom)} · démo</span></span>
             </div>
           </header>
           <main class="vue" id="vue" tabindex="-1">${rendu.html}</main>
         </div>`;
     } else {
-      const etat = E.api.charger();
-      const possibles = etat.personnes.filter(p => p.role === conf.role);
+      const possibles = personnesDe(route.espace);
       app.className = 'app app--terrain';
       app.innerHTML = `
         <a class="lien-evitement" href="#vue">Aller au contenu</a>
@@ -227,8 +252,60 @@
         <nav class="onglets" aria-label="Navigation de l’espace"><ul class="menu menu--onglets">${menuHtml(route.espace, route.vue, personne)}</ul></nav>`;
     }
     E.injecterIcones && E.injecterIcones(app);
-    if (rendu.apres) rendu.apres(app.querySelector('#vue'), ctx);
+    vueCourante = { rendu, ctx };
+    try {
+      if (rendu.apres) rendu.apres(app.querySelector('#vue'), ctx);
+    } catch (erreur) {
+      // Une erreur pendant l'affichage interdit d'enregistrer une lecture.
+      console.error(erreur);
+      rendu.contenuCharge = false;
+    }
+    enregistrerLectureSiOuverte(route, rendu, ctx);
   }
+
+  /**
+   * Enregistre la lecture d'une notification APRÈS un affichage réussi :
+   * - ouverture d'un détail (commande, intervention…) via « ?lecture=ID » ;
+   * - ouverture du message lui-même (vue « notification »).
+   * Un écran introuvable, une erreur ou un accès refusé laissent contenuCharge à faux :
+   * aucune lecture n'est alors enregistrée. La commande associée n'est jamais modifiée.
+   */
+  function enregistrerLectureSiOuverte(route, rendu, ctx) {
+    let resultat = null;
+    if (route.lecture) {
+      resultat = E.api.enregistrerLecture(route.lecture, ctx.destinataire,
+        { type: 'detail', chemin: `${route.vue}/${route.param}`, contenuCharge: rendu.contenuCharge === true });
+      // On retire « ?lecture » de l'adresse sans recharger la vue.
+      history.replaceState(null, '', `#/${route.espace}/${route.vue}${route.param ? '/' + route.param : ''}`);
+    } else if (rendu.messageOuvert) {
+      resultat = E.api.enregistrerLecture(rendu.messageOuvert, ctx.destinataire, { type: 'message', contenuCharge: rendu.contenuCharge === true });
+    }
+    if (resultat && rendu.apresLecture) rendu.apresLecture(app.querySelector('#vue'), resultat);
+    majCompteurs();
+  }
+
+  /** Contenu de la cloche : icône, pastille et texte accessible avec le nombre de non lues. */
+  function clocheHtml(dest) {
+    const n = nonLues(dest);
+    return `${icone('cloche')}<span class="visuellement-cache">Notifications : ${n} non lue${n > 1 ? 's' : ''}</span>${n ? `<span class="pastille-compteur" aria-hidden="true">${n}</span>` : ''}`;
+  }
+
+  /** Met à jour les compteurs (menu et cloche) sans réafficher la vue ni changer le défilement. */
+  function majCompteurs() {
+    if (!vueCourante) return;
+    const { ctx } = vueCourante;
+    const menu = app.querySelector('.menu');
+    if (menu) menu.innerHTML = menuHtml(ctx.espace, ctx.vue, ctx.personne);
+    const cloche = app.querySelector('#cloche');
+    if (cloche) cloche.innerHTML = clocheHtml(ctx.destinataire);
+  }
+
+  // Données modifiées (cette page ou un autre onglet du même navigateur) :
+  // compteurs à jour et, si la vue le prévoit, insertion douce des nouveautés.
+  document.addEventListener('edysol:donnees', e => {
+    majCompteurs();
+    if (vueCourante && vueCourante.rendu.surDonnees) vueCourante.rendu.surDonnees(app.querySelector('#vue'), e.detail || {});
+  });
 
   /** Point d'entrée : lit l'adresse et affiche la vue, puis place le focus sur le titre. */
   function router(focus = true) {
@@ -279,13 +356,15 @@
     if (action === 'changer-personne') {
       const route = lireRoute();
       choisirPersonne(route.espace, e.target.value);
-      // Retour à la liste : l'intervention ouverte peut ne pas concerner la nouvelle personne.
-      racine.location.hash = `#/${route.espace}/${ESPACES[route.espace].menu[0].vue}`;
+      // Bureau : on reste sur la même vue (sans paramètre). Terrain : retour à la liste,
+      // l'intervention ouverte peut ne pas concerner la nouvelle personne.
+      const vue = ESPACES[route.espace].type === 'bureau' ? route.vue : ESPACES[route.espace].menu[0].vue;
+      history.replaceState(null, '', `#/${route.espace}/${vue}`);
       router(false);
     }
   });
 
   racine.addEventListener('hashchange', () => router());
-  E.espaces = { ESPACES, router, nonLues };
+  E.espaces = { ESPACES, router, nonLues, majCompteurs };
   router(false);
 })(window);

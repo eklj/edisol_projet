@@ -41,6 +41,9 @@
       </ul></nav>`;
   }
 
+  // En-tête partagé avec la vue « carte » (js/espace/vues/carte-vehicules.js).
+  E.enteteComptabilite = (ctx, titre, sousTitre) => entete(ctx, titre, sousTitre);
+
   /** Quantité affichée en unité de référence avec son signe. */
   const qte = (milli, unite, signe = '') => `${signe}${E.formaterNombre(milli / 1000)} ${unite}`;
   const stock = a => M.stockCourant(etat().mouvements, a.id);
@@ -208,6 +211,7 @@
           { titre: 'Alertes', rendu: x => x.suivi.anomalies.length ? `<span class="badge badge--a-confirmer">${x.suivi.anomalies.length} à examiner</span>` : '<span class="badge badge--terminee">Aucune</span>' }
         ], suivis, { lien: x => ctx.lien('releves/' + x.v.id), legende: 'Véhicules de service' })}
         <div class="grille-2">
+          ${ui.bloc('Suivi des véhicules', `<p>Carte, positions, déplacements et historique des trajets. Démonstration : positions simulées.</p><p class="actions-bloc"><a class="bouton bouton--bleu bouton--petit" href="${ctx.lien('carte')}">${icone('lieu')}Ouvrir le suivi des véhicules</a></p>`)}
           ${ui.bloc('Alimentation depuis les comptes rendus', `<ul class="liste-puces">
             <li>Le kilométrage saisi est le <strong>total affiché au compteur</strong>, pas la distance de la mission.</li>
             <li>Le dernier relevé est choisi selon sa date réelle, même si la saisie arrive plus tard.</li>

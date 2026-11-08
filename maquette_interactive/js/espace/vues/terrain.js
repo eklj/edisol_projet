@@ -70,6 +70,7 @@
     const cr = s.comptesRendus.find(x => x.interventionId === i.id && x.employeId === ctx.personne.id);
     return {
       titre: i.commandeId,
+      contenuCharge: true, // intervention affectée et affichée : lecture possible
       html: `${ui.entetePage({ titre: eq.type === 'solo' ? 'Intervention en solo' : 'Détail de l’intervention', retour, sousTitre: `${esc(i.commandeId)} · ${ui.badgeStatut(i.statut)}` })}
         <div class="fiche-mission">
           <p class="fiche-mission__quand">${icone('calendrier')}<span><strong>${esc(E.formaterDate(i.date))}</strong><br>${esc(i.debut)} à ${esc(i.fin)}</span></p>
@@ -195,12 +196,17 @@
     const s = D().etat();
     const coords = s.coordinations.filter(c => c.controleuseId === ctx.personne.id);
     const commandeId = ctx.param || coords[0]?.commandeId;
+    // Cloisonnement de démonstration : seule la contrôleuse chargée de la coordination y accède.
+    if (ctx.param && !coords.some(co => co.commandeId === ctx.param)) {
+      return { titre: 'Coordination', contenuCharge: false, html: ui.entetePage({ titre: 'Coordination non attribuée', retour: { href: ctx.lien('activites'), texte: 'Mes activités' } }) + ui.notice('Ce chantier n’est pas coordonné par la personne choisie. (En production, le serveur devra refuser cet accès.)', 'alerte', 'bouclier') };
+    }
     const c = s.commandes.find(x => x.id === commandeId);
     if (!c) return { titre: 'Coordination', html: ui.entetePage({ titre: 'Coordination chantier' }) + '<p class="vide">Aucun chantier à coordonner pour cette personne.</p>' };
     const ints = D().interventionsDe(c.id);
     const renforts = s.renforts.filter(r => r.commandeId === c.id);
     return {
       titre: 'Coordination',
+      contenuCharge: true,
       html: `${ui.entetePage({ titre: 'Coordination chantier', retour: { href: ctx.lien('activites'), texte: 'Mes activités' }, sousTitre: `${esc(c.id)} · ${esc(c.commune)} · ${esc(D().prestation(c.prestation))}` })}
         ${coords.length > 1 ? `<div class="barre-filtres"><div class="champ"><label for="choix-chantier">Chantier</label><select id="choix-chantier">${coords.map(co => `<option ${co.commandeId === c.id ? 'selected' : ''}>${esc(co.commandeId)}</option>`).join('')}</select></div></div>` : ''}
         ${ui.bloc('Équipes prévues', ints.length ? `<ul class="liste-simple">${ints.map(i => `<li><strong>${esc(D().libelleEquipe(i.equipeId))}</strong><small class="sous-ligne">${esc(E.formaterDate(i.date, 'court'))} · ${esc(i.debut)} à ${esc(i.fin)}</small></li>`).join('')}</ul>` : '<p class="vide">Équipes à renseigner.</p>')}

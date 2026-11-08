@@ -59,4 +59,7 @@ const original = path.resolve(__dirname, '../../maquette_EdisolNC/Edysol_NC_Maqu
 if (fs.existsSync(original)) {
   assert.equal(fs.readFileSync(path.resolve(__dirname, '../js/metier/suivi_metier.js'), 'utf8'), fs.readFileSync(original, 'utf8'));
   console.log('OK · js/metier/suivi_metier.js identique à la référence V1');
+} else {
+  // Archive de la maquette seule : la référence V1 n'est pas présente, la comparaison est impossible.
+  console.log('NON VÉRIFIÉ · comparaison avec la référence V1 (fichier absent hors du dépôt complet)');
 }

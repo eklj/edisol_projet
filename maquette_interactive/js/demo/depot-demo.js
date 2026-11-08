@@ -11,23 +11,55 @@
 (function (racine) {
   'use strict';
   const Edysol = racine.Edysol = racine.Edysol || {};
+  // Nom de clé historique conservé (« v1 ») ; la version des données est contrôlée par VERSION.
   const CLE = 'edysol-maquette-demo-v1';
   let etat = null;
+
+  // Version 3 : créneaux client, véhicules de la carte. (Version 2 : notifications par personne.)
+  const VERSION = 3;
 
   /** Charge l'état (ou le crée) ; retour : objet d'état modifiable. */
   function charger() {
     if (etat) return etat;
     const sauve = Edysol.stockage.lire(CLE);
-    etat = sauve && sauve.version === 1 ? sauve : Edysol.creerDonneesDemo();
-    if (!sauve) sauver();
+    const valide = sauve && sauve.version === VERSION;
+    // Données absentes ou d'une ancienne version : on recrée les données fictives.
+    etat = valide ? sauve : Edysol.creerDonneesDemo();
+    if (!valide) sauver();
     return etat;
   }
 
-  /** Enregistre l'état dans le navigateur et prévient les autres onglets/vues. */
+  // Outil de démonstration : forcer l'échec du prochain enregistrement pour tester le retour arrière.
+  let echecSimule = false;
+  function simulerEchecEnregistrement(actif) { echecSimule = Boolean(actif); }
+
+  /**
+   * Enregistre l'état dans CE navigateur (localStorage) et prévient la page.
+   * Retour : vrai si l'écriture a réussi. En cas d'échec (stockage plein, refusé
+   * ou échec simulé), les données restent en mémoire : l'appelant décide du retour arrière.
+   */
   function sauver() {
-    Edysol.stockage.ecrire(CLE, etat);
-    document.dispatchEvent(new CustomEvent('edysol:donnees'));
+    let ok;
+    if (echecSimule) { echecSimule = false; ok = false; }
+    else ok = Edysol.stockage.ecrire(CLE, etat);
+    document.dispatchEvent(new CustomEvent('edysol:donnees', { detail: { externe: false } }));
+    return ok;
   }
+
+  /*
+   * Synchronisation entre onglets du MÊME navigateur : l'événement « storage »
+   * est émis quand un autre onglet modifie les données. Ce n'est pas une
+   * synchronisation entre appareils : le localStorage reste propre à ce navigateur.
+   */
+  window.addEventListener('storage', e => {
+    if (e.key !== CLE || !e.newValue) return;
+    try {
+      const recu = JSON.parse(e.newValue);
+      if (recu.version !== VERSION) return;
+      etat = recu;
+      document.dispatchEvent(new CustomEvent('edysol:donnees', { detail: { externe: true } }));
+    } catch (err) { /* contenu illisible : on garde l'état courant */ }
+  });
 
   /** Réinitialise toutes les données fictives. */
   function reinitialiser() {
@@ -42,9 +74,63 @@
     return `${prefixe}-${etat.sequence}`;
   }
 
-  /** Ajoute une notification interne (simulation : aucun envoi externe). */
+  /**
+   * Transforme des groupes en destinataires individuels.
+   * 'secretariat' donne la ou les secrétaires, 'cogerance' donne CHACUN des deux cogérants.
+   * Chaque personne obtient ainsi sa propre lecture. Les doublons sont retirés.
+   */
+  function resoudreDestinataires(pour) {
+    const roles = { secretariat: 'secretaire', cogerance: 'cogerant' };
+    const liste = pour.flatMap(d => roles[d]
+      ? charger().personnes.filter(p => p.role === roles[d]).map(p => 'personne:' + p.id)
+      : [d]);
+    return [...new Set(liste)];
+  }
+
+  /**
+   * Ajoute une notification interne (simulation : aucun envoi externe).
+   * Elle est ajoutée à la fin du tableau : l'ordre d'affichage est calculé
+   * par EdysolNotifications.boiteDe, jamais par la position dans le tableau.
+   */
   function notifier(pour, titre, texte, lien = '') {
-    charger().notifications.unshift({ id: nouvelId('N'), pour, titre, texte, date: new Date().toISOString(), lu: [], lien });
+    const n = { id: nouvelId('N'), pour: resoudreDestinataires(pour), titre, texte, recueLe: new Date().toISOString(), lectures: {}, lien };
+    charger().notifications.push(n);
+    return n;
+  }
+
+  /** Boîte de réception triée d'un destinataire (lecture seule : aucun statut modifié). */
+  function boite(destinataire) {
+    return racine.EdysolNotifications.boiteDe(charger().notifications, destinataire);
+  }
+
+  /** Nombre de non lues d'un destinataire (lecture seule). */
+  function nonLues(destinataire) {
+    return racine.EdysolNotifications.compterNonLues(charger().notifications, destinataire);
+  }
+
+  /**
+   * Enregistre la lecture d'UNE personne après ouverture réussie.
+   * Paramètres : identifiant, destinataire, ouverture { type, chemin, contenuCharge }.
+   * Retour : { ok, motif }. Ne modifie ni la commande, ni les affectations, ni aucune validation.
+   */
+  function enregistrerLecture(id, destinataire, ouverture) {
+    const N = racine.EdysolNotifications;
+    const liste = charger().notifications;
+    const i = liste.findIndex(x => x.id === id);
+    const n = liste[i];
+    const controle = N.lecturePossible(n, destinataire, ouverture);
+    if (!controle.ok) return controle;
+    if (N.estLue(n, destinataire)) return { ok: true, motif: 'Déjà lue.' };
+    liste[i] = N.avecLecture(n, destinataire, new Date().toISOString());
+    sauver();
+    return { ok: true, motif: '' };
+  }
+
+  /** Crée une notification fictive pour un seul destinataire (outil de démonstration). */
+  function recevoirNotificationDemo(destinataire) {
+    const n = notifier([destinataire], 'Message de démonstration', 'Notification fictive créée par le bouton de test de la maquette. Elle n’a pas de détail associé.', '');
+    sauver();
+    return n;
   }
 
   /** Ajoute une ligne à l'historique d'une commande. */
@@ -99,7 +185,7 @@
   /** Enregistre une demande de rappel envoyée depuis la section Contact (simulation). */
   function demanderRappel(d) {
     charger().demandesRappel.unshift({ id: nouvelId('R'), ...d, date: new Date().toISOString() });
-    notifier(['secretariat'], 'Demande de rappel', `${d.nom} · ${d.objet}`, 'notifications');
+    notifier(['secretariat'], 'Demande de rappel', `${d.nom} (${d.telephone}) · ${d.objet}`, '');
     sauver();
   }
 
@@ -192,6 +278,74 @@
     sauver();
   }
 
+  /* ---------- Déplacement d'une intervention (glisser-déposer ou fenêtre clavier) ---------- */
+
+  /** Copie des champs modifiables d'une intervention (pour annuler ou revenir en arrière). */
+  const instantane = i => ({ date: i.date, debut: i.debut, fin: i.fin, equipeId: i.equipeId, creneauClient: i.creneauClient });
+
+  /**
+   * Déplace une intervention après contrôle (js/metier/deplacement.js).
+   * Paramètres : identifiant, cible { date, debut, equipeId }, auteur (nom affiché).
+   * Retour : { ok, bloquants, avertissements, impossibles, position, jeton, erreurEnregistrement }.
+   * - bloquant : rien n'est modifié, l'intervention reste à sa place ;
+   * - échec d'enregistrement : la position précédente est rétablie ;
+   * - jeton : permet « Annuler le déplacement ».
+   */
+  function deplacerIntervention(id, cible, auteur, role) {
+    charger();
+    const R = racine.EdysolDeplacement;
+    // Droits vérifiés ici aussi (pas seulement dans l'interface) : rôle issu du sélecteur de démo.
+    const droits = R.droitsPlanning(acteur(role));
+    const i = etat.interventions.find(x => x.id === id);
+    if (!i) return { ok: false, bloquants: ['Intervention introuvable.'], avertissements: [], impossibles: [] };
+    const position = R.nouvellePosition(i, cible);
+    if (R.memePosition(position, i)) return { ok: false, inchange: true, bloquants: [], avertissements: [], impossibles: [], position };
+    const controle = R.controlerDeplacement(i, position, { equipes: etat.equipes, interventions: etat.interventions, aujourdhui: Edysol.aujourdhui(), droits });
+    if (controle.bloquants.length) return { ok: false, ...controle, position };
+
+    const avant = instantane(i);
+    const commande = etat.commandes.find(c => c.id === i.commandeId);
+    const historiqueAvant = commande ? commande.historique.length : 0;
+    const nbNotifs = etat.notifications.length;
+    Object.assign(i, position);
+    if (avant.creneauClient === 'confirme' && (avant.date !== position.date || avant.debut !== position.debut)) i.creneauClient = 'a-reconfirmer';
+    const eqAvant = etat.equipes.find(e => e.id === avant.equipeId), eqApres = etat.equipes.find(e => e.id === position.equipeId);
+    if (commande) historiser(commande, `Intervention ${i.id} déplacée par ${auteur} : ${avant.date} ${avant.debut}-${avant.fin} (${eqAvant.nom}) vers ${position.date} ${position.debut}-${position.fin} (${eqApres.nom}). Planning interne.`);
+    // Information interne des personnes concernées (simulée : aucun envoi externe).
+    notifier([...new Set([...eqAvant.membres, ...eqApres.membres])].map(m => 'personne:' + m), 'Intervention déplacée',
+      `${i.commandeId} : ${Edysol.formaterDate(position.date, 'court')} ${position.debut}-${position.fin} · ${eqApres.nom}`, 'intervention/' + i.id);
+
+    if (!sauver()) {
+      // Retour arrière complet : position, historique et notifications d'avant.
+      Object.assign(i, avant);
+      if (commande) commande.historique.length = historiqueAvant;
+      etat.notifications.length = nbNotifs;
+      document.dispatchEvent(new CustomEvent('edysol:donnees', { detail: { externe: false } }));
+      return { ok: false, erreurEnregistrement: true, bloquants: ['L’enregistrement a échoué : l’intervention a été remise à sa position précédente.'], avertissements: [], impossibles: controle.impossibles, position };
+    }
+    return { ok: true, ...controle, position, jeton: { id: i.id, avant, apres: instantane(i) } };
+  }
+
+  /**
+   * Annule un déplacement réussi, si l'intervention n'a pas changé depuis.
+   * Le retour est lui aussi contrôlé : si l'ancien créneau est désormais pris, l'annulation est refusée.
+   */
+  function annulerDeplacement(jeton, auteur, role) {
+    charger();
+    const R = racine.EdysolDeplacement;
+    const droits = R.droitsPlanning(acteur(role));
+    const i = etat.interventions.find(x => x.id === jeton.id);
+    if (!i || JSON.stringify(instantane(i)) !== JSON.stringify(jeton.apres)) return { ok: false, bloquants: ['L’intervention a changé depuis : annulation impossible.'] };
+    const controle = R.controlerDeplacement(i, jeton.avant, { equipes: etat.equipes, interventions: etat.interventions, aujourdhui: Edysol.aujourdhui(), droits });
+    if (controle.bloquants.length) return { ok: false, bloquants: controle.bloquants };
+    const apres = instantane(i);
+    Object.assign(i, jeton.avant);
+    const commande = etat.commandes.find(c => c.id === i.commandeId);
+    if (commande) historiser(commande, `Déplacement de ${i.id} annulé par ${auteur} : retour à ${i.date} ${i.debut}-${i.fin}.`);
+    if (!sauver()) { Object.assign(i, apres); if (commande) commande.historique.pop(); return { ok: false, bloquants: ['L’enregistrement de l’annulation a échoué.'] }; }
+    return { ok: true, bloquants: [] };
+  }
+
   /** Construit l'acteur de démonstration (rôle + permissions simulées) pour la politique de référence. */
   function acteur(role) {
     charger();
@@ -244,12 +398,8 @@
     return { ok: true, message: 'Correction enregistrée : la valeur d’origine reste dans l’historique.' };
   }
 
-  /** Marque une notification comme lue pour un destinataire. */
-  function marquerLue(id, destinataire) {
-    const n = charger().notifications.find(x => x.id === id);
-    if (n && !n.lu.includes(destinataire)) { n.lu.push(destinataire); sauver(); }
-  }
-
   Edysol.depotDemo = { charger, sauver, reinitialiser, validerCommande, creerCommande, demanderRappel, planifier, demarrerIntervention,
-    enregistrerCompteRendu, signalerRenfort, acteur, basculerPermission, ajouterMouvement, corrigerReleve, marquerLue, nomPersonne, notifier };
+    enregistrerCompteRendu, signalerRenfort, acteur, basculerPermission, ajouterMouvement, corrigerReleve, nomPersonne, notifier,
+    boite, nonLues, enregistrerLecture, recevoirNotificationDemo, resoudreDestinataires,
+    deplacerIntervention, annulerDeplacement, simulerEchecEnregistrement };
 })(window);

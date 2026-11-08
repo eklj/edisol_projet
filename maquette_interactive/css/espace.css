@@ -209,17 +209,36 @@ fieldset.bloc > legend + * { clear: both; }
 .historique li::before { content: ""; position: absolute; left: -25px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 3px solid var(--bleu-tuile); }
 .historique time { font-size: 12.5px; color: var(--texte-2); }
 
-/* Notifications */
-.notifications { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+/* Boîte de réception : non lues d'abord (mises en évidence), puis historique des lues.
+   L'état est écrit en toutes lettres (« Non lue », « Lue le … ») : la couleur n'est qu'un appui. */
+.boite__section { margin-top: 22px; }
+.boite__titre { font-size: 20px; display: flex; align-items: baseline; gap: 8px; }
+.boite__nombre { font-size: 15px; color: var(--texte-2); font-weight: 600; }
+.boite__aide { margin: 4px 0 12px; }
+.boite__outils { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--ligne); }
+.notifications { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; overflow-anchor: auto; }
 .notification { display: grid; grid-template-columns: 12px 1fr; gap: 12px; align-items: start; padding: 16px; background: #fff; border: 1px solid var(--ligne); border-radius: 14px; }
-.notification__point { width: 10px; height: 10px; margin-top: 7px; border-radius: 50%; background: transparent; border: 2px solid var(--ligne); }
-.notification.est-non-lue { border-color: var(--bleu-200); background: var(--bleu-50); }
-.notification.est-non-lue .notification__point { background: var(--vert-logo); border-color: var(--vert-logo); }
-.notification__corps { display: grid; gap: 2px; }
-.notification__corps span { color: var(--texte-2); font-size: 14.5px; }
-.notification__corps time { font-size: 12.5px; color: var(--texte-3); }
+.notification__point { width: 10px; height: 10px; margin-top: 8px; border-radius: 50%; background: transparent; border: 2px solid #9fb0bf; }
+.notification.est-non-lue { border-color: var(--bleu-tuile); border-left-width: 5px; background: var(--bleu-50); box-shadow: var(--ombre-1); }
+.notification.est-non-lue .notification__point { background: var(--vert-logo); border-color: var(--vert-700); }
+.notification.est-non-lue .notification__titre { font-weight: 800; }
+.notification.est-lue .notification__titre { font-weight: 600; color: var(--texte-2); }
+.notification__corps { display: grid; gap: 4px; min-width: 0; }
+.notification__titre { font-family: var(--police-texte); font-size: 16px; letter-spacing: 0; }
+.notification__texte { color: var(--texte-2); font-size: 14.5px; overflow-wrap: anywhere; }
+.notification__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: 13px; color: var(--texte-2); }
+.notification__metier { display: inline-flex; align-items: center; gap: 6px; }
 .notification__actions { grid-column: 2; display: flex; flex-wrap: wrap; gap: 6px; }
-@media (min-width: 760px) { .notification { grid-template-columns: 12px 1fr auto; } .notification__actions { grid-column: auto; } }
+@media (max-width: 479px) { .notification__actions .bouton { width: 100%; } }
+@media (min-width: 760px) { .notification { grid-template-columns: 12px 1fr auto; } .notification__actions { grid-column: auto; align-self: center; } }
+.etiquette-lecture { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 6px; font-size: 12.5px; font-weight: 750; }
+.etiquette-lecture svg { width: 14px; height: 14px; }
+.etiquette-lecture--non-lue { background: var(--bleu-800); color: #fff; }
+.etiquette-lecture--lue { background: #fff; color: var(--texte-2); border: 1px solid var(--ligne); font-weight: 600; }
+.message-notification { display: grid; gap: 14px; max-width: 760px; }
+.message-notification__titre { font-size: 22px; }
+.message-notification__texte { font-size: 16px; }
+.laterale__changer + .laterale__changer { margin-top: -4px; }
 
 /* Équipe */
 .cartes-equipe { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
@@ -354,3 +373,172 @@ fieldset.bloc > legend + * { clear: both; }
 }
 /* Contraste : petit texte jaune réservé aux fonds bleus (insuffisant sur le vert) */
 .carte-equipe:nth-child(even) .carte-equipe__type { color: #fff; }
+
+/* ---------- Carte des véhicules ---------- */
+.bandeau-simulation {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 12px 16px; border-radius: 12px;
+  background: var(--bleu-900); color: #fff; font-size: 14.5px;
+}
+.bandeau-simulation strong { font-family: var(--police-titre); font-size: 17px; color: var(--jaune); }
+.bandeau-simulation svg { width: 20px; height: 20px; color: var(--jaune); }
+.carte-outils { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.carte-recherche { flex: 0 1 280px; }
+.carte-grille { display: grid; gap: 18px; align-items: start; }
+@media (min-width: 1100px) { .carte-grille { grid-template-columns: minmax(0, 1fr) 380px; } }
+.carte-zone { position: relative; }
+.carte { height: min(62vh, 620px); min-height: 360px; border-radius: 16px; border: 1px solid var(--ligne); background: #dceaf3; z-index: 0; }
+.carte:focus-visible { outline: 3px solid var(--jaune); }
+.carte-reprendre { position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 500; box-shadow: var(--ombre-2); }
+.carte-fond { position: absolute; right: 12px; top: 12px; z-index: 500; max-width: 70%; margin: 0; padding: 6px 10px; border-radius: 8px; background: rgba(255,255,255,.95); font-size: 12.5px; color: var(--texte-2); border: 1px solid var(--ligne); }
+.carte-panneau { display: grid; gap: 14px; min-width: 0; }
+.liste-vehicules { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.vehicule-ligne {
+  width: 100%; display: flex; gap: 12px; align-items: center; text-align: left; min-height: 56px; padding: 10px 12px;
+  border: 1.5px solid var(--ligne); border-radius: 12px; background: #fff; cursor: pointer;
+}
+.vehicule-ligne:hover { border-color: var(--bleu-logo); }
+.vehicule-ligne[aria-pressed="true"] { border-color: var(--bleu-tuile); background: var(--bleu-50); box-shadow: inset 0 0 0 1.5px var(--bleu-tuile); }
+.vehicule-ligne__code { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: 6px 6px 6px 14px; font-weight: 800; color: #fff; background: var(--vert-700); }
+.vehicule-ligne--ancienne .vehicule-ligne__code { background: #fff; color: var(--alerte); border: 2px dashed var(--alerte); }
+.vehicule-ligne--perdue .vehicule-ligne__code { background: #e4e9ee; color: var(--texte-2); border: 2px solid #9fb0bf; }
+.vehicule-ligne__texte { display: grid; font-size: 13.5px; color: var(--texte-2); }
+.vehicule-ligne__texte strong { color: var(--encre); font-size: 14.5px; }
+.fiche-vehicule h2:focus { outline: none; }
+.etat-communication { display: flex; gap: 8px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; font-weight: 650; font-size: 14.5px; margin-bottom: 12px; background: var(--vert-100); color: var(--vert-800); }
+.etat-communication .pastille-etat { margin-top: 5px; }
+.etat-communication--ancienne { background: var(--alerte-fond); color: var(--alerte); }
+.etat-communication--perdue { background: #eceff2; color: var(--encre); }
+.pastille-etat { display: inline-block; flex: none; width: 12px; height: 12px; border-radius: 50%; background: var(--vert-logo); border: 2px solid var(--vert-700); }
+.pastille-etat--ancienne { background: #fff; border: 2px dashed var(--alerte); }
+.pastille-etat--perdue { background: #c3ccd4; border-color: #7d8d99; }
+.legende-carte { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13.5px; color: var(--texte-2); }
+.legende-carte span { display: inline-flex; align-items: center; gap: 6px; }
+.legende-carte__note { font-style: italic; }
+.trajet-periode { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 14px; }
+.trajet-periode select, .trajet-periode input { min-height: 42px; border: 1.5px solid #b9c7d3; border-radius: 10px; padding: 6px 10px; background: #fff; font-size: 16px; }
+.trajet-perso { display: inline-flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.trajet-perso[hidden] { display: none; }
+.tableau-horaires { max-height: 260px; overflow-y: auto; margin-top: 8px; border: 1px solid var(--ligne); border-radius: 10px; }
+.tableau-horaires .tableau td, .tableau-horaires .tableau th { padding: 6px 10px; font-size: 13.5px; }
+@media (max-width: 759px) { .tableau-horaires .tableau td { grid-template-columns: 96px 1fr; } }
+.ligne-interruption td { background: #f1f3f5; font-style: italic; color: var(--texte-2); }
+
+/* Marqueurs : code écrit + état abrégé (pas seulement une couleur) + flèche de direction */
+.marqueur {
+  position: relative; display: grid; justify-items: center; width: 54px; padding: 4px 0 3px; border-radius: 10px 10px 10px 16px;
+  background: var(--vert-700); color: #fff; border: 2px solid #fff; box-shadow: 0 3px 10px rgba(6,31,56,.35); font-family: var(--police-texte);
+}
+.marqueur__code { font-weight: 800; font-size: 14px; line-height: 1.1; }
+.marqueur__etat { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.marqueur--ancienne { background: #fff; color: var(--alerte); border: 2px dashed var(--alerte); }
+.marqueur--perdue { background: #dfe5ea; color: var(--texte-2); border: 2px solid #7d8d99; }
+.marqueur.est-selectionne { outline: 4px solid var(--jaune); outline-offset: 1px; z-index: 1000; }
+.marqueur__fleche { position: absolute; top: -14px; left: 50%; width: 0; height: 0; margin-left: -7px; border: 7px solid transparent; border-bottom: 12px solid var(--bleu-800); transform-origin: 50% 21px; }
+.trajet-fleche { display: block; width: 0; height: 0; margin: 0 auto; border: 6px solid transparent; border-bottom: 10px solid var(--bleu-800); transform-origin: 50% 50%; }
+.etiquette-trajet { font-weight: 700; font-size: 12px; }
+.etiquette-repere { background: transparent; border: 0; box-shadow: none; font-size: 12px; font-weight: 650; color: var(--texte-2); }
+.etiquette-repere::before { display: none; }
+
+/* Boutons de filtre (mêmes que la galerie du site public) */
+.filtres { display: flex; flex-wrap: wrap; gap: 8px; }
+.filtre {
+  min-height: 44px; padding: 8px 16px; border-radius: 999px; border: 1.5px solid var(--ligne); background: #fff;
+  font-weight: 650; font-size: 14.5px; color: var(--bleu-800); cursor: pointer; transition: background var(--transition), border-color var(--transition);
+}
+.filtre:hover { border-color: var(--bleu-logo); }
+.filtre[aria-pressed="true"] { background: var(--bleu-800); border-color: var(--bleu-800); color: #fff; }
+
+/* ---------- Planning dynamique (glisser-déposer) ---------- */
+.planning-commandes { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin-top: 12px; }
+.segment-bouton {
+  min-height: 44px; padding: 8px 16px; border: 1.5px solid var(--ligne); background: #fff; font-weight: 650; font-size: 14.5px;
+  color: var(--bleu-800); cursor: pointer; border-radius: 10px;
+}
+.segment-bouton[aria-pressed="true"] { background: var(--bleu-800); border-color: var(--bleu-800); color: #fff; }
+.jours-choix { display: flex; flex-wrap: wrap; gap: 6px; }
+.filtre--petit { min-height: 40px; padding: 6px 12px; font-size: 13.5px; text-transform: capitalize; }
+.pas-grille { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; margin-left: auto; }
+.pas-grille select { min-height: 40px; border: 1.5px solid #b9c7d3; border-radius: 10px; padding: 4px 8px; font-size: 16px; background: #fff; }
+.planning-aide { display: flex; gap: 8px; align-items: flex-start; }
+.planning-aide svg { width: 18px; height: 18px; flex: none; margin-top: 1px; }
+.planning-message { outline: none; }
+.planning-message:empty { display: none; }
+.resultat-deplacement { display: grid; gap: 8px; justify-items: start; }
+.details-controles { font-size: 13.5px; color: var(--texte-2); }
+.details-controles summary { cursor: pointer; font-weight: 650; min-height: 32px; }
+
+/* Vue « jour par ressource » : défilement horizontal limité à cette zone sur téléphone */
+.chrono { overflow-x: auto; background: #fff; border: 1px solid var(--ligne); border-radius: 16px; overscroll-behavior-x: contain; }
+.chrono__interieur { min-width: 920px; }
+.chrono__entete, .chrono__ligne { display: grid; grid-template-columns: 170px 1fr; }
+.chrono__entete { background: var(--fond); border-bottom: 1px solid var(--ligne); font-size: 12px; font-weight: 700; color: var(--texte-2); }
+.chrono__coin { padding: 8px 10px; position: sticky; left: 0; background: var(--fond); z-index: 3; }
+.chrono__heures { display: grid; grid-template-columns: repeat(var(--colonnes), 1fr); }
+.chrono__heures span { padding: 8px 4px; border-left: 1px solid var(--ligne); }
+.chrono__ligne { border-bottom: 1px solid var(--ligne); }
+.chrono__ligne:last-child { border-bottom: 0; }
+.chrono__ressource { position: sticky; left: 0; z-index: 3; display: grid; align-content: center; gap: 2px; padding: 6px 10px; background: #fff; border-right: 1px solid var(--ligne); font-size: 13px; }
+.chrono__ressource small { color: var(--texte-3); font-size: 11.5px; }
+.chrono__coordination { font-size: 11px; color: var(--vert-800); font-weight: 650; }
+.chrono__piste {
+  position: relative; min-height: 66px;
+  background-image: repeating-linear-gradient(90deg, transparent 0, transparent calc(100% / 12 - 1px), var(--ligne) calc(100% / 12 - 1px), var(--ligne) calc(100% / 12));
+}
+.chrono__piste .bloc-inter { position: absolute; top: 6px; bottom: 6px; }
+
+/* Bloc d'intervention : bouton déplaçable */
+.bloc-inter {
+  display: grid; align-content: start; gap: 0; min-width: 0; padding: 4px 8px; text-align: left; overflow: hidden;
+  border: 0; border-left: 5px solid; border-radius: 8px 8px 8px 14px; font: inherit; font-size: 12.5px; line-height: 1.3; color: var(--encre);
+  cursor: grab; touch-action: pan-x pan-y; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+  transition: box-shadow var(--transition), opacity var(--transition);
+}
+.bloc-inter strong { font-size: 13px; }
+.bloc-inter__heure, .bloc-inter__lieu { font-size: 11.5px; color: var(--texte-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bloc-inter:hover { box-shadow: 0 2px 10px rgba(6,31,56,.18); }
+.bloc-inter--binome { background: var(--bleu-100); border-color: var(--bleu-tuile); }
+.bloc-inter--solo { background: var(--vert-100); border-color: var(--vert-700); }
+.bloc-inter--controleuse { background: #fff6cf; border-color: #c9a800; }
+.bloc-inter.est-verrouille { cursor: pointer; background-image: repeating-linear-gradient(135deg, transparent 0 6px, rgba(6,31,56,.06) 6px 12px); }
+.bloc-inter.est-saisi { opacity: .45; box-shadow: none; cursor: grabbing; }
+.planning-grille__cellule .bloc-inter, .agenda .bloc-inter { width: 100%; }
+.planning-grille__cellule { position: relative; }
+html.glisser-en-cours, html.glisser-en-cours * { cursor: grabbing !important; }
+html.glisser-en-cours { user-select: none; }
+
+/* Aperçu du créneau cible pendant le geste */
+.apercu-creneau {
+  display: grid; gap: 1px; padding: 4px 8px; border-radius: 8px; font-size: 12px; line-height: 1.3; pointer-events: none; z-index: 5;
+  border: 2.5px dashed; box-shadow: 0 6px 18px rgba(6,31,56,.22);
+}
+.chrono__piste .apercu-creneau { position: absolute; top: 4px; bottom: 4px; min-width: 120px; }
+.planning-grille__cellule .apercu-creneau { position: relative; }
+.apercu-creneau.est-valide { background: rgba(235,247,232,.96); border-color: var(--vert-700); color: var(--vert-900); }
+.apercu-creneau.est-invalide { background: rgba(253,236,234,.97); border-color: var(--erreur); color: var(--erreur); }
+.apercu-creneau span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Fenêtre de modification */
+.dialogue-intervention { width: min(560px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); border: 0; border-radius: 18px; padding: 0; box-shadow: var(--ombre-2); }
+.dialogue-intervention::backdrop { background: rgba(4, 18, 33, .55); }
+.dialogue-intervention__form { display: grid; gap: 14px; padding: 20px; }
+.dialogue-intervention__entete { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.dialogue-intervention__entete h2 { font-size: 20px; }
+.dialogue-intervention__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+@media (max-width: 479px) { .dialogue-intervention__actions .bouton { width: 100%; } .pas-grille { margin-left: 0; } }
+/* Vue jour : la frise horaire prend toute la largeur ; les formulaires passent dessous */
+@media (min-width: 1280px) {
+  .grille-planning--large { grid-template-columns: 1fr; }
+  .grille-planning--large > .pile { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+}
+@media (max-width: 639px) { .carte-fond { font-size: 11px; max-width: 62%; } }
+
+/* Accès rapides des tableaux de bord (direction et secrétariat) */
+.raccourcis { display: grid; gap: 12px; }
+@media (min-width: 760px) { .raccourcis { grid-template-columns: 1fr 1fr; } }
+.raccourci { display: flex; gap: 14px; align-items: center; padding: 18px; color: #fff; background: var(--bleu-tuile); text-decoration: none; transition: transform var(--transition); }
+.raccourci:hover { transform: translateY(-2px); }
+.raccourci--vert { background: var(--vert-700); }
+.raccourci > svg { width: 30px; height: 30px; flex: none; color: var(--jaune); }
+.raccourci span { display: grid; gap: 2px; }
+.raccourci strong { font-family: var(--police-titre); font-size: 19px; }
+.raccourci small { color: #e6f0f9; font-size: 14px; }

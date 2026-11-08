@@ -1,7 +1,7 @@
 /* =========================================================================
    ÉDYSOL NC — Vues « bureau » : cogérance et secrétariat
    Tableau de bord, commandes (liste, détail, nouvelle), clients, équipe,
-   documents, aperçu du récapitulatif PDF et notifications.
+   documents et aperçu du récapitulatif PDF.
    Chaque vue est une fonction (ctx) qui retourne { titre, html, apres }.
    Données lues via Edysol.api (mode démonstration).
    ========================================================================= */
@@ -10,6 +10,7 @@
   const E = racine.Edysol;
   const { esc, icone, ui } = E;
   const O = racine.EdysolOrganisation;
+  const R = racine.EdysolDeplacement; // droits du planning (accès distinct du pouvoir de décision)
   const vues = E.vues = E.vues || {};
 
   /* ---------- Fonctions d'accès aux données (lecture seule) ---------- */
@@ -44,13 +45,17 @@
     return {
       titre,
       html: `
-        ${ui.entetePage({ titre, sousTitre: ctx.espace === 'cogerance' ? 'Pilotage partagé par les deux cogérants.' : 'Suivi des demandes et du planning.',
+        ${ui.entetePage({ titre, sousTitre: ctx.espace === 'cogerance' ? `Espace commun aux deux cogérants pour suivre l’activité et se concerter · ${esc(ctx.personne.nom)}.` : 'Suivi des demandes et du planning.',
           actions: ctx.espace === 'secretariat' ? `<a class="bouton bouton--principal" href="${ctx.lien('nouvelle')}">${icone('plus')}Nouvelle commande</a>` : `<a class="bouton bouton--bleu" href="${ctx.lien('planning')}">${icone('planning')}Ouvrir le planning</a>` })}
         <div class="indicateurs">
           ${ui.carteIndicateur({ libelle: 'Demandes à confirmer', valeur: aConfirmer.length, icone: 'commandes', href: ctx.lien('commandes/a-confirmer'), ton: 'jaune' })}
           ${ui.carteIndicateur({ libelle: 'Interventions cette semaine', valeur: semaine.length, icone: 'planning', href: ctx.lien('planning'), ton: 'bleu' })}
           ${ui.carteIndicateur({ libelle: 'Personnes mobilisées', valeur: mobilises.size, icone: 'equipe', ton: 'vert', note: 'Cette semaine' })}
           ${ui.carteIndicateur({ libelle: 'Notifications non lues', valeur: E.espaces.nonLues(ctx.destinataire), icone: 'cloche', href: ctx.lien('notifications'), ton: 'bleu-clair' })}
+        </div>
+        <div class="raccourcis" role="group" aria-label="Accès rapides">
+          <a class="raccourci tuile-1" href="${ctx.lien('planning')}">${icone('planning')}<span><strong>Planning et affectations</strong><small>${R.droitsPlanning(E.api.acteur(ctx.personne.role)).deplacer ? 'Consulter et déplacer les interventions par glisser-déposer' : 'Consulter les interventions (droits de déplacement à définir)'}</small></span></a>
+          <a class="raccourci raccourci--vert tuile-2" href="${ctx.lien('carte')}">${icone('vehicule')}<span><strong>Suivi des véhicules</strong><small>Carte, positions, déplacements et trajets (démonstration)</small></span></a>
         </div>
         <div class="grille-2">
           ${ui.bloc('Demandes à traiter', ui.tableau([
@@ -73,7 +78,7 @@
           { titre: 'Commande', rendu: r => esc(r.commandeId) }, { titre: 'Signalé par', rendu: r => esc(E.api.nomPersonne(r.controleuseId)) },
           { titre: 'Besoin', rendu: r => esc(r.texte) }, { titre: 'État', rendu: r => `<span class="badge badge--a-confirmer">${esc(r.etat)}</span>` }
         ], s.renforts, { lien: r => ctx.lien('commande/' + r.commandeId) }) + ui.notice('Sélection des renforts et validation des changements : règles à définir. Aucune affectation automatique.', 'alerte', 'alerte')) : ''}
-        ${ui.notice('Chaque nouvelle commande est signalée à la secrétaire et aux deux cogérants. <strong>Dans cette maquette</strong>, il s’agit d’une notification interne simulée : aucun e-mail, SMS ou message WhatsApp n’est envoyé.', 'demo')}`
+        ${ui.notice('Chaque nouvelle commande est signalée à la secrétaire et à chacun des deux cogérants, dans sa propre boîte. Être informé ou lire ne vaut ni décision ni validation. <strong>Dans cette maquette</strong>, il s’agit d’une notification interne simulée : aucun e-mail, SMS ou message WhatsApp n’est envoyé.', 'demo')}`
     };
   };
 
@@ -133,6 +138,7 @@
     const renforts = etat().renforts.filter(r => r.commandeId === c.id);
     return {
       titre: c.id,
+      contenuCharge: true, // détail affiché : une notification liée peut être enregistrée comme lue
       html: `
         ${ui.entetePage({ titre: `Commande ${c.id}`, retour: { href: ctx.lien('commandes'), texte: 'Commandes' },
           sousTitre: `${ui.badgeStatut(c.statut)} <span class="separateur">·</span> Créée le ${ui.temps(c.creeLe)} <span class="separateur">·</span> ${c.source === 'secretaire' ? 'Saisie par la secrétaire' : 'Demande depuis le site'}`,
@@ -299,33 +305,7 @@
     };
   };
 
-  /* ---------- Notifications (tous les espaces) ---------- */
-  vues.notifications = ctx => {
-    const liste = etat().notifications.filter(n => n.pour.includes(ctx.destinataire));
-    return {
-      titre: 'Notifications',
-      html: `${ui.entetePage({ titre: 'Notifications', sousTitre: 'Historique conservé dans cet espace.',
-          actions: liste.some(n => !n.lu.includes(ctx.destinataire)) ? '<button type="button" class="bouton bouton--clair bouton--petit" data-tout-lire>Tout marquer comme lu</button>' : '' })}
-        ${ui.notice('Notifications internes <strong>simulées</strong> : elles s’affichent uniquement dans la maquette. Aucun e-mail, SMS ou WhatsApp n’est envoyé. Le canal réel reste à valider.', 'demo')}
-        ${liste.length ? `<ul class="notifications">${liste.map(n => {
-          const lue = n.lu.includes(ctx.destinataire);
-          return `<li class="notification${lue ? '' : ' est-non-lue'}">
-            <span class="notification__point" aria-hidden="true"></span>
-            <div class="notification__corps"><strong>${esc(n.titre)}</strong><span>${esc(n.texte)}</span>${ui.temps(n.date)}${lue ? '' : '<span class="visuellement-cache">(non lue)</span>'}</div>
-            <div class="notification__actions">
-              ${n.lien && E.vues[n.lien.split('/')[0]] ? `<a class="bouton bouton--clair bouton--petit" href="${ctx.lien(n.lien)}" data-lire="${esc(n.id)}">Consulter</a>` : ''}
-              ${lue ? '' : `<button type="button" class="bouton bouton--discret bouton--petit" data-lire="${esc(n.id)}">Marquer comme lue</button>`}
-            </div></li>`;
-        }).join('')}</ul>` : '<p class="vide">Aucune notification.</p>'}`,
-      apres(vue) {
-        vue.addEventListener('click', e => {
-          const id = e.target.closest('[data-lire]')?.dataset.lire;
-          if (id) { E.api.marquerLue(id, ctx.destinataire); if (e.target.tagName === 'BUTTON') ctx.rafraichir(); }
-          if (e.target.closest('[data-tout-lire]')) { liste.forEach(n => E.api.marquerLue(n.id, ctx.destinataire)); ctx.rafraichir(); }
-        });
-      }
-    };
-  };
+  /* Les vues « notifications » et « notification » sont dans vues/notifications.js. */
 
   E.donneesVues = { etat, equipe, prestation, interventionsDe, libelleEquipe, dateCommande };
 })(window);
