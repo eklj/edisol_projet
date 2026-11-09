@@ -1,0 +1,84 @@
+/* =========================================================================
+   ÉDYSOL NC — Parcours de commande (commande.html)
+   Mobile : formulaire pleine largeur, boutons de navigation collés en bas.
+   Ordinateur : formulaire à gauche, résumé illustré fixe à droite.
+   ========================================================================= */
+.commande { background: var(--fond); padding: 24px 0 64px; }
+.commande__grille { display: grid; gap: 24px; align-items: start; }
+@media (min-width: 1024px) { .commande { padding: 48px 0 96px; } .commande__grille { grid-template-columns: minmax(0, 1fr) 380px; gap: 40px; } }
+
+.commande__carte { background: #fff; border: 1px solid var(--ligne); border-radius: 18px 18px 18px var(--rayon-tuile); padding: 22px 16px 0; scroll-margin-top: 96px; }
+@media (min-width: 640px) { .commande__carte { padding: 36px 40px 0; } }
+.commande__entete h1 { font-size: clamp(28px, 4vw, 40px); }
+
+/* Indicateur d'étapes */
+.etapier { list-style: none; padding: 0; margin: 22px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.etapier__item { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: var(--texte-3); font-weight: 600; }
+.etapier__num {
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--ligne);
+  font-weight: 800; color: var(--texte-2); background: #fff;
+}
+.etapier__num svg { width: 16px; height: 16px; }
+.etapier__item.est-faite .etapier__num { background: var(--vert-logo); border-color: var(--vert-logo); color: var(--vert-900); }
+.etapier__item[aria-current="step"] { color: var(--bleu-800); }
+.etapier__item[aria-current="step"] .etapier__num { background: var(--bleu-800); border-color: var(--bleu-800); color: #fff; }
+@media (max-width: 479px) { .etapier__titre { display: none; } .etapier__item[aria-current="step"] .etapier__titre { display: block; } }
+@media (min-width: 640px) { .etapier__item { flex-direction: row; align-items: center; font-size: 14px; } }
+.progression { height: 4px; background: var(--bleu-100); border-radius: 2px; margin-top: 18px; overflow: hidden; }
+.progression span { display: block; height: 100%; width: 25%; background: linear-gradient(90deg, var(--bleu-tuile), var(--vert-logo)); transition: width 400ms ease; }
+
+/* Contenu de l'étape */
+.etape-formulaire { display: grid; gap: 22px; padding: 26px 0 8px; outline: none; }
+.etape-formulaire__titre { font-size: 24px; }
+.etape-formulaire__aide { color: var(--texte-2); margin-top: -14px; }
+.recap { padding: 18px; border-radius: 12px; background: var(--bleu-50); border: 1px solid var(--bleu-200); }
+.recap h3 { font-size: 18px; margin-bottom: 10px; }
+.recap dl, .resume__liste { margin: 0; display: grid; gap: 8px; }
+.recap dl div, .resume__liste div { display: grid; grid-template-columns: 130px 1fr; gap: 10px; font-size: 14.5px; }
+.recap dt, .resume__liste dt { color: var(--texte-2); }
+.recap dd, .resume__liste dd { margin: 0; font-weight: 650; }
+
+/* Navigation : collée en bas de l'écran sur téléphone, toujours accessible au pouce */
+.commande__nav {
+  position: sticky; bottom: 0; z-index: 5; display: flex; gap: 10px; justify-content: space-between;
+  margin: 8px -16px 0; padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: rgba(255,255,255,.96); border-top: 1px solid var(--ligne); backdrop-filter: blur(6px);
+  border-radius: 0 0 18px var(--rayon-tuile);
+}
+.commande__nav .bouton { flex: 1; }
+#bouton-precedent[hidden] + #bouton-suivant { flex: 1; }
+@media (min-width: 640px) {
+  .commande__nav { position: static; margin: 16px -40px 0; padding: 18px 40px 26px; background: none; }
+  .commande__nav .bouton { flex: none; }
+  #bouton-suivant { margin-left: auto; }
+}
+
+/* Résumé latéral illustré */
+.commande__resume { display: none; }
+@media (min-width: 1024px) {
+  .commande__resume { display: block; position: sticky; top: 110px; background: #fff; border: 1px solid var(--ligne); border-radius: 18px; overflow: hidden; }
+}
+.resume__visuel { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border-radius: 0; background: var(--bleu-100); }
+.resume__visuel img { width: 100%; height: 100%; object-fit: cover; }
+.resume__visuel .pastille-provisoire { top: 10px; left: 10px; }
+.resume__corps { padding: 22px; }
+.resume__corps h2 { font-size: 21px; margin-bottom: 14px; }
+.resume__liste div { grid-template-columns: 110px 1fr; }
+.resume__garanties { list-style: none; padding: 16px 0 0; margin: 18px 0 0; border-top: 1px solid var(--ligne); display: grid; gap: 10px; font-size: 14px; color: var(--texte-2); }
+.resume__garanties li { display: flex; gap: 10px; }
+.resume__garanties li::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: 7px; border-radius: 2px 2px 2px 5px; background: var(--vert-logo); }
+.resume__garanties a { color: var(--bleu-700); font-weight: 700; }
+
+/* Confirmation */
+.confirmation { padding: 12px 0 36px; display: grid; gap: 16px; outline: none; }
+.confirmation h1 { font-size: clamp(28px, 4vw, 40px); }
+.confirmation__icone { display: grid; place-items: center; width: 64px; height: 64px; border-radius: 8px 8px 8px 24px; background: var(--vert-logo); color: var(--vert-900); }
+.confirmation__icone svg { width: 34px; height: 34px; }
+.confirmation__ref { font-size: 18px; }
+.confirmation__ref strong { white-space: nowrap; font-family: var(--police-titre); background: var(--jaune-doux); padding: 2px 8px; border-radius: 6px; }
+.confirmation__suite { display: grid; gap: 10px; padding-left: 20px; color: var(--texte-2); }
+.confirmation__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+@media (max-width: 479px) { .confirmation__actions .bouton { width: 100%; } }
+.page-commande .pied { padding-bottom: 28px; }
+
+@media (max-width: 479px) { .texte-long { display: none; } }

@@ -1,0 +1,571 @@
+diff --git a/maquette_interactive/CORRESPONDANCE_PRESTATIONS_EV017.md b/maquette_interactive/CORRESPONDANCE_PRESTATIONS_EV017.md
+new file mode 100644
+index 0000000..c604e8d
+--- /dev/null
++++ b/maquette_interactive/CORRESPONDANCE_PRESTATIONS_EV017.md
+@@ -0,0 +1,100 @@
++# EV-017 — Prestations corrigées et correspondances
++
++Livraison du 9 novembre 2026, depuis le dépôt actuel https://github.com/eklj/edisol_projet, branche `main`, commit `ae63a8a4962170f1d0249d8f0b5d556b87ebf57c`, dossier `maquette_interactive/`.
++
++Branche locale de correction : `maquette/prestations-ev017-2026-11-09`. Aucun push, publication ou déploiement. Le dépôt source et les anciennes livraisons restent conservés.
++
++## Sources et limites
++
++- **S1 : instruction actuelle d'Ethan**, reprenant les activités déclarées et autorisant la correction de la maquette.
++- **S2 : EV-017**, registre `EDYSOL_Registre_Evolutions_V1.md`, version 5, modifié le 9 novembre 2026, lu pour cette correction : [registre](https://chatgpt.com/library?file_id=libfile_7ce783ddb8ac8191ac7d8b01deb6bf9f&account_id=personal). EV-017 transcrit les réponses originales Q1, Q8 et Q27 lues par l'Assistant 2. Le formulaire n'a pas été rouvert ni modifié dans cette passe.
++- **S3 : questionnaire d'origine**, référencé par EV-017 : [Google Forms — réponses](https://docs.google.com/forms/d/1-pASmy4n9dEAC6ybJ5bbdv4mfTFbewFHf_epue48P8U/edit#responses).
++- **S4 : code du commit source**, notamment `js/commun/catalogue.js`, ses quatre entrées antérieures et `js/commun/visuels.js`.
++- **S5 : dernière livraison des visuels**, `EDYSOL_Maquette_Actuelle_Visuels_2026-11-09.zip` : comparaison binaire des 18 WebP avec ceux du dépôt actuel, tous identiques. Aucune réintégration nécessaire ; aucun ancien code d'archive n'a remplacé les sources actuelles.
++
++Q1 citée dans EV-017 : « Nettoyage des parties communes / fin de chantier / fin de bail / commerces / bureaux / particuliers / enlèvement encombrants / enlèvement tags / espaces verts... ». Les points de suspension interdisent de présenter la liste comme définitivement exhaustive. Q27 cite aussi « karcher ». Aucun contenu détaillé, surface, méthode précise, déchet accepté, tarif, délai ou engagement n'est déduit de ces intitulés.
++
++## Tableau de correspondance
++
++Chaque identifiant se retrouve dans le catalogue partagé, la carte publique et les deux formulaires. Le lien prérempli est `commande.html?prestation=IDENTIFIANT`. Le même identifiant et le même titre alimentent récapitulatif, détail interne, document imprimable, planning et terrain.
++
++| Activité / entrée conservée | Identifiant | Nature / classement | Source | Illustration utilisée |
++|---|---|---|---|---|
++| Nettoyage des parties communes | `parties-communes` | Offre citée | S1/S2, Q1 | Emplacement explicite |
++| Nettoyage de fin de chantier | `fin-chantier` | Offre citée | S1/S2, Q1 | Emplacement explicite |
++| Nettoyage de fin de bail | `fin-bail` | Offre citée | S1/S2, Q1 | Emplacement explicite |
++| Nettoyage de commerces | `commerces` | Offre citée | S1/S2, Q1 | Emplacement explicite |
++| Nettoyage de bureaux | `bureaux` | Offre citée ; ne définit pas les tâches incluses | S1/S2, Q1 | `bureaux`, illustration existante d'un geste d'entretien |
++| Nettoyage chez les particuliers | `particuliers` | Offre/contexte cité, distinct du type de client | S1/S2, Q1 | `domicile`, illustration existante d'un salon |
++| Enlèvement d'encombrants | `encombrants` | Offre citée | S1/S2, Q1 ; corroborations Q8/Q27 | Emplacement explicite ; déchets et filières non définis |
++| Enlèvement de tags | `tags` | Offre citée | S1/S2, Q1 ; corroborations Q8/Q27 | Emplacement explicite ; supports et méthodes non définis |
++| Espaces verts | `espaces-verts` | Offre citée | S1/S2, Q1 ; corroborations Q8/Q27 | Emplacement explicite ; aucun détail de tâches inventé |
++| Nettoyage au Kärcher | `karcher` | Activité technique citée, périmètre et libellé public à préciser | S1/S2, Q27 | Emplacement explicite ; jamais la monobrosse |
++| Entretien des sols | `sols` | Ancienne entrée : offre ou tâche à préciser | S4, pictogrammes du logo ; non réfutée par Q1 | `aspiration`, conservée |
++| Lavage mécanisé des sols | `lavage` | Ancienne entrée : offre ou technique à préciser | S4, pictogrammes du logo ; non réfutée par Q1 | `monobrosse`, conservée, distincte de Kärcher |
++| Nettoyage des vitres | `vitres` | Ancienne entrée : offre ou tâche à préciser | S4, pictogrammes du logo ; non réfutée par Q1 | `vitres`, conservée |
++| Mobilier et postes de travail | `mobilier` | Ancienne entrée : offre ou tâche à préciser | S4, pictogrammes du logo ; non réfutée par Q1 | `bureaux`, conservée |
++| Demande spécifique | `specifique` | Besoin non listé ; ne remplace aucune offre déclarée | S4, parcours existant | Emplacement explicite dans le résumé |
++
++Les images ne prouvent pas un contenu contractuel de prestation. Les six images générées restent identifiées comme illustrations de personnes et lieux fictifs. L'image d'ambiance initiale, le logo, les autres ressources et les anciens SVG sont également conservés.
++
++## Structure partagée et compatibilité
++
++`OFFRES` contient les neuf activités Q1, `ACTIVITES_TECHNIQUES` l'activité Q27 et `ENTREES_HISTORIQUES` les quatre entrées conservées. Chaque entrée porte sa nature, son groupe et sa source. Aucun rattachement de tâche à une offre n'est inventé. Les anciennes descriptions déduites du logo restent archivées dans `resumeHistorique` ; le texte visible indique désormais le classement et le contenu encore à préciser.
++
++`PRESTATIONS` réunit ces quatorze entrées pour les consommateurs existants. `GROUPES_PRESTATIONS` organise leur présentation. `TYPES_CLIENTS` demeure une liste indépendante contenant les deux types déjà présents : Particulier et Professionnel. Choisir une prestation ne modifie pas automatiquement le type du client.
++
++La demande garde le champ scalaire `prestation` et les boutons radio ; aucune multisélection n'est introduite. Le formulaire partagé affiche quinze choix avec la demande spécifique, répartis en groupes accessibles. Toutes les anciennes URL préremplies restent reconnues. Aucun identifiant existant n'est renommé, fusionné ou supprimé. La version 3 du stockage et les anciennes demandes restent inchangées ; aucune migration n'est nécessaire.
++
++`prestationParId` reste compatible. `libellePrestation` sert aux consommateurs internes ; un identifiant historique extérieur au catalogue est affiché explicitement au lieu d'être effacé ou réassigné. Une nouvelle saisie doit néanmoins utiliser une entrée connue et une seule chaîne d'identifiant.
++
++`visuelPrestation` et `mediaPrestation` protègent le rendu contre un visuel absent. Huit activités citées n'ont pas d'image pertinente et affichent « Illustration à fournir ». Aucun appel à `v.id` sur une valeur absente, aucune source vide et aucun remplacement automatique par l'image d'une autre activité. La visionneuse des cartes ne contient que les images disponibles, sans doublon. La galerie d'images existante demeure une galerie de médias, pas une liste exhaustive d'offres.
++
++## Fichiers modifiés ou ajoutés
++
++| Fichier | Changement ciblé |
++|---|---|
++| `js/commun/catalogue.js` | Dix activités citées, quatre entrées historiques conservées, sources/natures/groupes et libellé partagé |
++| `js/commun/formulaire-commande.js` | Groupes de choix communs client/secrétariat ; types clients séparés ; choix unique maintenu |
++| `js/commun/visuels.js` | Résolution défensive du visuel et emplacement partagé sans image |
++| `js/public/accueil.js` | Quatorze cartes, variante de tuile de 1 à 4, image facultative et galerie dédupliquée |
++| `js/public/commande.js` | Récapitulatif commun et résumé sans image hors sujet |
++| `js/espace/vues/bureau.js` | Source commune pour listes, détails, recherche et document imprimable |
++| `js/espace/vues/planning.js` | Titre dans le choix de demande et description accessible des interventions |
++| `js/espace/vues/terrain.js` | Catalogue commun explicité ; prestation dans l'en-tête du compte rendu |
++| `js/demo/depot-demo.js` | Validation du champ scalaire ; aucune réécriture des commandes existantes |
++| `index.html` | Présentation ne réduisant plus les prestations aux quatre pictogrammes |
++| `css/base.css`, `css/public.css` | Styles limités au nouvel emplacement et à la catégorie de carte ; grille responsive existante conservée |
++| `outils/tester_catalogue.js`, `package.json` | Douze scénarios EV-017 ajoutés à la commande de tests |
++| `LIRE_MOI.md`, présent tableau | Référence courante et précisions restantes |
++
++## Vérifications exécutées
++
++- `npm test` : **95 contrôles existants et 12 scénarios EV-017 réussis**. Ces scénarios comprennent vingt créations de demandes (dix activités, deux sources), leur rechargement local, les anciens identifiants, les médias facultatifs, la distinction Kärcher/monobrosse, les groupes de radios et le refus d'une multisélection.
++- Les chemins `src` et `srcset` du catalogue visuel existent ; les 18 WebP sont identiques au dépôt source et à la dernière livraison.
++- Vérification de syntaxe Node des modules modifiés ; `git diff --check`.
++- Navigateur, largeur 1 363 px : 14 cartes, quatre colonnes, huit emplacements sans photo ; aucun débordement horizontal.
++- Vue responsive à 390 px : 14 cartes, une colonne ; formulaire sans débordement, lien Kärcher prérempli, passage au clavier de Kärcher vers l'entrée historique Sols avec une seule radio cochée.
++- Parcours client complet de démonstration : parties communes → récapitulatif → enregistrement → détail du secrétariat → affectation locale → mission employé. Le même titre est conservé dans ces étapes. Aucune donnée réelle utilisée ou envoyée.
++- Formulaire secrétariat : quinze choix affichés et sélection de Kärcher. Ancien lien client `?prestation=vitres` : toujours sélectionné correctement.
++- Carte Bureaux : agrandissement, navigation clavier vers l'image suivante, fermeture Échap ; bouton suivant du carrousel des prestations toujours fonctionnel.
++- Les accès, notifications, modèles d'équipes et règles de planning existants ne sont pas modifiés par ce correctif. Aucune donnée fictive de test de navigateur n'est incluse dans les fichiers livrés.
++
++La suite navigateur historique `npm run verifier` n'a pas été exécutée dans cette passe ; les essais ci-dessus ont été effectués dans le navigateur de vérification. Aucun essai Android physique, contrôle serveur ni recette indépendante n'est revendiqué. La comparaison V1 externe absente reste explicitement non vérifiée dans les tests métier existants.
++
++## Questions restantes
++
++1. Q1 se termine par « ... » : quelles autres activités, le cas échéant, doivent être ajoutées ?
++2. Quel contenu exact et quelles limites définir pour chaque offre, sans les déduire des images ?
++3. Sols, lavage mécanisé, vitres et mobilier sont-ils des offres autonomes, des tâches/options ou des techniques rattachées ?
++4. Quel libellé public définitif et quel périmètre retenir pour l'activité Kärcher ?
++5. Une demande pourra-t-elle regrouper plusieurs prestations ? Le champ actuel reste unique en attendant cette décision.
++6. Fournir des photos/illustrations pertinentes pour les huit activités sans média, si souhaité. Le manque d'image n'empêche pas la demande.
++
++## Livraison et transmission
++
++L'archive unique contient `maquette_interactive/` complet avec toutes les images actuelles, les prestations corrigées, ce tableau, les tests et `correctif-prestations-ev017.diff`. Ce diff s'applique depuis la racine du dépôt au commit source ; il ne contient pas de remplacement par une ancienne archive.
++
++À Production : utiliser les identifiants et natures du tableau, garder les types clients séparés, arbitrer les questions restantes et le choix multiple avant toute migration. À l'Expert : vérifier la couverture des dix activités, les anciens liens et demandes, l'absence de contenu inventé, les emplacements manquants et les deux saisies. La réalisation décrite reste une maquette locale sans nouveau serveur.
++
++Aucun registre d'une autre conversation, formulaire Google, dépôt distant ou déploiement n'a été modifié.
+diff --git a/maquette_interactive/LIRE_MOI.md b/maquette_interactive/LIRE_MOI.md
+index 5ed5fd0..61de0d1 100644
+--- a/maquette_interactive/LIRE_MOI.md
++++ b/maquette_interactive/LIRE_MOI.md
+@@ -1,3 +1,5 @@
++> **Correctif EV-017 du 9 novembre 2026 :** catalogue partagé corrigé, images récentes conservées, choix unique maintenu. Voir [le tableau sourcé et les vérifications](CORRESPONDANCE_PRESTATIONS_EV017.md).
++
+ # ÉDYSOL NC : maquette interactive
+ 
+ Maquette navigable du site public et des espaces internes d'ÉDYSOL. Elle remplace un passage par Figma : tout se parcourt dans le navigateur.
+@@ -310,7 +312,7 @@ Aucune règle n'a été inventée pour les points suivants :
+ 
+ - **Photos de chantiers.** Aucune photo autorisée n'était fournie. Les visuels sont des illustrations vectorielles créées pour la maquette. Chacune porte la pastille « Illustration provisoire ». L'image `edysol-interieur` vient du site existant. Elle porte la mention « Visuel d'ambiance · à remplacer ».
+ - **Ajouter une vraie photo.** Renseigner `js/commun/visuels.js` avec le type `photo-chantier`. Passer `publicationAutorisee` et `confidentialiteVerifiee` à `true` après accord écrit.
+-- **Catalogue des prestations.** Les quatre intitulés sont déduits des pictogrammes du logo. Ils restent à valider.
++- **Catalogue des prestations — EV-017.** Les neuf offres Q1 et l’activité Kärcher Q27 sont désormais explicites. Les quatre entrées antérieures restent accessibles, sans classement définitif comme offres ou tâches. Voir `CORRESPONDANCE_PRESTATIONS_EV017.md` pour les sources, identifiants et périmètres à préciser.
+ - **Présentation de l'entreprise.** Histoire et valeurs à rédiger avec les cogérants.
+ - **Coordonnées.** Téléphone et adresse viennent du site existant. E-mail et horaires sont à compléter.
+ - **Textes légaux.** Consentement, mentions légales et politique de confidentialité à rédiger.
+diff --git a/maquette_interactive/css/base.css b/maquette_interactive/css/base.css
+index dd87d3b..afc7f02 100644
+--- a/maquette_interactive/css/base.css
++++ b/maquette_interactive/css/base.css
+@@ -278,3 +278,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
+ .segment span:hover { border-color: var(--bleu-logo); }
+ .segment input:checked + span { background: var(--bleu-800); border-color: var(--bleu-800); color: #fff; }
+ .segment input:focus-visible + span { outline: 3px solid var(--jaune); outline-offset: 2px; box-shadow: 0 0 0 6px var(--bleu-800); }
++
++/* Emplacement partagé entre cartes et résumé ; aucune image sans rapport avec l'activité. */
++.visuel-attente { width:100%; height:100%; min-height:150px; padding:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; background:var(--bleu-100); color:var(--bleu-800); overflow:hidden; }
++.visuel-attente svg { width:32px; height:32px; }
++.visuel-attente strong { font-size:16px; }
++.visuel-attente small { font-size:12px; }
+diff --git a/maquette_interactive/css/public.css b/maquette_interactive/css/public.css
+index edcc090..719c776 100644
+--- a/maquette_interactive/css/public.css
++++ b/maquette_interactive/css/public.css
+@@ -361,3 +361,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+   .hero__media .carrousel__legende { display: none; }
+   .hero__texte > * { max-width: 560px; }
+ }
++
++/* La grille existante reste responsive et répète les variantes de tuile par quatre. */
++.carte-prestation__media--attente { cursor:default; }
++.carte-prestation .carte-prestation__categorie { font-size:12px; font-weight:600; }
+diff --git a/maquette_interactive/index.html b/maquette_interactive/index.html
+index f9525a8..a8fe6e6 100644
+--- a/maquette_interactive/index.html
++++ b/maquette_interactive/index.html
+@@ -74,8 +74,8 @@
+             <p class="surtitre surtitre--clair">Nos prestations</p>
+             <h2 id="prestations-titre" class="titre-section">Entretien, nettoyage, services.</h2>
+             <span class="filet" aria-hidden="true"></span>
+-            <p class="chapeau chapeau--clair">Les quatre métiers représentés par les pictogrammes du logo ÉDYSOL. Chaque demande est étudiée avant confirmation&nbsp;: aucun tarif n’est affiché en ligne.</p>
+-            <p class="a-completer a-completer--sombre" role="note"><span>À confirmer</span> Intitulés et descriptions du catalogue, à valider par ÉDYSOL.</p>
++            <p class="chapeau chapeau--clair">Les activités déclarées par ÉDYSOL, une activité technique citée et les entrées antérieures conservées. Chaque demande est étudiée avant confirmation&nbsp;: aucun tarif n’est affiché en ligne.</p>
++            <p class="a-completer a-completer--sombre" role="note"><span>À préciser</span> Contenu et périmètre de chaque activité. Les quatre entrées antérieures restent accessibles ; leur classement comme offres, tâches ou techniques est à confirmer.</p>
+           </div>
+           <div id="carrousel-prestations" class="carrousel-cadre tuile-4"></div>
+         </div>
+diff --git a/maquette_interactive/js/commun/catalogue.js b/maquette_interactive/js/commun/catalogue.js
+index 8c4ef07..0aa35dd 100644
+--- a/maquette_interactive/js/commun/catalogue.js
++++ b/maquette_interactive/js/commun/catalogue.js
+@@ -7,25 +7,65 @@
+    - « Edysol fonctionnement.txt » : nettoyage, contrats particuliers et
+      professionnels ;
+    - site existant (site _web/dist/index.html) : téléphone et adresse.
+-   Les descriptions détaillées et le catalogue final restent À CONFIRMER
++   EV-017 confirme les activités citées dans le questionnaire (Q1/Q8/Q27).
++   Les descriptions détaillées et le catalogue exhaustif restent À CONFIRMER
+    par ÉDYSOL : aucun tarif, délai ou engagement n'est annoncé.
+    ========================================================================= */
+ (function (racine) {
+   'use strict';
+   const Edysol = racine.Edysol = racine.Edysol || {};
+ 
+-  /** Prestations présentées (intitulés déduits des pictogrammes du logo). */
+-  const PRESTATIONS = [
+-    { id: 'sols', titre: 'Entretien des sols', icone: 'balai', visuel: 'aspiration', tuile: 1,
+-      resume: 'Aspiration et entretien courant des sols de bureaux, de locaux et de logements.' },
+-    { id: 'lavage', titre: 'Lavage mécanisé des sols', icone: 'goutte', visuel: 'monobrosse', tuile: 2,
+-      resume: 'Lavage des grandes surfaces à la machine, par exemple dans les halls et couloirs.' },
+-    { id: 'vitres', titre: 'Nettoyage des vitres', icone: 'vitre', visuel: 'vitres', tuile: 3,
+-      resume: 'Vitres, baies vitrées et surfaces vitrées accessibles, pour plus de lumière.' },
+-    { id: 'mobilier', titre: 'Mobilier et postes de travail', icone: 'bureau', visuel: 'bureaux', tuile: 4,
+-      resume: 'Dépoussiérage et entretien des bureaux, tables et surfaces de travail.' }
++  /** Offres citées en Q1 ; les périmètres non détaillés restent à préciser.
++   * Source : EV-017, transcription des réponses Q1/Q8/Q27 ; aucune tâche incluse n'est déduite.
++   */
++  const OFFRES = [
++    { id: 'parties-communes', titre: 'Nettoyage des parties communes', icone: 'equipe', visuel: null },
++    { id: 'fin-chantier', titre: 'Nettoyage de fin de chantier', icone: 'balai', visuel: null },
++    { id: 'fin-bail', titre: 'Nettoyage de fin de bail', icone: 'maison', visuel: null },
++    { id: 'commerces', titre: 'Nettoyage de commerces', icone: 'bureau', visuel: null },
++    { id: 'bureaux', titre: 'Nettoyage de bureaux', icone: 'bureau', visuel: 'bureaux' },
++    { id: 'particuliers', titre: 'Nettoyage chez les particuliers', icone: 'maison', visuel: 'domicile' },
++    { id: 'encombrants', titre: 'Enlèvement d’encombrants', icone: 'etoile', visuel: null },
++    { id: 'tags', titre: 'Enlèvement de tags', icone: 'etoile', visuel: null },
++    { id: 'espaces-verts', titre: 'Espaces verts', icone: 'etoile', visuel: null }
++  ].map((p, i) => ({ ...p, groupe: 'offres', nature: 'offre', source: ['Q1', ...(['encombrants', 'tags', 'espaces-verts'].includes(p.id) ? ['Q8', 'Q27'] : [])], tuile: i % 4 + 1,
++    resume: 'Activité déclarée par ÉDYSOL. Contenu et périmètre à préciser avec l’entreprise.' }));
++
++  /** Activité technique explicitement citée en Q27, distincte de la monobrosse.
++   * Son accès dans la demande ne valide pas un périmètre commercial autonome.
++   */
++  const ACTIVITES_TECHNIQUES = [
++    { id: 'karcher', titre: 'Nettoyage au Kärcher', icone: 'goutte', visuel: null, tuile: 2,
++      groupe: 'techniques', nature: 'activite-technique', source: ['Q27'],
++      resume: 'Activité citée dans le questionnaire. Libellé public et périmètre à préciser ; distincte du lavage à la monobrosse.' }
+   ];
+ 
++  /** Identifiants historiques conservés : aucune migration des anciennes demandes.
++   * Leur classement en offres, tâches ou techniques reste à arbitrer ; aucune inclusion
++   * dans une nouvelle offre n'est supposée. Les anciennes descriptions sont archivées.
++   */
++  const ENTREES_HISTORIQUES = [
++    { id: 'sols', titre: 'Entretien des sols', icone: 'balai', visuel: 'aspiration', tuile: 1, nature: 'tache-ou-offre-a-preciser',
++      resumeHistorique: 'Aspiration et entretien courant des sols de bureaux, de locaux et de logements.' },
++    { id: 'lavage', titre: 'Lavage mécanisé des sols', icone: 'goutte', visuel: 'monobrosse', tuile: 2, nature: 'technique-ou-offre-a-preciser',
++      resumeHistorique: 'Lavage des grandes surfaces à la machine, par exemple dans les halls et couloirs.' },
++    { id: 'vitres', titre: 'Nettoyage des vitres', icone: 'vitre', visuel: 'vitres', tuile: 3, nature: 'tache-ou-offre-a-preciser',
++      resumeHistorique: 'Vitres, baies vitrées et surfaces vitrées accessibles, pour plus de lumière.' },
++    { id: 'mobilier', titre: 'Mobilier et postes de travail', icone: 'bureau', visuel: 'bureaux', tuile: 4, nature: 'tache-ou-offre-a-preciser',
++      resumeHistorique: 'Dépoussiérage et entretien des bureaux, tables et surfaces de travail.' }
++  ].map(p => ({ ...p, groupe: 'historique', source: ['Pictogrammes du logo — historique'],
++    resume: 'Entrée antérieure conservée. Place comme offre autonome, tâche ou technique et contenu à préciser.' }));
++
++  /** Liste compatible avec les anciens consommateurs ; une seule valeur par demande. */
++  const PRESTATIONS = [...OFFRES, ...ACTIVITES_TECHNIQUES, ...ENTREES_HISTORIQUES];
++  const GROUPES_PRESTATIONS = [
++    { id: 'offres', titre: 'Activités déclarées par ÉDYSOL' },
++    { id: 'techniques', titre: 'Activité technique citée — périmètre à préciser' },
++    { id: 'historique', titre: 'Entrées antérieures — classement à préciser' }
++  ];
++  // Les types de clients restent une information indépendante de la prestation choisie.
++  const TYPES_CLIENTS = ['Particulier', 'Professionnel'];
++
+   /** Choix supplémentaire du formulaire : besoin non listé. */
+   const DEMANDE_SPECIFIQUE = { id: 'specifique', titre: 'Demande spécifique', icone: 'etoile',
+     resume: 'Un autre besoin ? Décrivez-le : la secrétaire vous recontacte.' };
+@@ -54,5 +94,8 @@
+     return PRESTATIONS.find(p => p.id === id) || (id === DEMANDE_SPECIFIQUE.id ? DEMANDE_SPECIFIQUE : null);
+   }
+ 
+-  Object.assign(Edysol, { PRESTATIONS, DEMANDE_SPECIFIQUE, CONTACT, COMMUNES, CRENEAUX, FREQUENCES, prestationParId });
++  /** Libellé unique pour récapitulatifs, planning, PDF et terrain ; un identifiant inconnu reste visible. */
++  function libellePrestation(id) { return prestationParId(id)?.titre || (id ? `Prestation historique (${String(id)})` : 'À préciser'); }
++
++  Object.assign(Edysol, { OFFRES, ACTIVITES_TECHNIQUES, ENTREES_HISTORIQUES, GROUPES_PRESTATIONS, TYPES_CLIENTS, libellePrestation, PRESTATIONS, DEMANDE_SPECIFIQUE, CONTACT, COMMUNES, CRENEAUX, FREQUENCES, prestationParId });
+ })(window);
+diff --git a/maquette_interactive/js/commun/formulaire-commande.js b/maquette_interactive/js/commun/formulaire-commande.js
+index fc25bf0..56f24b2 100644
+--- a/maquette_interactive/js/commun/formulaire-commande.js
++++ b/maquette_interactive/js/commun/formulaire-commande.js
+@@ -27,24 +27,25 @@
+     const coche = (a, b) => (a === b ? 'checked' : '');
+     const erreur = nom => `<p class="message-erreur" id="${p}-${nom}-erreur" hidden></p>`;
+     if (n === 0) {
+-      const options = [...E.PRESTATIONS, E.DEMANDE_SPECIFIQUE];
++      const groupes = [...E.GROUPES_PRESTATIONS.map(g => ({ ...g, options: E.PRESTATIONS.filter(p => p.groupe === g.id) })), { id: 'autre', titre: 'Autre besoin', options: [E.DEMANDE_SPECIFIQUE] }];
+       return `
+         <fieldset class="groupe-choix" aria-describedby="${p}-prestation-erreur">
+           <legend class="libelle">Prestation souhaitée <span class="obligatoire" aria-hidden="true">*</span></legend>
+-          <div class="choix-cartes">
+-            ${options.map(o => `
++          <p class="aide">Choisissez une seule entrée. Les contenus précis restent à définir avec ÉDYSOL ; le choix multiple n’est pas encore retenu.</p>
++          ${groupes.map(g => `<fieldset class="groupe-choix"><legend class="libelle">${esc(g.titre)}</legend><div class="choix-cartes">
++            ${g.options.map(o => `
+               <label class="choix-carte">
+                 <input type="radio" name="prestation" value="${esc(o.id)}" ${coche(v.prestation, o.id)} required>
+                 <span class="choix-carte__icone">${icone(o.icone)}</span>
+                 <span class="choix-carte__texte"><strong>${esc(o.titre)}</strong><small>${esc(o.resume)}</small></span>
+               </label>`).join('')}
+-          </div>
++          </div></fieldset>`).join('')}
+           ${erreur('prestation')}
+         </fieldset>
+         <fieldset class="groupe-choix">
+           <legend class="libelle">Vous êtes</legend>
+           <div class="segments">
+-            ${['Particulier', 'Professionnel'].map(t => `<label class="segment"><input type="radio" name="typeClient" value="${t}" ${coche(v.typeClient || 'Particulier', t)}><span>${t}</span></label>`).join('')}
++            ${E.TYPES_CLIENTS.map(t => `<label class="segment"><input type="radio" name="typeClient" value="${t}" ${coche(v.typeClient || 'Particulier', t)}><span>${t}</span></label>`).join('')}
+           </div>
+         </fieldset>
+         <fieldset class="groupe-choix">
+diff --git a/maquette_interactive/js/commun/visuels.js b/maquette_interactive/js/commun/visuels.js
+index 8a7ac66..33b5f34 100644
+--- a/maquette_interactive/js/commun/visuels.js
++++ b/maquette_interactive/js/commun/visuels.js
+@@ -91,5 +91,25 @@
+     return `<picture>${v.sources.map(s => `<source type="${esc(s.type)}" srcset="${esc(s.srcset)}" sizes="${esc(tailles)}">`).join('')}<img ${attributs}></picture>`;
+   }
+ 
+-  Object.assign(Edysol, { VISUELS, visuelsDe, libelleStatut, baliseImage });
++  /** Retrouve une image pertinente, sans utiliser celle d'une autre activité.
++   * @param {object|null} prestation Entrée choisie. @returns {object|null} Visuel ou null.
++   */
++  function visuelPrestation(prestation) {
++    return VISUELS.find(v => prestation?.visuel && v.id === prestation.visuel) || null;
++  }
++
++  /** Retourne un média légendé ou un emplacement honnête, partagé avec le formulaire.
++   * @param {object|null} prestation Entrée choisie. @param {object} options Options d'image.
++   * @returns {string} HTML échappé ; jamais de source d'image vide.
++   */
++  function mediaPrestation(prestation, options = {}) {
++    const v = visuelPrestation(prestation), esc = Edysol.esc;
++    if (v) return baliseImage(v, options) + `<span class="pastille-provisoire">${esc(libelleStatut(v))}</span>`;
++    const titre = prestation?.titre || 'Prestation à choisir';
++    return `<div class="visuel-attente" role="img" aria-label="${esc(titre)} : illustration pertinente à fournir">
++      <span aria-hidden="true">${Edysol.icone('documents')}</span><strong>Illustration à fournir</strong>
++      <span>${esc(titre)}</span><small>Aucun chantier réel représenté</small></div>`;
++  }
++
++  Object.assign(Edysol, { visuelPrestation, mediaPrestation, VISUELS, visuelsDe, libelleStatut, baliseImage });
+ })(window);
+diff --git a/maquette_interactive/js/demo/depot-demo.js b/maquette_interactive/js/demo/depot-demo.js
+index 66d3d2a..3a5c4b5 100644
+--- a/maquette_interactive/js/demo/depot-demo.js
++++ b/maquette_interactive/js/demo/depot-demo.js
+@@ -145,7 +145,8 @@
+    */
+   function validerCommande(d) {
+     const erreurs = {};
+-    if (!Edysol.prestationParId(d.prestation)) erreurs.prestation = 'Choisissez une prestation.';
++    // La prestation reste une valeur unique ; la multisélection n'est pas validée.
++    if (typeof d.prestation !== 'string' || !Edysol.prestationParId(d.prestation)) erreurs.prestation = 'Choisissez une prestation.';
+     if (!d.nom || d.nom.trim().length < 2) erreurs.nom = 'Indiquez votre nom et prénom.';
+     const chiffres = String(d.telephone || '').replace(/\D/g, '');
+     if (chiffres.length < 6) erreurs.telephone = 'Indiquez un numéro de téléphone (6 chiffres au minimum).';
+diff --git a/maquette_interactive/js/espace/vues/bureau.js b/maquette_interactive/js/espace/vues/bureau.js
+index f6cc7e4..7d3f0bc 100644
+--- a/maquette_interactive/js/espace/vues/bureau.js
++++ b/maquette_interactive/js/espace/vues/bureau.js
+@@ -16,7 +16,8 @@
+   /* ---------- Fonctions d'accès aux données (lecture seule) ---------- */
+   const etat = () => E.api.charger();
+   const equipe = id => etat().equipes.find(e => e.id === id);
+-  const prestation = id => E.prestationParId(id)?.titre || 'À confirmer';
++  // Résolution commune des anciennes et nouvelles prestations EV-017.
++  const prestation = E.libellePrestation;
+   const interventionsDe = commandeId => etat().interventions.filter(i => i.commandeId === commandeId).sort((a, b) => (a.date + a.debut).localeCompare(b.date + b.debut));
+ 
+   /** Date affichée dans les listes : première intervention planifiée, sinon date souhaitée. */
+diff --git a/maquette_interactive/js/espace/vues/planning.js b/maquette_interactive/js/espace/vues/planning.js
+index aa7d6b4..212bb82 100644
+--- a/maquette_interactive/js/espace/vues/planning.js
++++ b/maquette_interactive/js/espace/vues/planning.js
+@@ -45,7 +45,7 @@
+     /** Texte accessible décrivant une intervention (lu par les lecteurs d'écran). */
+     const description = i => {
+       const c = s.commandes.find(x => x.id === i.commandeId);
+-      return `${i.commandeId}, ${E.formaterDate(i.date, 'court')} de ${i.debut} à ${i.fin}, ${D.libelleEquipe(i.equipeId)}, ${ui.STATUTS[i.statut]}${c ? ', ' + c.commune : ''}${i.creneauClient === 'confirme' ? ', créneau confirmé au client' : ''}. Entrée pour modifier ou consulter.`;
++      return `${i.commandeId}, ${E.formaterDate(i.date, 'court')} de ${i.debut} à ${i.fin}, ${D.libelleEquipe(i.equipeId)}, ${ui.STATUTS[i.statut]}${c ? ', ' + D.prestation(c.prestation) + ', ' + c.commune : ''}${i.creneauClient === 'confirme' ? ', créneau confirmé au client' : ''}. Entrée pour modifier ou consulter.`;
+     };
+     /** Bloc d'intervention (bouton) : déplaçable seulement s'il est planifié. */
+     const bloc = (i, style = '') => {
+@@ -54,6 +54,7 @@
+       const deplacable = i.statut === 'planifiee' && droits.deplacer;
+       return `<button type="button" class="bloc-inter bloc-inter--${esc(type)}${deplacable ? '' : ' est-verrouille'}" data-intervention="${esc(i.id)}" data-deplacable="${deplacable}" ${style} aria-label="${esc(description(i))}">
+           <span class="bloc-inter__heure">${esc(i.debut)}–${esc(i.fin)}</span><strong>${esc(i.commandeId.replace('EDY-2026-', 'EDY-'))}</strong>
++          <span class="visuellement-cache">${esc(D.prestation(c?.prestation))}</span>
+           <span class="bloc-inter__lieu">${esc(c?.commune || '')}${i.creneauClient === 'confirme' ? ' · client' : ''}${i.creneauClient === 'a-reconfirmer' ? ' · à reconfirmer' : ''}</span>
+         </button>`;
+     };
+@@ -108,7 +109,7 @@
+         <div class="champ">
+           <label for="aff-commande">Commande</label>
+           <select id="aff-commande" name="commande" required>
+-            ${aPlanifier.map(c => `<option value="${esc(c.id)}" ${c.id === (commandeChoisie?.id || aPlanifier[0]?.id) ? 'selected' : ''}>${esc(c.id)} · ${esc(c.client.nom)} · ${esc(ui.STATUTS[c.statut])}</option>`).join('')}
++            ${aPlanifier.map(c => `<option value="${esc(c.id)}" ${c.id === (commandeChoisie?.id || aPlanifier[0]?.id) ? 'selected' : ''}>${esc(c.id)} · ${esc(D.prestation(c.prestation))} · ${esc(c.client.nom)} · ${esc(ui.STATUTS[c.statut])}</option>`).join('')}
+           </select>
+           <p class="aide" id="aff-souhait"></p>
+         </div>
+diff --git a/maquette_interactive/js/espace/vues/terrain.js b/maquette_interactive/js/espace/vues/terrain.js
+index 72b1f79..9472c51 100644
+--- a/maquette_interactive/js/espace/vues/terrain.js
++++ b/maquette_interactive/js/espace/vues/terrain.js
+@@ -14,6 +14,7 @@
+   const O = racine.EdysolOrganisation;
+   const vues = E.vues = E.vues || {};
+ 
++  // Les vues terrain utilisent les libellés du catalogue commun, via donneesVues.
+   const D = () => E.donneesVues;
+   /** Interventions de ménage de la personne (toutes équipes dont elle est membre). */
+   function mesInterventions(personneId) {
+@@ -110,7 +111,7 @@
+     const rapport = 'CR-DÉMO-' + i.commandeId.slice(-3) + '-' + ctx.personne.id;
+     return {
+       titre: 'Compte rendu',
+-      html: `${ui.entetePage({ titre: 'Compte rendu', retour: { href: ctx.lien('intervention/' + i.id), texte: i.commandeId }, sousTitre: `${esc(i.commandeId)} · ${esc(rapport)} · ${esc(ctx.personne.nom)}` })}
++      html: `${ui.entetePage({ titre: 'Compte rendu', retour: { href: ctx.lien('intervention/' + i.id), texte: i.commandeId }, sousTitre: `${esc(i.commandeId)} · ${esc(D().prestation(s.commandes.find(c => c.id === i.commandeId)?.prestation))} · ${esc(rapport)} · ${esc(ctx.personne.nom)}` })}
+         <form class="formulaire-terrain" id="form-cr" novalidate>
+           <fieldset class="groupe-choix"><legend class="libelle">État de l’intervention</legend>
+             <div class="segments">${['Terminée', 'En cours', 'À reprogrammer'].map((t, k) => `<label class="segment"><input type="radio" name="etat" value="${t}" ${k === 0 ? 'checked' : ''}><span>${t}</span></label>`).join('')}</div>
+diff --git a/maquette_interactive/js/public/accueil.js b/maquette_interactive/js/public/accueil.js
+index 43dbed5..c411321 100644
+--- a/maquette_interactive/js/public/accueil.js
++++ b/maquette_interactive/js/public/accueil.js
+@@ -30,15 +30,15 @@
+   // --- Cartes de prestations : forme de tuile du logo, illustration, lien vers le formulaire prérempli ---
+   const cartes = document.getElementById('cartes-prestations');
+   cartes.innerHTML = E.PRESTATIONS.map(p => {
+-    const v = E.VISUELS.find(x => x.id === p.visuel);
++    const v = E.visuelPrestation(p);
+     return `
+       <li class="carte-prestation tuile-${p.tuile} ${p.tuile % 2 ? 'carte-prestation--bleue' : 'carte-prestation--verte'}">
+-        <button type="button" class="carte-prestation__media" data-visuel="${esc(v.id)}" aria-label="Agrandir l’illustration : ${esc(p.titre)}">
+-          ${E.baliseImage(v, { tailles: '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw' })}
+-          <span class="pastille-provisoire">${esc(E.libelleStatut(v))}</span>
+-        </button>
++        ${v ? `<button type="button" class="carte-prestation__media" data-visuel="${esc(v.id)}" aria-label="Agrandir l’illustration : ${esc(p.titre)}">
++          ${E.mediaPrestation(p, { tailles: '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw' })}
++        </button>` : `<div class="carte-prestation__media carte-prestation__media--attente">${E.mediaPrestation(p)}</div>`}
+         <div class="carte-prestation__corps">
+           <span class="carte-prestation__icone">${icone(p.icone)}</span>
++          <p class="carte-prestation__categorie">${esc(E.GROUPES_PRESTATIONS.find(g => g.id === p.groupe)?.titre || '')}</p>
+           <h3>${esc(p.titre)}</h3>
+           <p>${esc(p.resume)}</p>
+           <a class="lien-fleche" href="commande.html?prestation=${esc(p.id)}">Demander cette prestation ${icone('droite')}</a>
+@@ -48,7 +48,8 @@
+   cartes.addEventListener('click', e => {
+     const bouton = e.target.closest('[data-visuel]');
+     if (!bouton) return;
+-    const liste = E.PRESTATIONS.map(p => E.VISUELS.find(v => v.id === p.visuel));
++    // Ignorer les emplacements sans image et dédupliquer les médias partagés.
++    const liste = E.PRESTATIONS.map(E.visuelPrestation).filter(Boolean).filter((v, i, a) => a.findIndex(x => x.id === v.id) === i);
+     E.visionneuse.ouvrir(liste, liste.findIndex(v => v.id === bouton.dataset.visuel), bouton);
+   });
+ 
+diff --git a/maquette_interactive/js/public/commande.js b/maquette_interactive/js/public/commande.js
+index 1337fa3..127e783 100644
+--- a/maquette_interactive/js/public/commande.js
++++ b/maquette_interactive/js/public/commande.js
+@@ -49,7 +49,7 @@
+   function recapitulatif() {
+     const p = E.prestationParId(valeurs.prestation);
+     const lignes = [
+-      ['Prestation', p ? p.titre : 'À choisir'],
++      ['Prestation', p ? E.libellePrestation(p.id) : 'À choisir'],
+       ['Client', valeurs.typeClient || 'Particulier'],
+       ['Fréquence', valeurs.frequence || E.FREQUENCES[0]],
+       ['Lieu', valeurs.commune ? valeurs.commune : 'À préciser'],
+@@ -62,10 +62,11 @@
+   function majResume() {
+     resumeListe.innerHTML = recapitulatif().replace(/^<dl>|<\/dl>$/g, '');
+     const p = E.prestationParId(valeurs.prestation);
+-    const v = E.VISUELS.find(x => x.id === (p && p.visuel)) || E.VISUELS.find(x => x.id === 'equipe');
+-    if (resumeVisuel.dataset.visuel !== v.id) {
+-      resumeVisuel.dataset.visuel = v.id;
+-      resumeVisuel.innerHTML = E.baliseImage(v, { tailles: '(min-width: 1024px) 380px, 100vw' }) + `<span class="pastille-provisoire">${esc(E.libelleStatut(v))}</span>`;
++    // Un besoin sans image pertinente affiche son propre emplacement.
++    const cle = p?.id || 'aucune';
++    if (resumeVisuel.dataset.visuel !== cle) {
++      resumeVisuel.dataset.visuel = cle;
++      resumeVisuel.innerHTML = E.mediaPrestation(p, { tailles: '(min-width: 1024px) 380px, 100vw' });
+     }
+   }
+ 
+diff --git a/maquette_interactive/outils/tester_catalogue.js b/maquette_interactive/outils/tester_catalogue.js
+new file mode 100644
+index 0000000..68be6f4
+--- /dev/null
++++ b/maquette_interactive/outils/tester_catalogue.js
+@@ -0,0 +1,86 @@
++/* Tests EV-017 : couverture sourcée, compatibilité et demandes client/secrétariat.
++ * Exécution : node outils/tester_catalogue.js ; stockage fictif isolé, aucun serveur.
++ */
++'use strict';
++const fs = require('node:fs');
++const path = require('node:path');
++const vm = require('node:vm');
++const assert = require('node:assert/strict');
++const stockage = new Map();
++
++/** Charge les véritables modules de la maquette avec un stockage navigateur isolé.
++ * @returns {object} Espace Edysol utilisable sans interface ni réseau.
++ */
++function charger() {
++  const contexte = { console, Intl, Date, URLSearchParams,
++    localStorage: { getItem: k => stockage.get(k) ?? null, setItem: (k, v) => stockage.set(k, v), removeItem: k => stockage.delete(k) },
++    addEventListener() {}, document: { dispatchEvent() {} }, CustomEvent: class {} };
++  contexte.window = contexte;
++  vm.createContext(contexte);
++  for (const fichier of ['commun/utilitaires', 'commun/catalogue', 'commun/visuels', 'commun/formulaire-commande',
++    'metier/organisation', 'metier/notifications', 'metier/suivi_metier', 'metier/deplacement', 'demo/donnees-demo', 'demo/depot-demo', 'demo/api']) {
++    vm.runInContext(fs.readFileSync(path.resolve(__dirname, '../js/' + fichier + '.js'), 'utf8'), contexte, { filename: fichier });
++  }
++  return contexte.Edysol;
++}
++const E = charger();
++let controles = 0;
++/** Exécute un scénario nommé ; une erreur interrompt le programme. */
++function verifier(nom, action) { action(); controles++; console.log('OK · ' + nom); }
++const confirmes = ['parties-communes', 'fin-chantier', 'fin-bail', 'commerces', 'bureaux', 'particuliers', 'encombrants', 'tags', 'espaces-verts', 'karcher'];
++verifier('Dix activités citées accessibles, neuf offres Q1 et une activité technique Q27', () => {
++  assert.equal(E.OFFRES.length, 9); assert.equal(E.ACTIVITES_TECHNIQUES.length, 1);
++  for (const id of confirmes) assert.ok(E.prestationParId(id));
++});
++verifier('Aucun identifiant du catalogue en double et quatorze entrées conservées', () => {
++  assert.equal(E.PRESTATIONS.length, 14); assert.equal(new Set(E.PRESTATIONS.map(p => p.id)).size, 14);
++});
++verifier('Anciens identifiants et demande spécifique inchangés', () => {
++  for (const [id, titre] of Object.entries({ sols: 'Entretien des sols', lavage: 'Lavage mécanisé des sols', vitres: 'Nettoyage des vitres', mobilier: 'Mobilier et postes de travail', specifique: 'Demande spécifique' })) assert.equal(E.libellePrestation(id), titre);
++});
++verifier('Types clients indépendants du choix de prestation', () => assert.equal(JSON.stringify(E.TYPES_CLIENTS), '["Particulier","Professionnel"]'));
++verifier('Kärcher distinct de la monobrosse : identifiants, nature et absence de faux visuel', () => {
++  assert.notEqual(E.prestationParId('karcher').id, E.prestationParId('lavage').id);
++  assert.equal(E.prestationParId('karcher').nature, 'activite-technique');
++  assert.equal(E.visuelPrestation(E.prestationParId('karcher')), null);
++});
++verifier('Images pertinentes bureaux/particuliers et emplacements explicites pour les autres', () => {
++  assert.equal(E.visuelPrestation(E.prestationParId('bureaux')).id, 'bureaux');
++  assert.equal(E.visuelPrestation(E.prestationParId('particuliers')).id, 'domicile');
++  for (const id of confirmes.filter(id => !['bureaux', 'particuliers'].includes(id))) {
++    const html = E.mediaPrestation(E.prestationParId(id)); assert.match(html, /Illustration à fournir/); assert.doesNotMatch(html, /<img/);
++  }
++  assert.match(E.mediaPrestation({ titre: '<script>test</script>', visuel: 'absent' }), /&lt;script&gt;/);
++});
++verifier('Tous les médias et formats responsives référencés existent', () => {
++  for (const v of E.VISUELS) for (const fichier of [v.src, ...(v.sources || []).flatMap(s => s.srcset.split(',').map(x => x.trim().split(/\s+/)[0]))]) assert.ok(fs.existsSync(path.resolve(__dirname, '..', fichier)), fichier);
++});
++verifier('Formulaire partagé : quinze options radio, valeur préremplie et classement distinct', () => {
++  const html = E.formulaireCommande.champsEtape(0, { prestation: 'tags' });
++  assert.equal((html.match(/name="prestation"/g) || []).length, 15);
++  assert.match(html, /value="tags" checked/); assert.doesNotMatch(html, /type="checkbox" name="prestation"/);
++  for (const g of E.GROUPES_PRESTATIONS) assert.ok(html.includes(E.esc(g.titre)));
++});
++const donnees = { nom: 'Client essai EV-017', telephone: '123456', adresse: 'Adresse fictive de test', commune: 'Nouméa', description: 'Besoin fictif pour un essai', consentement: true };
++const ids = [];
++for (const source of ['client', 'secretaire']) verifier('Création et conservation du libellé pour chaque activité — ' + source, () => {
++  for (const prestation of confirmes) {
++    const saisie = { ...donnees, prestation, typeClient: 'Professionnel' };
++    assert.equal(Object.keys(E.api.validerCommande(saisie)).length, 0);
++    const c = E.api.creerCommande(saisie, source); ids.push(c.id);
++    assert.equal(c.prestation, prestation); assert.equal(c.client.type, 'Professionnel');
++    assert.equal(E.libellePrestation(c.prestation), E.prestationParId(prestation).titre);
++  }
++});
++verifier('Multisélection et identifiant inconnu refusés à la saisie', () => {
++  assert.ok(E.api.validerCommande({ ...donnees, prestation: ['tags', 'vitres'] }).prestation);
++  assert.ok(E.api.validerCommande({ ...donnees, prestation: 'inconnu' }).prestation);
++});
++verifier('Rechargement : vingt demandes conservées et anciennes demandes toujours résolues', () => {
++  const recharge = charger(); const etat = recharge.api.charger();
++  for (const id of ids) assert.ok(etat.commandes.find(c => c.id === id));
++  assert.equal(etat.version, 3);
++  for (const c of etat.commandes.filter(c => !ids.includes(c.id))) assert.ok(recharge.prestationParId(c.prestation));
++  assert.match(recharge.libellePrestation('ancien-identifiant-externe'), /ancien-identifiant-externe/);
++});
++console.log(`${controles} scénarios EV-017 réussis, dont vingt créations et rechargement local ; aucun serveur testé.`);
+diff --git a/maquette_interactive/package.json b/maquette_interactive/package.json
+index f0508a4..5547b96 100644
+--- a/maquette_interactive/package.json
++++ b/maquette_interactive/package.json
+@@ -5,7 +5,7 @@
+   "description": "Maquette interactive ÉDYSOL NC : site public, parcours de commande, espaces internes, planning glisser-déposer et carte des véhicules (mode démonstration, données fictives).",
+   "scripts": {
+     "start": "node outils/serveur.js 8000",
+-    "test": "node outils/verifier_metier_reference.js && node outils/tester_organisation.js && node outils/tester_notifications.js && node outils/tester_deplacement.js && node outils/tester_geolocalisation.js",
++    "test": "node outils/verifier_metier_reference.js && node outils/tester_organisation.js && node outils/tester_notifications.js && node outils/tester_deplacement.js && node outils/tester_geolocalisation.js && node outils/tester_catalogue.js",
+     "verifier": "node outils/verifier_maquette.js",
+     "apercus": "node outils/verifier_maquette.js --captures"
+   },

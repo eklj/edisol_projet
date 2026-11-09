@@ -1,0 +1,151 @@
+diff --git a/maquette_interactive/css/espace.css b/maquette_interactive/css/espace.css
+index 01b192b..21fe401 100644
+--- a/maquette_interactive/css/espace.css
++++ b/maquette_interactive/css/espace.css
+@@ -272,6 +272,20 @@ fieldset.bloc > legend + * { clear: both; }
+ .creneau-legende { font-size: 12.5px; font-weight: 650; padding: 3px 10px; border-radius: 999px; }
+ .grille-planning { display: grid; gap: 18px; align-items: start; }
+ @media (min-width: 1280px) { .grille-planning { grid-template-columns: minmax(0, 1fr) 360px; } }
++
++/* La confirmation flotte au-dessus de la vue et laisse les commandes cliquables. */
++#notification-affectation:not(:empty) {
++  position: fixed; z-index: 50; top: 20px; right: 20px;
++  max-width: min(380px, calc(100% - 40px));
++  padding: 12px 16px; border: 1px solid var(--vert-700); border-radius: 10px;
++  background: var(--vert-100); color: var(--vert-900);
++  box-shadow: var(--ombre-2); font-weight: 700; pointer-events: none;
++}
++@media (max-width: 767px) {
++  #notification-affectation:not(:empty) {
++    top: calc(72px + env(safe-area-inset-top)); inset-inline: 12px; max-width: none;
++  }
++}
+ .planning-vue { min-width: 0; }
+ .planning-grille { display: none; background: #fff; border: 1px solid var(--ligne); border-radius: 16px; overflow: hidden; }
+ .planning-grille__ligne { display: grid; grid-template-columns: 170px repeat(6, minmax(0, 1fr)); border-bottom: 1px solid var(--ligne); }
+diff --git a/maquette_interactive/espace.html b/maquette_interactive/espace.html
+index 7cfae2e..4602081 100644
+--- a/maquette_interactive/espace.html
++++ b/maquette_interactive/espace.html
+@@ -18,6 +18,9 @@
+     <noscript><p style="padding:24px">La maquette des espaces internes nécessite JavaScript.</p></noscript>
+   </div>
+ 
++  <!-- Région d’annonce persistante, hors de la grille et de la vue remplacée. -->
++  <div id="notification-affectation" role="status" aria-atomic="true"></div>
++
+   <!-- Bibliothèque de carte (locale) -->
+   <script src="assets/vendor/leaflet-1.9.4/leaflet.js"></script>
+   <!-- Socle commun -->
+diff --git a/maquette_interactive/js/demo/depot-demo.js b/maquette_interactive/js/demo/depot-demo.js
+index 3a5c4b5..1fec9d9 100644
+--- a/maquette_interactive/js/demo/depot-demo.js
++++ b/maquette_interactive/js/demo/depot-demo.js
+@@ -38,11 +38,11 @@
+    * Retour : vrai si l'écriture a réussi. En cas d'échec (stockage plein, refusé
+    * ou échec simulé), les données restent en mémoire : l'appelant décide du retour arrière.
+    */
+-  function sauver() {
++  function sauver(signalerEchec = true) {
+     let ok;
+     if (echecSimule) { echecSimule = false; ok = false; }
+     else ok = Edysol.stockage.ecrire(CLE, etat);
+-    document.dispatchEvent(new CustomEvent('edysol:donnees', { detail: { externe: false } }));
++    if (ok || signalerEchec) document.dispatchEvent(new CustomEvent('edysol:donnees', { detail: { externe: false } }));
+     return ok;
+   }
+ 
+@@ -193,7 +193,7 @@
+   /**
+    * Planifie une commande sur une équipe (binôme fixe, solo ou contrôleuse).
+    * Paramètres : identifiant de commande, proposition { date, debut, fin, equipeId }, auteur.
+-   * Retour : { ok, erreurs, conflits, intervention }. En cas de conflit, rien n'est enregistré
++   * Retour : { ok, erreurs, conflits, intervention, notification }. En cas de conflit, rien n'est enregistré
+    * tant que l'utilisateur n'a pas confirmé explicitement (accepterConflit).
+    */
+   function planifier(commandeId, proposition, auteur, accepterConflit = false) {
+@@ -202,16 +202,30 @@
+     if (!commande) return { ok: false, erreurs: ['Commande introuvable.'], conflits: [] };
+     const controle = racine.EdysolOrganisation.controlerAffectation(proposition, etat.equipes, etat.interventions);
+     if (controle.erreurs.length || (controle.conflits.length && !accepterConflit)) return { ok: false, ...controle };
++    // Garde les positions d’origine pour annuler toutes les écritures si la sauvegarde échoue.
++    const { sequence, interventions, notifications } = etat;
++    const { statut, historique } = commande;
++    const nombreInterventions = interventions.length;
++    const nombreNotifications = notifications.length;
++    const tailleHistorique = historique.length;
+     const intervention = { id: nouvelId('INT'), commandeId, ...proposition, statut: 'planifiee' };
+     etat.interventions.push(intervention);
+     if (commande.statut === 'a-confirmer') commande.statut = 'planifiee';
+     const equipe = etat.equipes.find(e => e.id === proposition.equipeId);
+     historiser(commande, `Affectation proposée par ${auteur} : ${equipe.nom}, ${proposition.date} ${proposition.debut}-${proposition.fin} (validation à préciser)`);
+     if (controle.conflits.length) historiser(commande, 'Conflit de créneau signalé et laissé à l’arbitrage (aucune réaffectation automatique)');
+-    notifier(['secretariat', 'cogerance'], `${commandeId} : affectation enregistrée`, `${equipe.nom} · ${Edysol.formaterDate(proposition.date, 'court')}`, 'commande/' + commandeId);
++    const notification = notifier(['secretariat', 'cogerance'], `Affectation enregistrée pour ${commandeId}`, `${equipe.nom} · ${Edysol.formaterDate(proposition.date, 'court')}`, 'commande/' + commandeId);
+     notifier(equipe.membres.map(m => 'personne:' + m), 'Nouvelle intervention', `${commandeId} · ${Edysol.formaterDate(proposition.date, 'court')} ${proposition.debut}`, 'intervention/' + intervention.id);
+-    sauver();
+-    return { ok: true, erreurs: [], conflits: controle.conflits, intervention };
++    // N’avertit les vues qu’après écriture, sans leur exposer l’état provisoire.
++    if (!sauver(false)) {
++      interventions.length = nombreInterventions;
++      notifications.length = nombreNotifications;
++      historique.length = tailleHistorique;
++      commande.statut = statut;
++      etat.sequence = sequence;
++      return { ok: false, erreurs: ['L’affectation n’a pas pu être enregistrée. Réessayez.'], conflits: [] };
++    }
++    return { ok: true, erreurs: [], conflits: controle.conflits, intervention, notification };
+   }
+ 
+   /** Signale le début d'une intervention (statut « en cours »). */
+diff --git a/maquette_interactive/js/espace/vues/planning.js b/maquette_interactive/js/espace/vues/planning.js
+index 212bb82..4214396 100644
+--- a/maquette_interactive/js/espace/vues/planning.js
++++ b/maquette_interactive/js/espace/vues/planning.js
+@@ -22,6 +22,20 @@
+   let mode = 'jour';        // 'jour' (par ressource) ou 'semaine'
+   let jourChoisi = null;    // date affichée en vue « jour »
+   let messageEnAttente = null; // résultat du dernier déplacement, affiché après réaffichage
++  let minuterieAffectation;
++
++  /** Affiche l’événement déjà enregistré, sans modifier sa lecture ni le planning. */
++  function afficherConfirmationAffectation(notification) {
++    const zone = document.querySelector('#notification-affectation');
++    clearTimeout(minuterieAffectation);
++    zone.textContent = notification ? notification.titre : '';
++    if (notification) {
++      zone.dataset.notificationId = notification.id;
++      minuterieAffectation = setTimeout(afficherConfirmationAffectation, 4000);
++    } else {
++      delete zone.dataset.notificationId;
++    }
++  }
+   const R = racine.EdysolDeplacement;
+   /** Pas de la grille (minutes), mémorisé dans ce navigateur. */
+   const lirePas = () => { const p = Number(E.stockage.lire('edysol-pas-grille')); return R.PAS.includes(p) ? p : 30; };
+@@ -167,7 +181,7 @@
+               <li>Pas de passage en solo, pas de remplacement automatique.</li></ul>
+               <p class="aide-bloc">Impossibles faute de données : indisponibilités, véhicules affectés, temps de trajet, horaires de coordination.</p>`)}
+             ${ui.bloc('Règles en attente', `<ul class="liste-regles">${O.REGLES_EN_ATTENTE.map(r => `<li>${ui.aDefinir(r)}</li>`).join('')}<li>${ui.aDefinir('Changement d’un créneau déjà confirmé au client : autorisation et information du client à définir.')}</li></ul>`)}
+-            ${ui.bloc('Outil de démonstration', `<label class="case"><input type="checkbox" id="simuler-echec"><span>Faire échouer l’enregistrement du prochain déplacement (pour vérifier le retour à la position précédente)</span></label>
++            ${ui.bloc('Outil de démonstration', `<label class="case"><input type="checkbox" id="simuler-echec"><span>Faire échouer le prochain enregistrement d’une affectation ou d’un déplacement</span></label>
+               ${ctx.personne.role === 'secretaire' ? `<p class="aide-bloc">Droits de la secrétaire non définis. Pour tester l’écran, une permission peut être <strong>simulée</strong> :</p>
+               <label class="case"><input type="checkbox" data-permission-planning="planning:deplacer" ${droits.deplacer ? 'checked' : ''}><span>Simuler la permission de déplacer <code>planning:deplacer</code></span></label>
+               <label class="case"><input type="checkbox" data-permission-planning="planning:reaffecter" ${droits.reaffecter ? 'checked' : ''}><span>Simuler la permission de réaffecter <code>planning:reaffecter</code></span></label>` : ''}`, { classe: 'bloc--permissions' })}
+@@ -207,6 +221,7 @@
+         });
+         form.addEventListener('submit', e => {
+           e.preventDefault();
++          afficherConfirmationAffectation();
+           const proposition = { date: form.elements.date.value, debut: form.elements.debut.value, fin: form.elements.fin.value, equipeId: selectEquipe.value };
+           const auteur = ctx.personne.nom; // personne choisie dans le sélecteur de démonstration
+           const accepter = conflitEnAttente === JSON.stringify(proposition);
+@@ -219,7 +234,7 @@
+             return;
+           }
+           ctx.rafraichir();
+-          document.querySelector('#vue .planning-vue').insertAdjacentHTML('beforebegin', ui.notice(`Affectation enregistrée dans la simulation pour ${esc(form.elements.commande.value)}. Les membres de l’équipe la voient dans leur espace.`, 'succes', 'valide'));
++          afficherConfirmationAffectation(r.notification);
+         });
+         vue.querySelectorAll('[data-semaine]').forEach(b => b.addEventListener('click', () => {
+           decalageSemaine = b.dataset.semaine === '0' ? 0 : decalageSemaine + Number(b.dataset.semaine);
