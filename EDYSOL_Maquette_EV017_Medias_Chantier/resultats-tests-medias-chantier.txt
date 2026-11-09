@@ -1,0 +1,131 @@
+
+> edysol-maquette-interactive@1.0.0 test
+> node outils/verifier_metier_reference.js && node outils/tester_organisation.js && node outils/tester_notifications.js && node outils/tester_deplacement.js && node outils/tester_geolocalisation.js && node outils/tester_catalogue.js
+
+OK — Deux employés : le compteur est 150, pas 250
+OK — Réessai identique sans doublon
+OK — Clé réutilisée avec autre contenu refusée
+OK — Doublon compte rendu/véhicule refusé
+OK — Saisie tardive ne remplace pas le dernier relevé daté
+OK — Ordre réel des relevés conservé
+OK — Relevé inférieur au voisin précédent signalé
+OK — Relevé tardif supérieur au voisin suivant signalé
+OK — Derniers relevés simultanés contradictoires laissés ambigus
+OK — Correction conserve la version d’origine
+OK — Projection applique la nouvelle version
+OK — Correction sans motif refusée
+OK — Correction concurrente refusée
+OK — Aucun véhicule : aucun relevé
+OK — Aucun véhicule avec compteur résiduel refusé
+OK — Compteur invalide : -1
+OK — Compteur invalide : NaN
+OK — Compteur invalide : Infinity
+OK — Compteur invalide : 
+OK — Compteur invalide : null
+OK — Compteur zéro autorisé
+OK — Date sans fuseau refusée
+OK — Date civile impossible refusée
+OK — Identité employé requise
+OK — Véhicules indépendants
+OK — Stock = entrées moins sorties
+OK — Quantités décimales sans arrondi flottant
+OK — Unité incompatible refusée
+OK — Mouvement répété sans doublon
+OK — Matériel durable indivisible
+OK — Écart d’inventaire ne crée pas de mouvement
+OK — employe exclu de la comptabilité
+OK — controleuse exclu de la comptabilité
+OK — Ancien identifiant de rôle sans accès comptable
+OK — secretaire peut consulter
+OK — secretaire sans droit explicite ne peut modifier
+OK — cogerant peut consulter
+OK — cogerant sans droit explicite ne peut modifier
+OK — Requête anonyme refusée
+39 contrôles réussis. Politique de référence uniquement ; aucun serveur n’est connecté.
+OK · Composition de référence conforme
+OK · Trois binômes seulement : erreur
+OK · Binôme à trois personnes refusé
+OK · Solo à deux personnes refusé
+OK · Personne dans deux équipes refusée
+OK · Chevauchement du même binôme signalé
+OK · Créneaux qui se touchent sans chevauchement acceptés
+OK · Autre équipe au même moment acceptée
+OK · Conflit signalé sans proposition de remplacement
+OK · Fin avant début refusée
+OK · Équipe inconnue refusée
+OK · Le partenaire de binôme est nommé
+OK · Le solo est décrit comme tel
+OK · Équipes de la contrôleuse : ménage uniquement
+OK · Règles d’absence et de renfort laissées à décider
+15 contrôles réussis (règles d'organisation de la maquette).
+NON VÉRIFIÉ · comparaison avec la référence V1 (fichier absent hors du dépôt complet)
+OK · 1. A (ancienne) puis B (récente) avant C (lue)
+OK · 2. Nouvelle D placée après A et B, avant les lues
+OK · 3. Construire la boîte ne change aucun statut
+OK · Clic sans contenu chargé : lecture refusée
+OK · Détail différent de la notification : lecture refusée
+OK · Personne non destinataire : lecture refusée
+OK · Notification introuvable : lecture refusée
+OK · 4. Ouvrir B marque seulement B et la garde dans l’historique
+OK · 5. Lecture du cogérant 1 : toujours non lue pour le cogérant 2 et la secrétaire
+OK · Relire ne change pas la date de première lecture
+OK · 8. Compteur = non lues du destinataire courant
+OK · Réception simultanée : ordre stable par identifiant
+12 contrôles réussis (boîte de réception, logique locale).
+OK · Avancer de 10 h à 9 h : durée conservée (2 h)
+OK · Retarder de deux heures depuis 9 h : 11 h à 13 h
+OK · Alignement sur la grille (30 min et 15 min)
+OK · Autre jour : autorisé et durée conservée
+OK · Vers un autre binôme complet : autorisé si libre
+OK · Chevauchement avec le binôme cible : bloquant, sans forçage possible
+OK · Binôme vers employé seul : refusé (pas de passage en solo)
+OK · Solo vers solo : autorisé ; solo vers binôme : refusé
+OK · Hors plage de la grille : refusé
+OK · Intervention en cours ou terminée : non déplaçable
+OK · Créneau confirmé au client : avertissement, règles à définir
+OK · Contrôles impossibles signalés (indisponibilités, véhicules, trajets)
+OK · Droits : la direction déplace et réaffecte
+OK · Droits : la secrétaire consulte, mais ne déplace pas sans permission explicite
+OK · Droits : permission de déplacer sans réaffecter : changement d’équipe refusé
+OK · Droits : employé et contrôleuse sans accès au planning de gestion
+16 contrôles réussis (déplacement d'intervention).
+OK · Mesure valide normalisée
+OK · Mesure sans heure GPS refusée
+OK · Coordonnées hors limites refusées
+OK · Réception avant la mesure refusée (horloges)
+OK · Position actuelle si mesurée il y a moins de 2 min
+OK · Position ancienne entre 2 et 15 min, jamais présentée comme actuelle
+OK · Communication perdue au-delà de 15 min
+OK · L’âge se calcule sur l’heure GPS, pas sur l’heure de réception
+OK · Trajet : un trou de plus de 3 min devient une interruption, sans point inventé
+OK · Trajet limité à la période choisie et trié par heure GPS
+OK · Animation seulement entre deux mesures proches
+OK · Cap : vers l’est = 90°
+OK · Accès carte : direction et secrétaire confirmés ; employé et contrôleuse refusés
+13 contrôles réussis (suivi des véhicules, logique locale).
+OK · Dix activités citées accessibles, neuf offres Q1 et une activité technique Q27
+OK · Aucun identifiant du catalogue en double et quatorze entrées conservées
+OK · Anciens identifiants et demande spécifique inchangés
+OK · Types clients indépendants du choix de prestation
+OK · Kärcher distinct de la monobrosse : identifiants, nature et absence de faux visuel
+OK · Images pertinentes bureaux/particuliers et emplacements explicites pour les autres
+OK · Tous les médias et formats responsives référencés existent
+OK · Formulaire partagé : quinze options radio, valeur préremplie et classement distinct
+OK · Création et conservation du libellé pour chaque activité — client
+OK · Création et conservation du libellé pour chaque activité — secretaire
+OK · Multisélection et identifiant inconnu refusés à la saisie
+OK · Rechargement : vingt demandes conservées et anciennes demandes toujours résolues
+12 scénarios EV-017 réussis, dont vingt créations et rechargement local ; aucun serveur testé.
+OK · Échec d’écriture sans demande, notification ni lot résiduel. Réessai réussi.
+OK · Accès par personne au bureau, dans l’équipe affectée et en coordination. Refus hors dossier.
+OK · Demande sans fichier indépendante.
+
+Recette navigateur Chrome, maquette locale, données et fichiers fictifs
+- Ordinateur (1348 px) et téléphone (cadre de 390 px, largeur utile de 375 px) : demande enregistrée sans fichier.
+- Aux deux tailles : ajout puis retrait d’une photo, puis demande distincte avec un PNG et un MP4 de 2 secondes.
+- Le sélecteur multiple a accepté deux médias valides et a refusé une vidéo de 31 secondes.
+- Les boutons de capture mobile ont ouvert les sélecteurs photo et vidéo. La caméra physique reste à essayer sur un appareil compatible.
+- La sélection est conservée lors d’un aller-retour entre les étapes Détails et date et Vos coordonnées.
+- Les demandes avec médias ont été affectées. Les fichiers ont été ouverts dans chaque mission par un membre du binôme avant de signaler le début, et retrouvés après actualisation sur ordinateur.
+- Les médias sont visibles au secrétariat et en cogérance. L’URL directe de la mission refuse l’agent non affecté. La règle de coordination a été vérifiée dans le test ciblé du dépôt.
+- Le bloc de la mission mobile ne génère aucun débordement horizontal.

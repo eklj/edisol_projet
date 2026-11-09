@@ -1,0 +1,612 @@
+diff --git a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/LIRE_MOI.md b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/LIRE_MOI.md
+index 61de0d1..840874d 100644
+--- a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/LIRE_MOI.md
++++ b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/LIRE_MOI.md
+@@ -333,3 +333,31 @@ Les identifiants V1 restent valables dans `espace.html`. Exemples : `#g-planning
+ - Le glisser-déposer tactile a été vérifié avec des événements tactiles simulés dans Chromium, pas sur un vrai téléphone.
+ - Le fond OpenStreetMap n'a pas pu être vérifié : l'environnement de test n'a pas accès à Internet. Seul le fond schématique a été vu.
+ - Les polices Outfit et Inter sont incluses (licence OFL, voir `assets/fonts`).
++
++## Photos et vidéos du chantier
++
++La rubrique facultative est à l’étape **Détails et date** du formulaire public.
++Le sélecteur accepte plusieurs fichiers. Sur téléphone, les raccourcis de
++capture demandent l’appareil photo ou la caméra arrière si le navigateur le
++permet. Le sélecteur de fichiers reste accessible. Les aperçus et le retrait
++sont disponibles avant validation. Une demande peut être enregistrée sans média.
++
++Les limites de démonstration se configurent dans `js/commun/medias-chantier.js` :
++six fichiers et 60 Mo au total, 8 Mo par photo (JPG, PNG, WebP), 25 Mo et
++30 secondes par vidéo (MP4, WebM, MOV dans un codec lisible par le navigateur).
++Les formats et les valeurs définitives restent à valider.
++
++Pour la recette, utiliser les fichiers fictifs fournis avec l’archive.
++Ouvrir le formulaire et les espaces internes depuis la **même adresse** et
++dans le **même navigateur**. Affecter la commande depuis le secrétariat ou la
++cogérance, puis ouvrir la fiche depuis « Mes interventions » avec un membre
++de l’équipe choisie. Les fichiers sont aussi visibles dans le détail de la
++commande au bureau et pour les contrôleuses affectées ou chargées de la
++coordination du chantier. L’ancien récapitulatif imprimable reste distinct.
++
++Les fichiers sont stockés dans IndexedDB et leur référence dans la commande.
++Ce stockage local simule l’envoi. Les profils de démonstration sont
++sélectionnables et leur cloisonnement est simulé. En production, l’accès devra
++être contrôlé par dossier côté serveur, avec validation du contenu, limites de
++taille et de durée, stockage privé et possibilité de réessayer sans créer de
++doublon. Utiliser uniquement des fichiers d’essai dans cette maquette.
+diff --git a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/commande.html b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/commande.html
+index b47d3fb..c65a84e 100644
+--- a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/commande.html
++++ b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/commande.html
+@@ -32,6 +32,7 @@
+ 
+         <form id="formulaire-commande" novalidate>
+           <div class="etape-formulaire" id="zone-etape" tabindex="-1" aria-live="polite"></div>
++          <p class="champ__erreur" id="commande-erreur-envoi" role="alert"></p>
+           <div class="commande__nav">
+             <button type="button" class="bouton bouton--clair" id="bouton-precedent">Précédent</button>
+             <button type="submit" class="bouton bouton--principal" id="bouton-suivant">Continuer</button>
+@@ -63,10 +64,12 @@
+   <script src="js/commun/catalogue.js"></script>
+   <script src="js/commun/visuels.js"></script>
+   <script src="js/commun/formulaire-commande.js"></script>
++  <script src="js/commun/medias-chantier.js"></script>
+   <script src="js/metier/suivi_metier.js"></script>
+   <script src="js/metier/organisation.js"></script>
+   <script src="js/metier/notifications.js"></script>
+   <script src="js/demo/donnees-demo.js"></script>
++  <script src="js/demo/medias-demo.js"></script>
+   <script src="js/demo/depot-demo.js"></script>
+   <script src="js/demo/api.js"></script>
+   <script src="js/public/gabarit.js"></script>
+diff --git a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/css/base.css b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/css/base.css
+index afc7f02..238a575 100644
+--- a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/css/base.css
++++ b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/css/base.css
+@@ -177,6 +177,20 @@ button, input, select, textarea { font: inherit; color: inherit; }
+ .champ [aria-invalid="true"] { border-color: var(--erreur); background: #fffafa; }
+ .message-erreur { color: var(--erreur); font-size: 13.5px; font-weight: 600; }
+ .champ > label.case { font-weight: 500; }
++
++/* Pièces du chantier : grille partagée entre formulaire et dossiers autorisés. */
++.medias-chantier { min-width: 0; display: grid; gap: 10px; border: 1px solid var(--ligne); border-radius: 12px; padding: 14px; }
++.medias-chantier legend { font-weight: 700; padding-inline: 4px; }
++.medias-chantier .aide { margin: 0; color: var(--texte-2); font-size: 13.5px; }
++.medias-chantier input[type="file"] { width: 100%; max-width: 100%; font: inherit; font-size: 14px; }
++.medias-chantier input::file-selector-button { padding: 8px; cursor: pointer; }
++.medias-chantier__capture { display: none; gap: 8px; flex-wrap: wrap; }
++@media (max-width: 767px), (pointer: coarse) { .medias-chantier__capture { display: flex; } }
++.medias-chantier__liste { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 10px; }
++.medias-chantier__carte { min-width: 0; display: grid; align-content: start; gap: 6px; padding: 8px; border: 1px solid var(--ligne); border-radius: 10px; }
++.medias-chantier__carte :is(img, video) { width: 100%; height: 140px; object-fit: contain; background: var(--fond); border-radius: 6px; }
++.medias-chantier__nom { overflow-wrap: anywhere; font-size: 14px; font-weight: 650; }
++#commande-erreur-envoi:empty, #medias-erreurs:empty { margin: 0; }
+ .case { display: flex; gap: 12px; align-items: flex-start; font-size: 14.5px; cursor: pointer; }
+ .case input { width: 22px; height: 22px; margin-top: 1px; accent-color: var(--bleu-tuile); flex: none; }
+ 
+diff --git a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/espace.html b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/espace.html
+index 4602081..d930387 100644
+--- a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/espace.html
++++ b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/espace.html
+@@ -28,6 +28,7 @@
+   <script src="js/commun/catalogue.js"></script>
+   <script src="js/commun/visuels.js"></script>
+   <script src="js/commun/formulaire-commande.js"></script>
++  <script src="js/commun/medias-chantier.js"></script>
+   <!-- Règles métier de référence (fonctions pures, testées avec Node) -->
+   <script src="js/metier/suivi_metier.js"></script>
+   <script src="js/metier/organisation.js"></script>
+@@ -37,6 +38,7 @@
+   <script src="js/commun/positions.js"></script>
+   <!-- Mode démonstration : données fictives séparées + dépôt local + point d'accès unique -->
+   <script src="js/demo/donnees-demo.js"></script>
++  <script src="js/demo/medias-demo.js"></script>
+   <script src="js/demo/depot-demo.js"></script>
+   <script src="js/demo/api.js"></script>
+   <script src="js/demo/positions-simulees.js"></script>
+diff --git a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/commun/medias-chantier.js b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/commun/medias-chantier.js
+new file mode 100644
+index 0000000..f830a87
+--- /dev/null
++++ b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/commun/medias-chantier.js
+@@ -0,0 +1,133 @@
++/* ÉDYSOL NC — Règles de démonstration et aperçu des médias du chantier. */
++(function (racine) {
++  'use strict';
++  const E = racine.Edysol;
++  const { esc } = E;
++  const MIO = 1024 * 1024;
++  // Valeurs ajustables avant la mise en production, communes aux indications et aux contrôles.
++  const limites = Object.freeze({
++    nombre: 6, total: 60 * MIO, duree: 30,
++    photo: { max: 8 * MIO, formats: ['image/jpeg', 'image/png', 'image/webp'], noms: 'JPG, PNG, WebP' },
++    video: { max: 25 * MIO, formats: ['video/mp4', 'video/webm', 'video/quicktime'], noms: 'MP4, WebM, MOV' }
++  });
++  const titre = 'Photos et vidéos du chantier';
++  const taille = octets => octets >= MIO
++    ? `${E.formaterNombre(Math.round(octets / MIO * 10) / 10)} Mo`
++    : `${Math.max(1, Math.ceil(octets / 1024))} Ko`;
++  const type = fichier => Object.keys(limites).find(cle => limites[cle].formats?.includes(fichier.type));
++
++  /** Vérifie que le navigateur sait ouvrir le média et lit la durée réelle de la vidéo. */
++  function lireMedia(url, categorie) {
++    return new Promise((resolve, reject) => {
++      const video = categorie === 'video';
++      const element = document.createElement(video ? 'video' : 'img');
++      function terminer(erreur) {
++        clearTimeout(minuterie);
++        const duree = video ? element.duration : null;
++        element.onloadedmetadata = element.onload = element.onerror = null;
++        element.removeAttribute('src');
++        if (video) element.load();
++        if (erreur) reject(new Error('Ce fichier ne peut pas être lu par ce navigateur.'));
++        else resolve(duree);
++      }
++      const minuterie = setTimeout(() => terminer(true), 5000);
++      element.onerror = () => terminer(true);
++      if (video) {
++        element.preload = 'metadata';
++        element.onloadedmetadata = () => terminer(false);
++      } else element.onload = () => terminer(false);
++      element.src = url;
++    });
++  }
++
++  /** Retourne un aperçu contrôlé ou libère son URL et explique le refus. */
++  async function preparer(fichier, selection) {
++    const categorie = type(fichier);
++    if (!categorie) throw new Error('Format non accepté.');
++    if (!fichier.size) throw new Error('Le fichier est vide.');
++    if (selection.length >= limites.nombre) throw new Error(`Maximum ${limites.nombre} fichiers par demande.`);
++    if (fichier.size > limites[categorie].max) throw new Error(`Ce fichier dépasse ${taille(limites[categorie].max)}.`);
++    const total = selection.reduce((somme, media) => somme + media.fichier.size, 0) + fichier.size;
++    if (total > limites.total) throw new Error(`La sélection dépasse ${taille(limites.total)} au total.`);
++    const url = URL.createObjectURL(fichier);
++    try {
++      const duree = await lireMedia(url, categorie);
++      if (categorie === 'video' && (!Number.isFinite(duree) || duree <= 0 || duree > limites.duree)) {
++        throw new Error(`La vidéo doit durer au maximum ${limites.duree} secondes.`);
++      }
++      return { fichier, url, duree };
++    } catch (erreur) {
++      URL.revokeObjectURL(url);
++      throw erreur;
++    }
++  }
++
++  /** Même aperçu dans la saisie et dans le dossier interne, avec retrait seulement avant envoi. */
++  function liste(medias, modifiable = false) {
++    if (!medias.length) return '<p class="aide">Aucun média joint.</p>';
++    return `<ul class="medias-chantier__liste">${medias.map(({ fichier, url, duree }, index) => `
++      <li class="medias-chantier__carte">
++        ${type(fichier) === 'video'
++          ? `<video controls playsinline preload="metadata" src="${esc(url)}" aria-label="${esc(fichier.name)}"></video>`
++          : `<img src="${esc(url)}" alt="Photo du chantier : ${esc(fichier.name)}">`}
++        <span class="medias-chantier__nom">${esc(fichier.name)}</span>
++        <small>${taille(fichier.size)}${duree ? ` · ${Math.ceil(duree)} s` : ''}</small>
++        ${modifiable ? `<button type="button" class="bouton bouton--clair bouton--petit" data-retirer-media="${index}" aria-label="Retirer ${esc(fichier.name)}">Retirer</button>` : ''}
++      </li>`).join('')}</ul>`;
++  }
++
++  /** Le sélecteur multiple reste disponible à côté des raccourcis de capture mobile. */
++  function saisie(medias) {
++    const accept = [...limites.photo.formats, ...limites.video.formats].join(',');
++    return `<fieldset class="medias-chantier">
++      <legend>${titre} <span class="facultatif">(facultatif)</span></legend>
++      <label for="medias-fichiers" class="libelle">Choisir des photos ou des vidéos</label>
++      <input type="file" id="medias-fichiers" multiple accept="${accept}" aria-describedby="medias-aide medias-limites" data-choisir-media>
++      <p class="aide" id="medias-aide">Montrez-nous le lieu ou les objets à nettoyer pour aider l’équipe à préparer son intervention.</p>
++      <p class="aide" id="medias-limites">Photos ${limites.photo.noms} (${taille(limites.photo.max)} chacune). Vidéos ${limites.video.noms} (${taille(limites.video.max)} et ${limites.duree} s chacune). Jusqu’à ${limites.nombre} fichiers, ${taille(limites.total)} au total. La lecture dépend des formats pris en charge par le navigateur.</p>
++      <div class="medias-chantier__capture">
++        <button type="button" class="bouton bouton--clair bouton--petit" data-capture-media="photo">Prendre une photo</button>
++        <input type="file" id="media-capture-photo" accept="image/*" capture="environment" data-choisir-media hidden>
++        <button type="button" class="bouton bouton--clair bouton--petit" data-capture-media="video">Filmer une vidéo</button>
++        <input type="file" id="media-capture-video" accept="video/*" capture="environment" data-choisir-media hidden>
++      </div>
++      <p class="aide">Simulation locale. Utilisez des fichiers d’essai, sans information personnelle.</p>
++      <p class="champ__erreur" id="medias-erreurs" role="alert"></p>
++      <p class="visuellement-cache" id="medias-annonce" role="status"></p>
++      <div id="medias-selection">${liste(medias, true)}</div>
++    </fieldset>`;
++  }
++
++  /** Lit uniquement le dossier autorisé et libère les aperçus en quittant l’écran. */
++  function monterDossier(vue, commandeId, personneId) {
++    const zone = vue.querySelector('[data-medias-dossier]');
++    if (!zone) return;
++    let actif = true;
++    let medias = [];
++    E.api.lireMediasCommande(commandeId, personneId).then(fichiers => {
++      if (!actif) return;
++      medias = fichiers.map(media => ({ ...media, url: URL.createObjectURL(media.fichier) }));
++      zone.innerHTML = liste(medias);
++    }).catch(() => {
++      if (actif) zone.textContent = 'Ces fichiers ne sont pas disponibles dans ce navigateur.';
++    });
++    return () => {
++      actif = false;
++      medias.forEach(media => URL.revokeObjectURL(media.url));
++    };
++  }
++
++  /** Relie le bloc au cycle de vie des fiches internes. */
++  function dossier(commandeId, ctx) {
++    let nettoyer;
++    return {
++      html: E.ui.bloc(titre, '<div data-medias-dossier><p class="vide">Chargement des fichiers…</p></div>'),
++      monter(vue) { nettoyer = monterDossier(vue, commandeId, ctx.personne.id); },
++      detruire() { nettoyer?.(); },
++      // Un changement depuis un autre onglet peut modifier l’affectation ou la coordination.
++      surDonnees(vue, detail) { if (detail.externe) ctx.rafraichir(); }
++    };
++  }
++
++  E.mediasChantier = { preparer, liste, saisie, dossier };
++})(window);
+diff --git a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/demo/depot-demo.js b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/demo/depot-demo.js
+index 1fec9d9..b864d78 100644
+--- a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/demo/depot-demo.js
++++ b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/demo/depot-demo.js
+@@ -63,6 +63,10 @@
+ 
+   /** Réinitialise toutes les données fictives. */
+   function reinitialiser() {
++    // Supprime les pièces locales des demandes réinitialisées.
++    for (const commande of charger().commandes) {
++      if (commande.referenceMedias) Edysol.mediasDemo.supprimer(commande.referenceMedias).catch(console.error);
++    }
+     Edysol.stockage.supprimer(CLE);
+     etat = Edysol.creerDonneesDemo();
+     sauver();
+@@ -164,8 +168,9 @@
+    * Paramètres : données validées, source ('client' | 'secretaire').
+    * Retour : la commande créée (statut « à confirmer » : la date reste un souhait).
+    */
+-  function creerCommande(d, source) {
++  function creerCommande(d, source, referenceMedias) {
+     charger();
++    const sequenceAvant = etat.sequence;
+     etat.sequenceCommande += 1;
+     const id = `EDY-2026-${String(etat.sequenceCommande).padStart(3, '0')}`;
+     const commande = {
+@@ -175,14 +180,52 @@
+       dateSouhaitee: d.dateSouhaitee || '', creneau: d.creneau || 'Indifférent', frequence: d.frequence || Edysol.FREQUENCES[0],
+       historique: []
+     };
++    if (referenceMedias) commande.referenceMedias = referenceMedias;
+     historiser(commande, source === 'secretaire' ? 'Commande saisie par la secrétaire (démonstration)' : 'Demande enregistrée depuis le site (démonstration)');
+     historiser(commande, 'Information du secrétariat et des deux cogérants (simulée, aucun envoi)');
+     etat.commandes.unshift(commande);
+     notifier(['secretariat', 'cogerance'], `Nouvelle commande ${id}`, `Client : ${commande.client.nom} · à vérifier`, 'commande/' + id);
+-    sauver();
++    // Avec des pièces jointes, il faut aussi conserver durablement le lien vers les fichiers.
++    if (!sauver(!referenceMedias) && referenceMedias) {
++      etat.commandes.shift();
++      etat.notifications.pop();
++      etat.sequence = sequenceAvant;
++      etat.sequenceCommande -= 1;
++      throw new Error('Enregistrement de la demande impossible.');
++    }
+     return commande;
+   }
+ 
++  /** Stocke les fichiers avant la demande et retire le lot si la demande échoue. */
++  async function creerCommandeAvecMedias(d, fichiers) {
++    if (!fichiers.length) return creerCommande(d, 'client');
++    const reference = await Edysol.mediasDemo.enregistrer(fichiers);
++    try {
++      return creerCommande(d, 'client', reference);
++    } catch (erreur) {
++      await Edysol.mediasDemo.supprimer(reference);
++      throw erreur;
++    }
++  }
++
++  /** Cloisonnement de la démo selon la personne choisie et son lien avec le dossier. */
++  async function lireMediasCommande(commandeId, personneId) {
++    const s = charger();
++    const personne = s.personnes.find(p => p.id === personneId);
++    const commande = s.commandes.find(c => c.id === commandeId);
++    if (!personne || !commande) throw new Error('Dossier inaccessible.');
++    const bureau = ['cogerant', 'secretaire'].includes(personne.role);
++    const coordination = personne.role === 'controleuse' && s.coordinations.some(
++      c => c.commandeId === commandeId && c.controleuseId === personneId);
++    const equipes = s.equipes.filter(e => e.membres.includes(personneId));
++    const mission = s.interventions.some(i => i.commandeId === commandeId && equipes.some(e => e.id === i.equipeId));
++    if (!bureau && !coordination && !mission) throw new Error('Dossier inaccessible.');
++    if (!commande.referenceMedias) return [];
++    const fichiers = await Edysol.mediasDemo.lire(commande.referenceMedias);
++    if (!fichiers) throw new Error('Fichiers indisponibles.');
++    return fichiers;
++  }
++
+   /** Enregistre une demande de rappel envoyée depuis la section Contact (simulation). */
+   function demanderRappel(d) {
+     charger().demandesRappel.unshift({ id: nouvelId('R'), ...d, date: new Date().toISOString() });
+@@ -413,7 +456,7 @@
+     return { ok: true, message: 'Correction enregistrée : la valeur d’origine reste dans l’historique.' };
+   }
+ 
+-  Edysol.depotDemo = { charger, sauver, reinitialiser, validerCommande, creerCommande, demanderRappel, planifier, demarrerIntervention,
++  Edysol.depotDemo = { charger, sauver, reinitialiser, validerCommande, creerCommande, creerCommandeAvecMedias, lireMediasCommande, demanderRappel, planifier, demarrerIntervention,
+     enregistrerCompteRendu, signalerRenfort, acteur, basculerPermission, ajouterMouvement, corrigerReleve, nomPersonne, notifier,
+     boite, nonLues, enregistrerLecture, recevoirNotificationDemo, resoudreDestinataires,
+     deplacerIntervention, annulerDeplacement, simulerEchecEnregistrement };
+diff --git a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/demo/medias-demo.js b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/demo/medias-demo.js
+new file mode 100644
+index 0000000..65126cd
+--- /dev/null
++++ b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/demo/medias-demo.js
+@@ -0,0 +1,39 @@
++/* ÉDYSOL NC — Stockage local des fichiers d’essai, séparé des données de planning. */
++(function (racine) {
++  'use strict';
++  const E = racine.Edysol;
++  const base = 'edysol-maquette-medias';
++  const magasin = 'demandes';
++
++  /** Attend la fin de la transaction avant de confirmer une écriture ou une lecture. */
++  function executer(mode, operation) {
++    return new Promise((resolve, reject) => {
++      const ouverture = racine.indexedDB.open(base, 1);
++      ouverture.onupgradeneeded = () => ouverture.result.createObjectStore(magasin);
++      ouverture.onerror = () => reject(ouverture.error);
++      ouverture.onsuccess = () => {
++        const db = ouverture.result;
++        try {
++          const transaction = db.transaction(magasin, mode);
++          const requete = operation(transaction.objectStore(magasin));
++          transaction.oncomplete = () => { db.close(); resolve(requete.result); };
++          transaction.onabort = () => { db.close(); reject(transaction.error); };
++        } catch (erreur) {
++          db.close();
++          reject(erreur);
++        }
++      };
++    });
++  }
++
++  E.mediasDemo = {
++    async enregistrer(fichiers) {
++      const octets = racine.crypto.getRandomValues(new Uint8Array(16));
++      const reference = Array.from(octets, octet => octet.toString(16).padStart(2, '0')).join('');
++      await executer('readwrite', stock => stock.add(fichiers, reference));
++      return reference;
++    },
++    lire: reference => executer('readonly', stock => stock.get(reference)),
++    supprimer: reference => executer('readwrite', stock => stock.delete(reference))
++  };
++})(window);
+diff --git a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/espace/vues/bureau.js b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/espace/vues/bureau.js
+index 7d3f0bc..9db865b 100644
+--- a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/espace/vues/bureau.js
++++ b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/espace/vues/bureau.js
+@@ -137,6 +137,7 @@
+     const crs = etat().comptesRendus.filter(cr => ints.some(i => i.id === cr.interventionId));
+     const coord = etat().coordinations.filter(x => x.commandeId === c.id);
+     const renforts = etat().renforts.filter(r => r.commandeId === c.id);
++    const medias = E.mediasChantier.dossier(c.id, ctx);
+     return {
+       titre: c.id,
+       contenuCharge: true, // détail affiché : une notification liée peut être enregistrée comme lue
+@@ -157,6 +158,7 @@
+               ['Date souhaitée', esc(c.dateSouhaitee ? E.formaterDate(c.dateSouhaitee) : 'Non précisée') + ` · ${esc(c.creneau)}<small class="sous-ligne">Souhait du client, pas une confirmation.</small>`],
+               ['Fréquence', esc(c.frequence)]
+             ], true))}
++            ${medias.html}
+             ${ui.bloc('Documents et règlement', ui.definitions([
+               ['Récapitulatif', `<a class="lien-simple" href="${ctx.lien('pdf/' + c.id)}">Aperçu du récapitulatif (simulation)</a>`],
+               ['Montant', ui.aDefinir('À confirmer avec le client')],
+@@ -174,7 +176,10 @@
+             ${ui.bloc('Comptes rendus', crs.length ? `<ul class="liste-simple">${crs.map(cr => `<li><strong>${esc(cr.id)}</strong> · ${esc(E.api.nomPersonne(cr.employeId))} · ${esc(cr.etat)}<small class="sous-ligne">${esc(cr.observations || '')} ${cr.vehiculeId ? '· Véhicule ' + esc(cr.vehiculeId) : '· Aucun véhicule'}</small></li>`).join('')}</ul>` : '<p class="vide">Aucun compte rendu.</p>')}
+             ${ui.bloc('Historique', `<ol class="historique">${[...c.historique].reverse().map(h => `<li>${ui.temps(h.date)}<span>${esc(h.texte)}</span></li>`).join('')}</ol>`)}
+           </div>
+-        </div>`
++        </div>`,
++      apres: medias.monter,
++      detruire: medias.detruire,
++      surDonnees: medias.surDonnees
+     };
+   };
+ 
+diff --git a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/espace/vues/terrain.js b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/espace/vues/terrain.js
+index 9472c51..3f1693a 100644
+--- a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/espace/vues/terrain.js
++++ b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/espace/vues/terrain.js
+@@ -69,6 +69,7 @@
+     const c = s.commandes.find(x => x.id === i.commandeId);
+     const eq = D().equipe(i.equipeId);
+     const cr = s.comptesRendus.find(x => x.interventionId === i.id && x.employeId === ctx.personne.id);
++    const medias = E.mediasChantier.dossier(c.id, ctx);
+     return {
+       titre: i.commandeId,
+       contenuCharge: true, // intervention affectée et affichée : lecture possible
+@@ -81,18 +82,22 @@
+           ], true)}
+         </div>
+         <section class="consigne"><h2>${icone('info')}Consignes</h2><p>${esc(c.acces || 'Aucune consigne d’accès.')}</p><p>${esc(c.description)}</p><p class="aide-bloc">Accès à vérifier avec le secrétariat en cas de doute.</p></section>
++        ${medias.html}
+         <div class="actions-mission">
+           ${i.statut === 'planifiee' ? `<button type="button" class="bouton bouton--bleu" data-demarrer>${icone('lecture')}Signaler le début</button>` : ''}
+           ${cr ? ui.notice(`Compte rendu ${esc(cr.id)} enregistré (${esc(cr.etat)}).`, 'succes', 'valide')
+             : `<a class="bouton bouton--principal" href="${ctx.lien('compte-rendu/' + i.id)}">${icone('crayon')}Rédiger le compte rendu</a>`}
+         </div>`,
+       apres(vue) {
++        medias.monter(vue);
+         vue.querySelector('[data-demarrer]')?.addEventListener('click', () => {
+           E.api.demarrerIntervention(i.id, ctx.personne.id);
+           ctx.rafraichir();
+           document.querySelector('#vue .actions-mission').insertAdjacentHTML('afterbegin', ui.notice('Début signalé dans la simulation (heure du navigateur).', 'succes', 'valide'));
+         });
+-      }
++      },
++      detruire: medias.detruire,
++      surDonnees: medias.surDonnees
+     };
+   };
+ 
+@@ -205,12 +210,14 @@
+     if (!c) return { titre: 'Coordination', html: ui.entetePage({ titre: 'Coordination chantier' }) + '<p class="vide">Aucun chantier à coordonner pour cette personne.</p>' };
+     const ints = D().interventionsDe(c.id);
+     const renforts = s.renforts.filter(r => r.commandeId === c.id);
++    const medias = E.mediasChantier.dossier(c.id, ctx);
+     return {
+       titre: 'Coordination',
+       contenuCharge: true,
+       html: `${ui.entetePage({ titre: 'Coordination chantier', retour: { href: ctx.lien('activites'), texte: 'Mes activités' }, sousTitre: `${esc(c.id)} · ${esc(c.commune)} · ${esc(D().prestation(c.prestation))}` })}
+         ${coords.length > 1 ? `<div class="barre-filtres"><div class="champ"><label for="choix-chantier">Chantier</label><select id="choix-chantier">${coords.map(co => `<option ${co.commandeId === c.id ? 'selected' : ''}>${esc(co.commandeId)}</option>`).join('')}</select></div></div>` : ''}
+         ${ui.bloc('Équipes prévues', ints.length ? `<ul class="liste-simple">${ints.map(i => `<li><strong>${esc(D().libelleEquipe(i.equipeId))}</strong><small class="sous-ligne">${esc(E.formaterDate(i.date, 'court'))} · ${esc(i.debut)} à ${esc(i.fin)}</small></li>`).join('')}</ul>` : '<p class="vide">Équipes à renseigner.</p>')}
++        ${medias.html}
+         <form class="bloc bloc--formulaire" id="form-renfort" novalidate>
+           <h2 class="bloc__titre">Besoin de renfort</h2>
+           <p class="aide-bloc">Le signalement informe la secrétaire et les cogérants. Il ne sélectionne et n’affecte personne.</p>
+@@ -221,6 +228,7 @@
+         ${renforts.length ? ui.bloc('Signalements', `<ul class="liste-simple">${renforts.map(r => `<li>${esc(r.texte)}<small class="sous-ligne">${esc(E.formaterHorodatage(r.date))} · ${esc(r.etat)}</small></li>`).join('')}</ul>`) : ''}
+         ${ui.bloc('Règles restant à définir', `<ul class="liste-regles">${O.REGLES_EN_ATTENTE.slice(0, 3).map(r => `<li>${ui.aDefinir(r)}</li>`).join('')}</ul>`)}`,
+       apres(vue) {
++        medias.monter(vue);
+         vue.querySelector('#choix-chantier')?.addEventListener('change', e => ctx.naviguer('coordination/' + e.target.value));
+         vue.querySelector('#form-renfort').addEventListener('submit', e => {
+           e.preventDefault();
+@@ -230,7 +238,9 @@
+           ctx.rafraichir();
+           document.querySelector('#vue #renfort-retour').innerHTML = ui.notice('Besoin signalé dans la simulation. Aucune affectation automatique.', 'succes', 'valide');
+         });
+-      }
++      },
++      detruire: medias.detruire,
++      surDonnees: medias.surDonnees
+     };
+   };
+ })(window);
+diff --git a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/public/commande.js b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/public/commande.js
+index 127e783..78ac24e 100644
+--- a/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/public/commande.js
++++ b/EDYSOL_Maquette_EV017_Affectation/maquette_interactive/js/public/commande.js
+@@ -9,6 +9,7 @@
+   'use strict';
+   const E = racine.Edysol;
+   const F = E.formulaireCommande;
++  const M = E.mediasChantier;
+   const { esc, icone } = E;
+ 
+   const form = document.getElementById('formulaire-commande');
+@@ -19,10 +20,14 @@
+   const suivant = document.getElementById('bouton-suivant');
+   const resumeListe = document.getElementById('resume-liste');
+   const resumeVisuel = document.getElementById('resume-visuel');
++  const erreurEnvoi = document.getElementById('commande-erreur-envoi');
+ 
+   // Valeurs saisies, conservées d'une étape à l'autre. Préremplissage possible via ?prestation=vitres.
+   const parametre = new URLSearchParams(racine.location.search).get('prestation');
+   const valeurs = { prestation: E.prestationParId(parametre) ? parametre : undefined };
++  // Les fichiers restent disponibles quand le client revient à une étape précédente.
++  const medias = [];
++  let occupe = false;
+   let etape = 0;
+ 
+   /** Affiche l'étape courante, l'indicateur d'étapes et les boutons. */
+@@ -37,8 +42,10 @@
+       <h2 class="etape-formulaire__titre"><span class="visuellement-cache">Étape ${etape + 1} sur ${F.ETAPES.length} : </span>${esc(info.titre)}</h2>
+       <p class="etape-formulaire__aide">${esc(info.aide)}</p>
+       ${F.champsEtape(etape, valeurs)}
++      ${etape === 2 ? M.saisie(medias) : ''}
+       ${etape === 3 ? `<div class="recap" id="recap"><h3>Récapitulatif</h3>${recapitulatif()}</div>` : ''}`;
+     precedent.hidden = etape === 0;
++    erreurEnvoi.textContent = '';
+     suivant.innerHTML = etape === 3 ? 'Envoyer<span class="texte-long"> ma demande</span> (simulation)' : 'Continuer';
+     majResume();
+     if (focus) zone.focus({ preventScroll: true });
+@@ -55,6 +62,7 @@
+       ['Lieu', valeurs.commune ? valeurs.commune : 'À préciser'],
+       ['Date souhaitée', valeurs.dateSouhaitee ? E.formaterDate(valeurs.dateSouhaitee) + ' · ' + (valeurs.creneau || 'Indifférent') : 'Non précisée']
+     ];
++    if (medias.length) lignes.push(['Médias joints', String(medias.length)]);
+     return `<dl>${lignes.map(([t, d]) => `<div><dt>${esc(t)}</dt><dd>${esc(d)}</dd></div>`).join('')}</dl>`;
+   }
+ 
+@@ -74,6 +82,54 @@
+   form.addEventListener('input', () => { Object.assign(valeurs, F.lire(form)); majResume(); });
+   form.addEventListener('change', () => { Object.assign(valeurs, F.lire(form)); majResume(); });
+ 
++  /** Met en pause la navigation pendant la lecture des médias ou la sauvegarde. */
++  function bloquer(actif) {
++    occupe = precedent.disabled = suivant.disabled = actif;
++    const groupe = zone.querySelector('.medias-chantier');
++    if (groupe) groupe.disabled = actif;
++  }
++
++  function majSelection(message) {
++    zone.querySelector('#medias-selection').innerHTML = M.liste(medias, true);
++    zone.querySelector('#medias-annonce').textContent = message;
++    majResume();
++  }
++
++  zone.addEventListener('change', async e => {
++    if (!e.target.matches('[data-choisir-media]') || occupe || !e.target.files.length) return;
++    const choix = Array.from(e.target.files);
++    e.target.value = ''; // Autorise la sélection du même fichier après un retrait.
++    const retour = zone.querySelector('#medias-erreurs');
++    retour.textContent = '';
++    zone.querySelector('#medias-annonce').textContent = 'Vérification des fichiers…';
++    bloquer(true);
++    const erreurs = [];
++    try {
++      for (const fichier of choix) {
++        try { medias.push(await M.preparer(fichier, medias)); }
++        catch (erreur) { erreurs.push(`${fichier.name} : ${erreur.message}`); }
++      }
++      retour.textContent = erreurs.join(' ');
++      majSelection(`${medias.length} fichier(s) dans la sélection.`);
++    } finally {
++      bloquer(false);
++    }
++  });
++
++  zone.addEventListener('click', e => {
++    const capture = e.target.closest('[data-capture-media]');
++    if (capture) document.getElementById('media-capture-' + capture.dataset.captureMedia).click();
++    const retirer = e.target.closest('[data-retirer-media]');
++    if (!retirer) return;
++    const index = Number(retirer.dataset.retirerMedia);
++    const [media] = medias.splice(index, 1);
++    URL.revokeObjectURL(media.url);
++    zone.querySelector('#medias-erreurs').textContent = '';
++    majSelection(`${media.fichier.name} retiré.`);
++    const cible = zone.querySelector(`[data-retirer-media="${Math.min(index, medias.length - 1)}"]`) || zone.querySelector('#medias-fichiers');
++    cible.focus();
++  });
++
+   precedent.addEventListener('click', () => {
+     Object.assign(valeurs, F.lire(form));
+     etape = Math.max(0, etape - 1);
+@@ -81,14 +137,27 @@
+   });
+ 
+   // « Continuer » valide l'étape ; à la dernière étape, enregistre la demande simulée.
+-  form.addEventListener('submit', e => {
++  form.addEventListener('submit', async e => {
+     e.preventDefault();
++    if (occupe) return;
+     Object.assign(valeurs, F.lire(form));
+     const erreurs = E.api.validerCommande(valeurs);
+     const champs = F.ETAPES[etape].champs;
+     if (!F.afficherErreurs(form, erreurs, champs)) return;
+     if (etape < 3) { etape += 1; afficherEtape(); return; }
+-    const commande = E.api.creerCommande(valeurs, 'client');
++    erreurEnvoi.textContent = '';
++    bloquer(true);
++    let commande;
++    try {
++      const fichiers = medias.map(({ fichier, duree }) => ({ fichier, duree }));
++      commande = await E.api.creerCommandeAvecMedias(valeurs, fichiers);
++    } catch (erreur) {
++      erreurEnvoi.textContent = 'La demande n’a pas pu être enregistrée dans ce navigateur. Les fichiers sélectionnés sont conservés dans le formulaire. Réessayez, ou revenez à l’étape précédente pour les retirer.';
++    } finally {
++      bloquer(false);
++    }
++    if (!commande) { suivant.focus(); return; }
++    medias.splice(0).forEach(media => URL.revokeObjectURL(media.url));
+     afficherConfirmation(commande);
+   });
+ 
