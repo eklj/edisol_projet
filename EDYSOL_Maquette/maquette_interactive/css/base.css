@@ -79,7 +79,9 @@
   --rayon-tuile: 34px;
   --ombre-1: 0 1px 2px rgba(6, 31, 56, .06), 0 2px 8px rgba(6, 31, 56, .06);
   --ombre-2: 0 10px 30px rgba(6, 31, 56, .14);
+  --ombre-survol: 0 14px 36px rgba(6, 31, 56, .2);
   --transition: 180ms cubic-bezier(.2, .7, .2, 1);
+  --transition-ample: 320ms cubic-bezier(.2, .7, .2, 1);
   --cible-tactile: 48px;
 }
 
@@ -131,22 +133,16 @@ button, input, select, textarea { font: inherit; color: inherit; }
   min-height: var(--cible-tactile); padding: 12px 22px;
   border: 2px solid transparent; border-radius: 12px;
   font-weight: 700; font-size: 15.5px; line-height: 1.2; text-decoration: none; cursor: pointer;
-  transition: background var(--transition), color var(--transition), transform var(--transition), border-color var(--transition);
-  -webkit-tap-highlight-color: transparent;
+  transition: background-color var(--transition), color var(--transition), border-color var(--transition), box-shadow var(--transition), filter var(--transition);
+  -webkit-tap-highlight-color: rgba(33, 97, 161, .24);
 }
-.bouton:active { transform: translateY(1px); }
 .bouton[disabled], .bouton[aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
-.bouton--principal { background: var(--vert-logo); color: var(--vert-900); }
-.bouton--principal:hover { background: #63c65b; }
-.bouton--bleu { background: var(--bleu-800); color: #fff; }
-.bouton--bleu:hover { background: var(--bleu-700); }
-.bouton--clair { background: #fff; color: var(--bleu-800); border-color: var(--ligne); }
-.bouton--clair:hover { border-color: var(--bleu-logo); }
-.bouton--contour-clair { background: transparent; color: #fff; border-color: rgba(255,255,255,.55); }
-.bouton--contour-clair:hover { background: rgba(255,255,255,.1); border-color: #fff; }
-.bouton--discret { background: transparent; color: var(--bleu-800); padding-inline: 12px; }
-.bouton--discret:hover { background: var(--bleu-100); }
-.bouton--danger { background: var(--erreur); color: #fff; }
+.bouton--principal { background: var(--vert-logo); color: var(--vert-900); --bouton-fond-survol: #63c65b; }
+.bouton--bleu { background: var(--bleu-800); color: #fff; --bouton-fond-survol: var(--bleu-700); }
+.bouton--clair { background: #fff; color: var(--bleu-800); border-color: var(--ligne); --bouton-fond-survol: var(--bleu-50); }
+.bouton--contour-clair { background: transparent; color: #fff; border-color: rgba(255,255,255,.55); --bouton-fond-survol: rgba(255,255,255,.1); }
+.bouton--discret { background: transparent; color: var(--bleu-800); padding-inline: 12px; --bouton-fond-survol: var(--bleu-100); }
+.bouton--danger { background: var(--erreur); color: #fff; --bouton-fond-survol: #962018; }
 .bouton--petit { min-height: 40px; padding: 8px 14px; font-size: 14px; border-radius: 10px; }
 .bouton svg { width: 20px; height: 20px; flex: none; }
 
@@ -154,10 +150,31 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .bouton-icone {
   display: inline-grid; place-items: center; width: var(--cible-tactile); height: var(--cible-tactile);
   border-radius: 50%; border: 2px solid transparent; cursor: pointer; background: #fff; color: var(--bleu-800);
-  transition: background var(--transition), transform var(--transition);
+  --bouton-fond-survol: var(--bleu-100);
+  transition: background-color var(--transition), border-color var(--transition), box-shadow var(--transition), filter var(--transition);
 }
-.bouton-icone:hover { background: var(--bleu-100); }
 .bouton-icone svg { width: 22px; height: 22px; }
+
+/* Le relief et les icônes réagissent sans déplacer la zone d'appui. */
+:is(.bouton, .bouton-icone):where(:not(:disabled, [aria-disabled="true"])):active {
+  filter: brightness(.92);
+}
+@media (hover: hover) and (pointer: fine) {
+  :is(.bouton-icone, .bouton--principal, .bouton--bleu, .bouton--clair, .bouton--contour-clair, .bouton--discret, .bouton--danger):where(:not(:disabled, [aria-disabled="true"])):hover { background-color: var(--bouton-fond-survol); }
+  .bouton--clair:where(:not(:disabled, [aria-disabled="true"])):hover { border-color: var(--bleu-logo); }
+  .bouton--contour-clair:where(:not(:disabled, [aria-disabled="true"])):hover { border-color: #fff; }
+  :is(.bouton, .bouton-icone):where(:not(:disabled, [aria-disabled="true"], :focus-visible)):hover {
+    box-shadow: var(--ombre-1);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :is(.bouton, .bouton-icone) > svg { transition: translate var(--transition), scale var(--transition); }
+  :is(.bouton, .bouton-icone):focus-visible > svg { translate: 2px 0; }
+  :is(.bouton, .bouton-icone):where(:not(:disabled, [aria-disabled="true"])):active > svg { scale: .92; }
+  @media (hover: hover) and (pointer: fine) {
+    :is(.bouton, .bouton-icone):where(:not(:disabled, [aria-disabled="true"])):hover > svg { translate: 2px 0; }
+  }
+}
 
 /* --- Champs de formulaire --- */
 .champ { display: grid; gap: 6px; }
@@ -183,7 +200,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .medias-chantier legend { font-weight: 700; padding-inline: 4px; }
 .medias-chantier .aide { margin: 0; color: var(--texte-2); font-size: 13.5px; }
 .medias-chantier input[type="file"] { width: 100%; max-width: 100%; font: inherit; font-size: 14px; }
-.medias-chantier input::file-selector-button { padding: 8px; cursor: pointer; }
+.medias-chantier input::file-selector-button {
+  margin-inline-end: 10px; padding: 9px 12px; cursor: pointer;
+  border: 1px solid var(--bleu-200); border-radius: 8px; background: var(--bleu-50); color: var(--bleu-800);
+  font: inherit; font-weight: 650; transition: background-color var(--transition), border-color var(--transition);
+}
+.medias-chantier input:focus-visible::file-selector-button { border-color: var(--bleu-logo); }
+.medias-chantier input::file-selector-button:active { background: var(--bleu-200); }
 .medias-chantier__capture { display: none; gap: 8px; flex-wrap: wrap; }
 @media (max-width: 767px), (pointer: coarse) { .medias-chantier__capture { display: flex; } }
 .medias-chantier__liste { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 10px; }
@@ -192,7 +215,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .medias-chantier__nom { overflow-wrap: anywhere; font-size: 14px; font-weight: 650; }
 #commande-erreur-envoi:empty, #medias-erreurs:empty { margin: 0; }
 .case { display: flex; gap: 12px; align-items: flex-start; font-size: 14.5px; cursor: pointer; }
-.case input { width: 22px; height: 22px; margin-top: 1px; accent-color: var(--bleu-tuile); flex: none; }
+.case input { width: 22px; height: 22px; margin-top: 1px; accent-color: var(--bleu-tuile); flex: none; cursor: inherit; }
 
 /* --- Badges d'état : la couleur n'est jamais le seul indicateur (libellé toujours présent) --- */
 .badge {
@@ -244,7 +267,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* Réduction des animations : on coupe transitions et défilements doux */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important; transition-delay: 0s !important; scroll-behavior: auto !important;
+  }
+  .medias-chantier input::file-selector-button { transition: none; }
 }
 
 /* --- Composants de formulaire partagés (commande client et secrétariat) --- */
@@ -262,9 +289,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
   border: 1.5px solid var(--ligne); border-radius: 12px; background: #fff; cursor: pointer;
   transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
 }
-.choix-carte:hover { border-color: var(--bleu-logo); }
 .choix-carte input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.choix-carte__icone { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 6px 6px 6px 16px; background: var(--bleu-100); color: var(--bleu-tuile); }
+.choix-carte__icone { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 6px 6px 6px 16px; background: var(--bleu-100); color: var(--bleu-tuile); transition: background-color var(--transition), color var(--transition), translate var(--transition); }
 .choix-carte__icone svg { width: 22px; height: 22px; }
 .choix-carte__texte { display: grid; gap: 2px; }
 .choix-carte__texte strong { font-size: 15.5px; }
@@ -286,12 +312,29 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .segment span {
   display: inline-flex; align-items: center; min-height: 46px; padding: 10px 16px; border-radius: 10px;
   border: 1.5px solid var(--ligne); background: #fff; font-weight: 600; font-size: 15px; cursor: pointer;
-  transition: background var(--transition), border-color var(--transition);
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition), box-shadow var(--transition);
 }
 .segments--colonne .segment span { width: 100%; }
-.segment span:hover { border-color: var(--bleu-logo); }
 .segment input:checked + span { background: var(--bleu-800); border-color: var(--bleu-800); color: #fff; }
 .segment input:focus-visible + span { outline: 3px solid var(--jaune); outline-offset: 2px; box-shadow: 0 0 0 6px var(--bleu-800); }
+
+.choix-carte:not(:has(input:checked)):active, .segment:active input:not(:checked) + span { background: var(--bleu-100); }
+@media (hover: hover) and (pointer: fine) {
+  :is(.saisie, .champ input:not([type="checkbox"], [type="radio"]), .champ select, .champ textarea):where(:not(:disabled, [readonly], [aria-invalid="true"])):hover {
+    border-color: var(--bleu-logo);
+  }
+  .medias-chantier input:not(:disabled)::file-selector-button:hover { border-color: var(--bleu-logo); background: var(--bleu-100); }
+  .choix-carte:not(:has(input:checked, input[aria-invalid="true"])):hover, .segment:hover input:not(:checked) + span {
+    border-color: var(--bleu-logo);
+  }
+  .choix-carte:not(:has(input:checked, input:focus-visible)):hover { box-shadow: var(--ombre-1); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .choix-carte:has(input:focus-visible) .choix-carte__icone { translate: 0 -2px; }
+  @media (hover: hover) and (pointer: fine) {
+    .choix-carte:hover .choix-carte__icone { translate: 0 -2px; }
+  }
+}
 
 /* Emplacement partagé entre cartes et résumé ; aucune image sans rapport avec l'activité. */
 .visuel-attente { width:100%; height:100%; min-height:150px; padding:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; background:var(--bleu-100); color:var(--bleu-800); overflow:hidden; }

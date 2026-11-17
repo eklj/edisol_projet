@@ -45,7 +45,23 @@
   background: rgba(255,255,255,.96); border-top: 1px solid var(--ligne); backdrop-filter: blur(6px);
   border-radius: 0 0 18px var(--rayon-tuile);
 }
-.commande__nav .bouton { flex: 1; }
+.commande__nav .bouton { position: relative; flex: 1; }
+/* Les chevrons accompagnent le changement d'étape sans modifier la largeur des boutons. */
+#bouton-precedent::before, #bouton-suivant::after {
+  content: ""; position: absolute; top: calc(50% - 4px); width: 8px; height: 8px;
+  border-top: 2px solid currentColor; border-right: 2px solid currentColor;
+  pointer-events: none; transition: translate var(--transition);
+}
+#bouton-precedent::before { left: 11px; rotate: -135deg; }
+#bouton-suivant::after { right: 11px; rotate: 45deg; }
+@media (prefers-reduced-motion: no-preference) {
+  #bouton-precedent:focus-visible::before { translate: -2px 0; }
+  #bouton-suivant:focus-visible::after { translate: 2px 0; }
+  @media (hover: hover) and (pointer: fine) {
+    #bouton-precedent:hover::before { translate: -2px 0; }
+    #bouton-suivant:not(:disabled):hover::after { translate: 2px 0; }
+  }
+}
 #bouton-precedent[hidden] + #bouton-suivant { flex: 1; }
 @media (min-width: 640px) {
   .commande__nav { position: static; margin: 16px -40px 0; padding: 18px 40px 26px; background: none; }
@@ -67,7 +83,11 @@
 .resume__garanties { list-style: none; padding: 16px 0 0; margin: 18px 0 0; border-top: 1px solid var(--ligne); display: grid; gap: 10px; font-size: 14px; color: var(--texte-2); }
 .resume__garanties li { display: flex; gap: 10px; }
 .resume__garanties li::before { content: ""; flex: none; width: 8px; height: 8px; margin-top: 7px; border-radius: 2px 2px 2px 5px; background: var(--vert-logo); }
-.resume__garanties a { color: var(--bleu-700); font-weight: 700; }
+.resume__garanties a { color: var(--bleu-700); font-weight: 700; text-underline-offset: 4px; transition: text-decoration-color var(--transition); }
+.resume__garanties a:is(:focus-visible, :active) { text-decoration-color: var(--vert-700); }
+@media (hover: hover) and (pointer: fine) {
+  .resume__garanties a:hover { text-decoration-color: var(--vert-700); }
+}
 
 /* Confirmation */
 .confirmation { padding: 12px 0 36px; display: grid; gap: 16px; outline: none; }
