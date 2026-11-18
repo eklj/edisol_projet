@@ -352,17 +352,17 @@
   function deplacerIntervention(id, cible, auteur, role) {
     charger();
     const R = racine.EdysolDeplacement;
-    // Droits vérifiés ici aussi (pas seulement dans l'interface) : rôle issu du sélecteur de démo.
-    const droits = R.droitsPlanning(acteur(role));
     const i = etat.interventions.find(x => x.id === id);
     if (!i) return { ok: false, bloquants: ['Intervention introuvable.'], avertissements: [], impossibles: [] };
+    // Le dépôt vérifie lui-même la fréquence stockée sur la commande liée.
+    const commande = etat.commandes.find(c => c.id === i.commandeId);
+    const droits = R.droitsPlanning(acteur(role), commande?.frequence === Edysol.FREQUENCES[0]);
     const position = R.nouvellePosition(i, cible);
     if (R.memePosition(position, i)) return { ok: false, inchange: true, bloquants: [], avertissements: [], impossibles: [], position };
     const controle = R.controlerDeplacement(i, position, { equipes: etat.equipes, interventions: etat.interventions, aujourdhui: Edysol.aujourdhui(), droits });
     if (controle.bloquants.length) return { ok: false, ...controle, position };
 
     const avant = instantane(i);
-    const commande = etat.commandes.find(c => c.id === i.commandeId);
     const historiqueAvant = commande ? commande.historique.length : 0;
     const nbNotifs = etat.notifications.length;
     Object.assign(i, position);
@@ -391,14 +391,14 @@
   function annulerDeplacement(jeton, auteur, role) {
     charger();
     const R = racine.EdysolDeplacement;
-    const droits = R.droitsPlanning(acteur(role));
     const i = etat.interventions.find(x => x.id === jeton.id);
     if (!i || JSON.stringify(instantane(i)) !== JSON.stringify(jeton.apres)) return { ok: false, bloquants: ['L’intervention a changé depuis : annulation impossible.'] };
+    const commande = etat.commandes.find(c => c.id === i.commandeId);
+    const droits = R.droitsPlanning(acteur(role), commande?.frequence === Edysol.FREQUENCES[0]);
     const controle = R.controlerDeplacement(i, jeton.avant, { equipes: etat.equipes, interventions: etat.interventions, aujourdhui: Edysol.aujourdhui(), droits });
     if (controle.bloquants.length) return { ok: false, bloquants: controle.bloquants };
     const apres = instantane(i);
     Object.assign(i, jeton.avant);
-    const commande = etat.commandes.find(c => c.id === i.commandeId);
     if (commande) historiser(commande, `Déplacement de ${i.id} annulé par ${auteur} : retour à ${i.date} ${i.debut}-${i.fin}.`);
     if (!sauver()) { Object.assign(i, apres); if (commande) commande.historique.pop(); return { ok: false, bloquants: ['L’enregistrement de l’annulation a échoué.'] }; }
     return { ok: true, bloquants: [] };

@@ -5,6 +5,7 @@
    (outils/tester_deplacement.js).
    Règles appliquées :
    - la DURÉE est conservée (seul le début est choisi, la fin est recalculée) ;
+   - une intervention ponctuelle conserve son équipe affectée ;
    - une équipe n'est jamais recomposée : on change d'équipe ENTIÈRE, et
      seulement vers une équipe du même type (binôme fixe vers binôme fixe,
      solo vers solo, contrôleuse vers contrôleuse). Passer d'un binôme à un
@@ -65,11 +66,15 @@
     // Droits de la personne (si fournis) : l'accès à l'outil ne donne pas le pouvoir de déplacer.
     if (donnees.droits) {
       if (!donnees.droits.deplacer) bloquants.push('Droit de déplacement non attribué à ce rôle (droits de la secrétaire à définir par la direction).');
-      else if (position.equipeId !== intervention.equipeId && !donnees.droits.reaffecter) bloquants.push('Droit de réaffectation à une autre équipe non attribué à ce rôle (droits de la secrétaire à définir par la direction).');
+      else if (position.equipeId !== intervention.equipeId && !donnees.droits.reaffecter) {
+        bloquants.push(donnees.droits.conserverEquipe
+          ? 'Une intervention ponctuelle conserve son équipe affectée.'
+          : 'Droit de réaffectation à une autre équipe non attribué à ce rôle (droits de la secrétaire à définir par la direction).');
+      }
     }
     if (intervention.statut !== 'planifiee') bloquants.push('Seule une intervention planifiée peut être déplacée (celle-ci est en cours ou terminée).');
     if (!cible) bloquants.push('Équipe de destination inconnue.');
-    else if (source && cible.type !== source.type) {
+    else if (!donnees.droits?.conserverEquipe && source && cible.type !== source.type) {
       bloquants.push(source.type === 'binome'
         ? 'Un binôme fixe ne peut pas être remplacé par un employé seul : aucun passage en solo sans règle validée.'
         : `Changement de type d’équipe (${O.TYPES_EQUIPE[source.type]} vers ${O.TYPES_EQUIPE[cible.type]}) : règle non validée.`);
@@ -106,15 +111,18 @@
   /**
    * Droits sur le planning selon le rôle (politique de la maquette, à exécuter côté serveur en production).
    * - Accès à l'outil (consulter) : direction (cogérants) et secrétaire, confirmé le 05/11/2026.
-   * - Pouvoir de déplacer ou de réaffecter : la direction le conserve.
-   *   Pour la secrétaire, ces droits NE SONT PAS DÉFINIS : ils restent fermés,
-   *   sauf permission explicite ('planning:deplacer', 'planning:reaffecter'),
-   *   simulable dans la maquette. Rien n'est accordé automatiquement.
+   * - Intervention ponctuelle : les deux rôles peuvent modifier le créneau,
+   *   avec l'équipe déjà affectée.
+   * - Autres interventions : la direction conserve ses droits. Pour la
+   *   secrétaire, seules les permissions explicites (simulables) les ouvrent.
    * - Employés et contrôleuses : aucun accès au planning de gestion.
-   * Paramètre : acteur { role, permissions }. Retour : { consulter, deplacer, reaffecter, droitsDefinis }.
+   * Paramètres : acteur { role, permissions }, ponctuelle (fréquence de la commande liée).
    */
-  function droitsPlanning(acteur) {
+  function droitsPlanning(acteur, ponctuelle = false) {
     const role = acteur && acteur.role;
+    if (ponctuelle && (role === 'cogerant' || role === 'secretaire')) {
+      return { consulter: true, deplacer: true, reaffecter: false, droitsDefinis: true, conserverEquipe: true };
+    }
     if (role === 'cogerant') return { consulter: true, deplacer: true, reaffecter: true, droitsDefinis: true };
     if (role === 'secretaire') {
       const p = (acteur.permissions || []);

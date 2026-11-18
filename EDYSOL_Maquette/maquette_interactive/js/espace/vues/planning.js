@@ -4,6 +4,7 @@
      Glisser une intervention change son heure et/ou son équipe (même type).
    - Vue « Semaine » : glisser une intervention vers un autre jour ou une
      autre équipe ; l'heure est conservée. Agenda par jour sur téléphone.
+   - Une intervention ponctuelle conserve toujours son équipe.
    - La durée est toujours conservée ; la grille s'aligne sur un pas réglable.
    - Un conflit de déplacement est BLOQUANT : l'intervention reste à sa place.
    - « Annuler le déplacement » après chaque déplacement réussi.
@@ -49,9 +50,10 @@
     const aPlanifier = s.commandes.filter(c => c.statut !== 'terminee');
 
     const pas = lirePas();
-    // Droits de la personne choisie : accès à l'outil ≠ pouvoir de déplacer (voir EdysolDeplacement.droitsPlanning).
-    const droits = R.droitsPlanning(E.api.acteur(ctx.personne.role));
-    const avecDroits = d => ({ ...d, droits });
+    // Les permissions simulées concernent les autres fréquences, pas les ponctuelles.
+    const acteur = E.api.acteur(ctx.personne.role);
+    const droits = R.droitsPlanning(acteur);
+    const droitsIntervention = c => R.droitsPlanning(acteur, c?.frequence === E.FREQUENCES[0]);
     if (!jourChoisi || !jours.includes(jourChoisi)) jourChoisi = jours.includes(E.aujourdhui()) ? E.aujourdhui() : jours[0];
     const debutGrille = R.minutes(R.PLAGE.debut), finGrille = R.minutes(R.PLAGE.fin), amplitude = finGrille - debutGrille;
     const pct = m => ((m - debutGrille) / amplitude * 100).toFixed(4);
@@ -61,11 +63,11 @@
       const c = s.commandes.find(x => x.id === i.commandeId);
       return `${i.commandeId}, ${E.formaterDate(i.date, 'court')} de ${i.debut} à ${i.fin}, ${D.libelleEquipe(i.equipeId)}, ${ui.STATUTS[i.statut]}${c ? ', ' + D.prestation(c.prestation) + ', ' + c.commune : ''}${i.creneauClient === 'confirme' ? ', créneau confirmé au client' : ''}. Entrée pour modifier ou consulter.`;
     };
-    /** Bloc d'intervention (bouton) : déplaçable seulement s'il est planifié. */
+    /** Les blocs et le formulaire partagent les droits de la commande liée. */
     const bloc = (i, style = '') => {
       const c = s.commandes.find(x => x.id === i.commandeId);
       const type = D.equipe(i.equipeId)?.type || 'solo';
-      const deplacable = i.statut === 'planifiee' && droits.deplacer;
+      const deplacable = i.statut === 'planifiee' && droitsIntervention(c).deplacer;
       return `<button type="button" class="bloc-inter bloc-inter--${esc(type)}${deplacable ? '' : ' est-verrouille'}" data-intervention="${esc(i.id)}" data-deplacable="${deplacable}" ${style} aria-label="${esc(description(i))}">
           <span class="bloc-inter__heure">${esc(i.debut)}–${esc(i.fin)}</span><strong>${esc(i.commandeId.replace('EDY-2026-', 'EDY-'))}</strong>
           <span class="visuellement-cache">${esc(D.prestation(c?.prestation))}</span>
@@ -157,7 +159,7 @@
           ${decalageSemaine ? '<button type="button" class="bouton bouton--discret bouton--petit" data-semaine="0">Cette semaine</button>' : ''}
           <span class="planning-legende"><span class="creneau-legende creneau--binome">Binôme fixe</span><span class="creneau-legende creneau--solo">Solo</span><span class="creneau-legende creneau--controleuse">Contrôleuse (ménage)</span><span class="creneau-legende creneau--coordination">Coordination</span></span>
         </div>
-        ${ctx.personne.role === 'secretaire' ? ui.notice(`<strong>Accès de la secrétaire confirmé (consultation du planning).</strong> Ses droits de déplacement et de réaffectation ne sont pas encore définis : ils restent fermés et ne sont pas alignés automatiquement sur ceux de la direction. ${droits.deplacer ? '<br>Permission simulée active : ' + [droits.deplacer ? 'déplacer' : '', droits.reaffecter ? 'réaffecter' : ''].filter(Boolean).join(' et ') + ' (démonstration seulement).' : 'Les interventions s’ouvrent en consultation.'}`, 'alerte', 'bouclier') : ''}
+        ${ctx.personne.role === 'secretaire' ? ui.notice('<strong>Vous pouvez déplacer les interventions ponctuelles planifiées en conservant leur équipe.</strong> Pour les autres interventions, les droits de déplacement et de réaffectation ne sont pas encore définis. L’outil de démonstration permet de les simuler.', 'info', 'bouclier') : ''}
         <div class="planning-commandes">
           <div class="segments" role="group" aria-label="Affichage du planning">
             <button type="button" class="segment-bouton" data-mode="jour" aria-pressed="${mode === 'jour'}">Jour par ressource</button>
@@ -166,9 +168,7 @@
           ${mode === 'jour' ? `<div class="jours-choix" role="group" aria-label="Jour affiché">${jours.map(j => `<button type="button" class="filtre filtre--petit" data-jour="${j}" aria-pressed="${j === jourChoisi}">${esc(E.formaterDate(j, 'court'))}</button>`).join('')}</div>` : ''}
           <label class="pas-grille">Grille <select id="pas-grille">${R.PAS.map(p => `<option value="${p}" ${p === pas ? 'selected' : ''}>${p} min</option>`).join('')}</select></label>
         </div>
-        <p class="aide-bloc planning-aide">${icone('info')}${droits.deplacer
-          ? 'Glissez une intervention planifiée pour la déplacer (sur téléphone : appui long, puis glisser). Cliquez dessus, ou Entrée au clavier, pour modifier date, heure ou équipe sans glisser. La durée est conservée.'
-          : 'Consultation : cliquez sur une intervention, ou Entrée au clavier, pour voir son détail. Le glisser-déposer n’est pas disponible tant que le droit de déplacement n’est pas attribué.'}</p>
+        <p class="aide-bloc planning-aide">${icone('info')}Glissez une intervention déplaçable vers un autre créneau (sur téléphone : appui long dans la vue Jour par ressource). Cliquez dessus, ou appuyez sur Entrée au clavier, pour ouvrir son détail et modifier le créneau selon vos droits.</p>
         <div id="planning-message" class="planning-message" tabindex="-1"></div>
         <p class="visuellement-cache" aria-live="assertive" id="annonce-planning"></p>
         <div class="grille-planning${mode === 'jour' ? ' grille-planning--large' : ''}">
@@ -177,12 +177,13 @@
             ${formulaire}
             ${ui.bloc('Contrôles lors d’un déplacement', `<ul class="liste-puces">
               <li>Chevauchement des personnes de l’équipe : <strong>bloquant</strong>.</li>
-              <li>Binôme fixe déplacé en entier, vers un autre binôme fixe seulement.</li>
+              <li>La durée est conservée. Une intervention ponctuelle conserve aussi son équipe affectée.</li>
+              <li>Pour les autres interventions, un binôme fixe ne peut être remplacé que par un autre binôme fixe.</li>
               <li>Pas de passage en solo, pas de remplacement automatique.</li></ul>
               <p class="aide-bloc">Impossibles faute de données : indisponibilités, véhicules affectés, temps de trajet, horaires de coordination.</p>`)}
             ${ui.bloc('Règles en attente', `<ul class="liste-regles">${O.REGLES_EN_ATTENTE.map(r => `<li>${ui.aDefinir(r)}</li>`).join('')}<li>${ui.aDefinir('Changement d’un créneau déjà confirmé au client : autorisation et information du client à définir.')}</li></ul>`)}
             ${ui.bloc('Outil de démonstration', `<label class="case"><input type="checkbox" id="simuler-echec"><span>Faire échouer le prochain enregistrement d’une affectation ou d’un déplacement</span></label>
-              ${ctx.personne.role === 'secretaire' ? `<p class="aide-bloc">Droits de la secrétaire non définis. Pour tester l’écran, une permission peut être <strong>simulée</strong> :</p>
+              ${ctx.personne.role === 'secretaire' ? `<p class="aide-bloc">Pour tester les droits de la secrétaire sur les autres interventions, ces permissions peuvent être <strong>simulées</strong> :</p>
               <label class="case"><input type="checkbox" data-permission-planning="planning:deplacer" ${droits.deplacer ? 'checked' : ''}><span>Simuler la permission de déplacer <code>planning:deplacer</code></span></label>
               <label class="case"><input type="checkbox" data-permission-planning="planning:reaffecter" ${droits.reaffecter ? 'checked' : ''}><span>Simuler la permission de réaffecter <code>planning:reaffecter</code></span></label>` : ''}`, { classe: 'bloc--permissions' })}
           </div>
@@ -256,6 +257,13 @@
         const zoneMessage = vue.querySelector('#planning-message');
         const annonce = texte => { vue.querySelector('#annonce-planning').textContent = texte; };
 
+        /** Vérifie le créneau avec les données courantes, pour l'aperçu et le formulaire. */
+        function controler(i, position) {
+          const { equipes, interventions, commandes } = E.api.charger();
+          const commande = commandes.find(c => c.id === i.commandeId);
+          return R.controlerDeplacement(i, position, { equipes, interventions, aujourdhui: E.aujourdhui(), droits: droitsIntervention(commande) });
+        }
+
         /** Libellé court d'une position : « jeu. 6 nov. 09:00 à 11:00 · Binôme fixe 1 ». */
         const libellePosition = p => `${E.formaterDate(p.date, 'court')} ${p.debut} à ${p.fin} · ${D.equipe(p.equipeId)?.nom || p.equipeId}`;
 
@@ -323,7 +331,7 @@
             if (!cible) return;
             const i = E.api.charger().interventions.find(it => it.id === element.dataset.intervention);
             const pos = R.nouvellePosition(i, cible);
-            const ctrl = R.controlerDeplacement(i, pos, avecDroits({ equipes: s.equipes, interventions: E.api.charger().interventions, aujourdhui: E.aujourdhui() }));
+            const ctrl = controler(i, pos);
             const valide = !ctrl.bloquants.length;
             fantome = document.createElement('div');
             fantome.className = 'apercu-creneau ' + (valide ? 'est-valide' : 'est-invalide');
@@ -357,7 +365,8 @@
           origineFocus = origine;
           const eq = D.equipe(i.equipeId);
           const c = s.commandes.find(x => x.id === i.commandeId);
-          const deplacable = i.statut === 'planifiee' && droits.deplacer;
+          const droit = droitsIntervention(c);
+          const deplacable = i.statut === 'planifiee' && droit.deplacer;
           const memesType = s.equipes.filter(e => e.type === eq.type);
           dialogue.innerHTML = `
             <form method="dialog" class="dialogue-intervention__form" novalidate>
@@ -374,8 +383,10 @@
               </div>
               <p class="dialogue-intervention__fin" aria-live="polite">Fin calculée : <strong id="dlg-fin">${esc(i.fin)}</strong> (durée conservée)</p>
               <div class="champ"><label for="dlg-equipe">Équipe</label>
-                <select id="dlg-equipe" name="equipe" ${droits.reaffecter ? '' : 'disabled aria-describedby="dlg-equipe-droit"'}>${memesType.map(e => `<option value="${esc(e.id)}" ${e.id === i.equipeId ? 'selected' : ''}>${esc(e.nom)}${e.type === 'binome' ? ' · ' + esc(e.membres.map(E.api.nomPersonne).join(' + ')) : ''}</option>`).join('')}</select>
-                <p class="aide">Seulement des équipes du même type (${esc(O.TYPES_EQUIPE[eq.type])}). Un binôme fixe est toujours déplacé en entier.</p>${droits.reaffecter ? '' : '<p class="aide" id="dlg-equipe-droit">Changement d’équipe : droit de réaffectation non attribué à ce rôle.</p>'}</div>
+                <select id="dlg-equipe" name="equipe" ${droit.reaffecter ? '' : 'disabled'} aria-describedby="dlg-equipe-aide">${(droit.reaffecter ? memesType : [eq]).map(e => `<option value="${esc(e.id)}" ${e.id === i.equipeId ? 'selected' : ''}>${esc(e.nom)}${e.type === 'binome' ? ' · ' + esc(e.membres.map(E.api.nomPersonne).join(' + ')) : ''}</option>`).join('')}</select>
+                <p class="aide" id="dlg-equipe-aide">${droit.conserverEquipe ? 'Une intervention ponctuelle conserve son équipe affectée.'
+                  : droit.reaffecter ? `Seulement des équipes du même type (${esc(O.TYPES_EQUIPE[eq.type])}). Un binôme fixe est toujours déplacé en entier.`
+                    : 'Changement d’équipe : droit de réaffectation non attribué à ce rôle.'}</p></div>
               <div id="dlg-retour" role="alert"></div>
               <div class="dialogue-intervention__actions">
                 <button type="submit" class="bouton bouton--principal" value="enregistrer">${icone('valide')}Enregistrer le déplacement</button>
@@ -393,14 +404,14 @@
             form.elements.debut.addEventListener('input', majFin);
             form.addEventListener('submit', e => {
               e.preventDefault();
-              const cible = { date: form.elements.date.value, debut: form.elements.debut.value, equipeId: droits.reaffecter ? form.elements.equipe.value : i.equipeId };
+              const cible = { date: form.elements.date.value, debut: form.elements.debut.value, equipeId: droit.reaffecter ? form.elements.equipe.value : i.equipeId };
               if (!/^\d{4}-\d{2}-\d{2}$/.test(cible.date) || !/^\d{2}:\d{2}$/.test(cible.debut)) {
                 dialogue.querySelector('#dlg-retour').innerHTML = ui.notice('Date et heure de début à renseigner.', 'erreur', 'alerte');
                 return;
               }
               // Contrôle avant fermeture : en cas de refus, la fenêtre reste ouverte avec l'explication.
               const pos = R.nouvellePosition(i, cible);
-              const ctrl = R.controlerDeplacement(i, pos, avecDroits({ equipes: s.equipes, interventions: E.api.charger().interventions, aujourdhui: E.aujourdhui() }));
+              const ctrl = controler(i, pos);
               if (ctrl.bloquants.length) {
                 dialogue.querySelector('#dlg-retour').innerHTML = ui.notice(`<strong>Déplacement impossible :</strong><br>${ctrl.bloquants.map(esc).join('<br>')}`, 'erreur', 'alerte');
                 return;
