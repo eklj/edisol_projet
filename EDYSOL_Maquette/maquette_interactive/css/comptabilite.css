@@ -1,0 +1,125 @@
+/* ÉDYSOL NC — Navigation et présentation communes de la Comptabilité. */
+.compta-entete {
+  padding: clamp(16px, 2.5vw, 30px);
+  border: 1px solid var(--ligne);
+  border-top: 4px solid var(--vert-700);
+  border-radius: 16px 16px 16px 30px;
+  background: #fff;
+}
+
+.compta-entete .page-entete { margin-bottom: 0; }
+.compta-entete .lien-retour { margin-top: -6px; }
+.compta-entete .onglets-internes { margin-top: 20px; }
+.compta-entete .onglets-internes ul { flex-wrap: wrap; overflow: visible; background: var(--bleu-50); }
+
+.compta-entete--accueil {
+  padding: clamp(24px, 4vw, 48px);
+  border: 0;
+  border-left: 5px solid var(--jaune);
+  background: linear-gradient(120deg, var(--bleu-950), var(--bleu-800));
+  color: #fff;
+}
+
+.compta-entete--accueil .page-entete__titre { font-size: clamp(32px, 4.2vw, 48px); }
+.compta-entete--accueil .page-entete__sous-titre { max-width: 55ch; margin-top: 12px; color: var(--bleu-100); }
+
+.compta-raccourcis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.compta-raccourci {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-content: start;
+  gap: 6px 14px;
+  height: 100%;
+  padding: clamp(16px, 2.3vw, 24px);
+  border: 1px solid var(--ligne);
+  border-radius: 14px 14px 14px 28px;
+  background: #fff;
+  box-shadow: var(--ombre-1);
+  text-decoration: none;
+  transition: border-color var(--transition), box-shadow var(--transition), background-color var(--transition);
+}
+
+.compta-raccourci__icone {
+  grid-row: span 3;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 9px 9px 9px 17px;
+  background: var(--bleu-100);
+  color: var(--bleu-800);
+}
+
+.compta-raccourcis li:nth-child(n+3) .compta-raccourci__icone { background: var(--vert-100); color: var(--vert-800); }
+.compta-raccourci h2 { color: var(--bleu-900); font-size: clamp(20px, 2vw, 24px); }
+.compta-raccourci p { color: var(--texte-2); font-size: 14.5px; }
+.compta-raccourci__suite {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  align-self: end;
+  margin-top: 8px;
+  color: var(--vert-800);
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.compta-raccourci__suite svg { flex: none; width: 20px; height: 20px; transition: transform var(--transition); }
+.compta-raccourci:focus-visible, .compta-raccourci:active { border-color: var(--bleu-logo); background: var(--bleu-50); }
+
+@media (hover: hover) and (pointer: fine) {
+  .compta-raccourci:hover { border-color: var(--bleu-logo); box-shadow: var(--ombre-2); }
+  .compta-raccourci:hover .compta-raccourci__suite svg { transform: translateX(3px); }
+}
+
+.compta-outils {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px 20px;
+}
+.compta-outils .champ { flex: 0 1 280px; min-width: 0; }
+.compta-resultats .compta-outils { margin-bottom: 12px; }
+.compta-resultats .compta-aide { margin: 8px 0; }
+.compta-resultats .tableau { table-layout: auto; overflow-wrap: anywhere; }
+.compta-resultats .tableau th,
+.compta-resultats .tableau td:first-child strong { white-space: normal; }
+.compta-resultats .tableau td a.compta-lien-tableau,
+.compta-resultats .tableau td:first-child a:not(.bouton) {
+  color: var(--bleu-700);
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+
+.compta-saisie { display: grid; gap: 16px; align-items: start; }
+.compta-formulaire > .bouton { justify-self: start; }
+.compta-formulaire [role="status"]:empty { display: none; }
+.compta-formulaire [role="status"]:focus,
+.compta-resultats h2:focus { outline: 2px solid var(--bleu-logo); outline-offset: 3px; }
+.compta-formulaire :is(input, select, [role="status"]),
+.compta-resultats h2[tabindex] { scroll-margin-block: 90px 20px; }
+
+@media (min-width: 1200px) {
+  .compta-saisie { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+}
+
+@media (max-width: 639px) {
+  .compta-raccourcis { grid-template-columns: minmax(0, 1fr); }
+  .compta-entete .onglets-internes a { min-height: 42px; padding-inline: 10px; font-size: 13.5px; }
+  .compta-outils .champ, .compta-formulaire > .bouton { width: 100%; }
+  .compta-resultats .tableau td { grid-template-columns: minmax(76px, 36%) minmax(0, 1fr); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .compta-raccourci, .compta-raccourci__suite svg { transition: none; }
+  .compta-raccourci:hover .compta-raccourci__suite svg { transform: none; }
+}

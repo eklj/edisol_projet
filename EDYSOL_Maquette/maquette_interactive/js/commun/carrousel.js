@@ -64,7 +64,8 @@
     let minuterie = null;
     // État de lecture : coupé d'office si l'utilisateur réduit les animations ou économise les données.
     const economie = racine.navigator.connection && racine.navigator.connection.saveData;
-    let lectureVoulue = total > 1 && !Edysol.mouvementsReduits() && !economie;
+    const preferenceMouvement = racine.matchMedia?.('(prefers-reduced-motion: reduce)');
+    let lectureVoulue = total > 1 && !preferenceMouvement?.matches && !economie;
     let suspendu = false; // survol, focus, page masquée ou hors écran
 
     /** Affiche la diapositive demandée (boucle) et met à jour les commandes. */
@@ -73,11 +74,11 @@
       diapos.forEach((d, i) => {
         const active = i === index;
         d.classList.toggle('est-active', active);
-        d.toggleAttribute('aria-hidden', !active);
+        d.setAttribute('aria-hidden', String(!active));
         // Les liens éventuels des diapositives masquées ne doivent pas recevoir le focus.
         d.querySelectorAll('a, button').forEach(el => { el.tabIndex = active ? 0 : -1; });
       });
-      points.forEach((p, i) => p.toggleAttribute('aria-current', i === index));
+      points.forEach((p, i) => p.setAttribute('aria-current', String(i === index)));
       if (compteur) compteur.textContent = index + 1;
       // Préchargement de la diapositive suivante pour un enchaînement fluide.
       const suivante = diapos[(index + 1) % total]?.querySelector('img');
@@ -103,12 +104,21 @@
       conteneur.classList.toggle('est-en-pause', !lectureVoulue);
     }
 
+    function changerLecture(active) {
+      lectureVoulue = active;
+      majBoutonPause();
+      relancer();
+    }
+
+    // La réduction des mouvements prend aussi effet sur une page déjà ouverte.
+    preferenceMouvement?.addEventListener('change', e => { if (e.matches) changerLecture(false); });
+
     conteneur.addEventListener('click', e => {
       const cible = e.target.closest('button');
       if (!cible) return;
       if (cible.classList.contains('carrousel__prec')) aller(index - 1, 'manuel');
       else if (cible.classList.contains('carrousel__suiv')) aller(index + 1, 'manuel');
-      else if (cible.classList.contains('carrousel__pause')) { lectureVoulue = !lectureVoulue; majBoutonPause(); relancer(); }
+      else if (cible.classList.contains('carrousel__pause')) changerLecture(!lectureVoulue);
       else if (cible.dataset.aller) aller(Number(cible.dataset.aller), 'manuel');
       else if (cible.classList.contains('carrousel__agrandir') && o.surAgrandir) o.surAgrandir(index, cible);
     });
@@ -144,7 +154,7 @@
 
     majBoutonPause();
     relancer();
-    return { aller: i => aller(i, 'manuel'), arreter() { lectureVoulue = false; majBoutonPause(); relancer(); }, get index() { return index; } };
+    return { aller: i => aller(i, 'manuel'), arreter() { changerLecture(false); }, get index() { return index; } };
   }
 
   Edysol.creerCarrousel = creerCarrousel;
