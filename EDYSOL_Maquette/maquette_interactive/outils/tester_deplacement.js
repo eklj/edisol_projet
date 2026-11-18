@@ -93,9 +93,25 @@ verifier('Droits : permission de déplacer sans réaffecter : changement d’éq
   assert.equal(D.controlerDeplacement(it, D.nouvellePosition(it, { date: it.date, debut: '09:00' }), { ...donnees, droits: d }).bloquants.length, 0);
   assert.match(D.controlerDeplacement(it, D.nouvellePosition(it, { date: it.date, debut: '08:00', equipeId: 'B2' }), { ...donnees, droits: d }).bloquants.join(' '), /réaffectation/);
 });
+for (const role of ['cogerant', 'secretaire']) {
+  verifier(`Ponctuelle : ${role} peut changer le créneau sans changer l’équipe`, () => {
+    const droits = D.droitsPlanning({ role }, true);
+    const p = D.nouvellePosition(it, { date: '2026-11-10', debut: '09:00' });
+    assert.deepEqual(p, { date: '2026-11-10', debut: '09:00', fin: '11:00', equipeId: 'B1' });
+    assert.deepEqual(D.controlerDeplacement(it, p, { ...donnees, droits }).bloquants, []);
+    const conflit = { ...autres[1], ...p };
+    const r = D.controlerDeplacement(it, p, { ...donnees, droits, interventions: [it, conflit] });
+    assert.match(r.bloquants.join(' '), /Chevauchement avec EDY-2/);
+    const droitsSimules = D.droitsPlanning({ role, permissions: ['planning:deplacer', 'planning:reaffecter'] }, true);
+    const changementEquipe = D.controlerDeplacement(it, { ...p, equipeId: 'B2' }, { ...donnees, droits: droitsSimules });
+    assert.match(changementEquipe.bloquants.join(' '), /conserve son équipe affectée/);
+  });
+}
 verifier('Droits : employé et contrôleuse sans accès au planning de gestion', () => {
   assert.equal(D.droitsPlanning({ role: 'employe' }).consulter, false);
   assert.equal(D.droitsPlanning({ role: 'controleuse' }).consulter, false);
+  assert.equal(D.droitsPlanning({ role: 'employe' }, true).deplacer, false);
+  assert.equal(D.droitsPlanning({ role: 'controleuse' }, true).deplacer, false);
 });
 
 console.log(`${controles} contrôles réussis (déplacement d'intervention).`);

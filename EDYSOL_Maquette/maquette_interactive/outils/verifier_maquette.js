@@ -358,10 +358,12 @@ async function verifier(nom, action) { await action(); controles++; console.log(
     await pp.evaluate(() => localStorage.clear());
     // Glisser-déposer testé côté direction (cogérants), qui garde le pouvoir de déplacer.
     await pp.goto(base + 'espace.html#/cogerance/planning', { waitUntil: 'networkidle' });
-    // Données de test : INT-9 (binôme 2, 10:00 à 12:00) placée le mardi de la semaine prochaine.
+    // Les droits historiques de réaffectation sont testés sur une commande régulière.
     const mardi = await pp.evaluate(() => {
       const d = Edysol.ajouterJours(Edysol.lundiDe(Edysol.aujourdhui()), 8);
-      const i = Edysol.api.charger().interventions.find(x => x.id === 'INT-9');
+      const s = Edysol.api.charger();
+      const i = s.interventions.find(x => x.id === 'INT-9');
+      s.commandes.find(c => c.id === i.commandeId).frequence = Edysol.FREQUENCES[1];
       Object.assign(i, { date: d, debut: '10:00', fin: '12:00', equipeId: 'B2', creneauClient: 'non-confirme' });
       Edysol.api.sauver();
       return d;
@@ -539,10 +541,13 @@ async function verifier(nom, action) { await action(); controles++; console.log(
         assert.equal(/Planning et affectations|Suivi des véhicules/.test(menu), false);
       }
     });
-    // Intervention de test : la semaine prochaine, binôme fixe 2, 10:00 à 12:00.
+    // Droits historiques du Secrétariat : intervention liée à une commande régulière.
     const mardiA = await pa.evaluate(() => {
       const d = Edysol.ajouterJours(Edysol.lundiDe(Edysol.aujourdhui()), 8);
-      Object.assign(Edysol.api.charger().interventions.find(x => x.id === 'INT-9'), { date: d, debut: '10:00', fin: '12:00', equipeId: 'B2', creneauClient: 'non-confirme' });
+      const s = Edysol.api.charger();
+      const i = s.interventions.find(x => x.id === 'INT-9');
+      s.commandes.find(c => c.id === i.commandeId).frequence = Edysol.FREQUENCES[1];
+      Object.assign(i, { date: d, debut: '10:00', fin: '12:00', equipeId: 'B2', creneauClient: 'non-confirme' });
       Edysol.api.sauver(); return d;
     });
     const posA = () => pa.evaluate(() => { const i = Edysol.api.charger().interventions.find(x => x.id === 'INT-9'); return `${i.date} ${i.debut}-${i.fin} ${i.equipeId}`; });
@@ -562,7 +567,7 @@ async function verifier(nom, action) { await action(); controles++; console.log(
       await pa.mouse.move(b.x + 12 + minutes / 720 * piste.width, piste.y + piste.height / 2, { steps: 10 });
       await pa.mouse.up(); await pa.waitForTimeout(250);
     }
-    await verifier('Secrétaire : planning consultable, déplacement fermé par défaut (droits non définis, signalé)', async () => {
+    await verifier('Secrétariat : intervention régulière consultable, déplacement fermé par défaut', async () => {
       await pa.goto(base + 'espace.html#/secretariat/planning', { waitUntil: 'networkidle' });
       await blocVisible();
       assert.match(await pa.textContent('#vue'), /droits de déplacement et de réaffectation ne sont pas encore définis/);
@@ -603,6 +608,35 @@ async function verifier(nom, action) { await action(); controles++; console.log(
       assert.match(await pa.getAttribute('.bloc-inter[data-intervention="INT-9"]', 'aria-label'), /de 10:00 à 12:00/);
     });
     await pa.evaluate(() => { Edysol.api.basculerPermission('planning:deplacer', false); });
+    await verifier('Secrétariat sans permission simulée : ponctuelle déplacée au clavier et retrouvée en Cogérance après rechargement', async () => {
+      const avant = await pa.evaluate(date => {
+        const s = Edysol.api.charger();
+        const i = s.interventions.find(x => x.id === 'INT-10');
+        Object.assign(i, { date, debut: '13:00', fin: '15:00' });
+        Edysol.api.sauver();
+        return s.interventions.length;
+      }, mardiA);
+      const ponctuelle = pa.locator('.chrono .bloc-inter[data-intervention="INT-10"]');
+      await pa.goto(base + 'espace.html#/secretariat/planning');
+      await blocVisible();
+      assert.equal(await ponctuelle.getAttribute('data-deplacable'), 'true');
+      await ponctuelle.press('Enter');
+      await pa.waitForSelector('#dialogue-intervention[open]');
+      assert.equal(await pa.locator('#dlg-equipe').isDisabled(), true);
+      await pa.fill('#dlg-debut', '14:00');
+      await pa.locator('#dialogue-intervention button[type=submit]').press('Enter');
+      await pa.waitForSelector('#planning-message .resultat-deplacement');
+      await pa.goto(base + 'espace.html#/cogerance/planning');
+      await pa.reload();
+      await blocVisible();
+      assert.match(await ponctuelle.getAttribute('aria-label'), /de 14:00 à 16:00/);
+      const apres = await pa.evaluate(() => {
+        const s = Edysol.api.charger();
+        const i = s.interventions.find(x => x.id === 'INT-10');
+        return [s.interventions.length, i.equipeId, s.commandes.find(c => c.id === i.commandeId).frequence === Edysol.FREQUENCES[0]];
+      });
+      assert.deepEqual(apres, [avant, 'S-J', true]);
+    });
     await pa.context().close();
 
     // ---------- Carte des véhicules ----------

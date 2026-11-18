@@ -55,7 +55,7 @@
           ${ui.carteIndicateur({ libelle: 'Notifications non lues', valeur: E.espaces.nonLues(ctx.destinataire), icone: 'cloche', href: ctx.lien('notifications'), ton: 'bleu-clair' })}
         </div>
         <div class="raccourcis" role="group" aria-label="Accès rapides">
-          <a class="raccourci tuile-1" href="${ctx.lien('planning')}">${icone('planning')}<span><strong>Planning et affectations</strong><small>${R.droitsPlanning(E.api.acteur(ctx.personne.role)).deplacer ? 'Consulter et déplacer les interventions par glisser-déposer' : 'Consulter les interventions (droits de déplacement à définir)'}</small></span></a>
+          <a class="raccourci tuile-1" href="${ctx.lien('planning')}">${icone('planning')}<span><strong>Planning et affectations</strong><small>${R.droitsPlanning(E.api.acteur(ctx.personne.role)).deplacer ? 'Consulter et déplacer les interventions par glisser-déposer' : 'Consulter le planning et déplacer les interventions ponctuelles'}</small></span></a>
           <a class="raccourci raccourci--vert tuile-2" href="${ctx.lien('carte')}">${icone('vehicule')}<span><strong>Suivi des véhicules</strong><small>Carte, positions, déplacements et trajets (démonstration)</small></span></a>
         </div>
         <div class="grille-2">

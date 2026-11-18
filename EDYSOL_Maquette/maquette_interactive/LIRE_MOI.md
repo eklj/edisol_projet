@@ -49,7 +49,7 @@ npm test
 | `outils/verifier_metier_reference.js` | Les 39 contrôles de la référence V1 (relevés, stocks, droits), copiés sans modification |
 | `outils/tester_organisation.js` | Binômes fixes, solos, conflits signalés |
 | `outils/tester_notifications.js` | Ordre de la boîte, lectures par personne, conditions de lecture |
-| `outils/tester_deplacement.js` | Déplacement d'intervention : durée conservée, binôme complet, conflits bloquants |
+| `outils/tester_deplacement.js` | Déplacement d'intervention : durée conservée, maintien de l'équipe des ponctuelles, droits par rôle, conflits bloquants |
 | `outils/tester_geolocalisation.js` | Mesures GPS, état de communication, trajets avec interruptions, accès à la carte |
 
 La comparaison entre `js/metier/suivi_metier.js` et l'original V1 n'est possible que dans le dépôt complet. Hors du dépôt, le test affiche « NON VÉRIFIÉ » au lieu de l'ignorer.
@@ -74,8 +74,8 @@ npm run verifier
 5. Ouvrir l'espace Employés, choisir l'agent affecté et rédiger le compte rendu avec un véhicule.
 6. Revenir en Cogérance, Comptabilité, Véhicules : le relevé apparaît sans nouvelle saisie.
 7. En Cogérance, ouvrir Notifications avec « Cogérant 1 ». Ouvrir une notification non lue. Changer la personne pour « Cogérant 2 » : elle y est toujours non lue.
-8. En Cogérance, ouvrir « Planning et affectations », vue « Jour par ressource », jour de demain. Glisser EDY-044 (binôme fixe 2) d'une heure plus tôt, puis cliquer « Annuler le déplacement ».
-9. Passer en Secrétariat, même écran : le changement y est visible (mêmes données). Les interventions s'ouvrent en consultation, car les droits de déplacement de la secrétaire ne sont pas définis.
+8. En Cogérance, ouvrir « Planning et affectations », vue « Jour par ressource », jour de demain. Glisser EDY-044 d'une heure plus tôt sur la ligne du binôme fixe 2.
+9. Passer en Secrétariat et vérifier le nouveau créneau d'EDY-044. Ouvrir l'intervention par un clic ou avec Entrée, puis choisir une autre date libre dans la fenêtre de modification. À l'enregistrement, le bouton « Annuler le déplacement » permet de rétablir le dernier créneau s'il est toujours libre. Recharger la page et retrouver la même intervention au nouveau créneau dans les deux espaces.
 10. Ouvrir « Suivi des véhicules » (menu ou raccourci du tableau de bord), dans l'un ou l'autre espace. Choisir V-DÉMO-01 et suivre son déplacement. Déplacer la carte : le suivi se met en pause.
 
 Le bouton « Réinitialiser la démo » remet toutes les données fictives à zéro.
@@ -131,7 +131,7 @@ Les écrans n'appellent que `Edysol.api`. Pour brancher un futur serveur, il suf
 | Positions des véhicules | **Simulées** : véhicules et trajets fictifs, aucune position réelle collectée |
 | Fond de carte | Réel si Internet est disponible (tuiles OpenStreetMap) ; sinon fond schématique local |
 | Permissions d'écriture comptables | Fermées par défaut ; cases pour les simuler |
-| Droits de déplacement et de réaffectation de la secrétaire | Non définis, fermés par défaut ; cases pour les simuler |
+| Déplacement par la secrétaire | Créneau modifiable pour les interventions ponctuelles planifiées, avec la même équipe. Permissions simulables pour les autres interventions |
 | Génération de PDF | Aperçu HTML imprimable ; pas de fichier PDF généré |
 | Paiement | Absent : modalités à définir avec l'employeur |
 
@@ -195,22 +195,24 @@ En configurant `EDYSOL_CONFIG = { sourcePositions: 'reelle' }` avant les scripts
 
 ## Planning dynamique (glisser-déposer)
 
-Emplacement : entrée « Planning et affectations » du menu, et raccourci du tableau de bord, dans l'espace Cogérance comme dans l'espace Secrétariat. Les deux espaces lisent et modifient les **mêmes données** : une intervention n'existe qu'une fois. Un déplacement fait dans un espace est visible dans l'autre. L'historique de la commande indique qui l'a fait.
+Ouvrir « Planning et affectations » depuis le menu ou le tableau de bord de l'espace Cogérance ou Secrétariat. Les deux espaces partagent les **mêmes données** dans ce navigateur. Le déplacement modifie le créneau de l'intervention existante, qui conserve son identifiant et la fréquence de la commande liée. Le changement apparaît dans les deux espaces et l'historique de la commande indique qui l'a fait.
 
-- **Vue « Jour par ressource »** : une ligne par équipe, de 07:00 à 19:00. Glisser une intervention change son heure et, si on la lâche sur une autre ligne, son équipe.
-- **Vue « Semaine »** : glisser une intervention vers un autre jour ou une autre équipe. L'heure est conservée.
+- Dans la **vue « Jour par ressource »**, glisser une intervention le long de la ligne pour changer son heure. La grille affiche les créneaux de 07:00 à 19:00.
+- Dans la **vue « Semaine »**, glisser une intervention d'un jour à l'autre. L'heure est conservée.
+- Une **intervention ponctuelle** conserve l'équipe affectée. Pour les autres interventions, le dépôt sur une autre ligne permet de changer d'équipe si les droits et les règles d'affectation le permettent.
 - La **durée est toujours conservée**. La grille s'aligne sur un pas réglable (15, 30 ou 60 min), mémorisé dans ce navigateur.
 - Pendant le geste, un **aperçu** montre le créneau cible, les nouvelles heures de début et de fin, l'équipe et « Créneau possible » ou « Impossible : raison ».
 - Après un déplacement réussi : message avec l'ancien et le nouveau créneau, et bouton **« Annuler le déplacement »**.
-- **Souris** : le geste commence après 4 px de mouvement. **Téléphone** : appui long (350 ms), puis glisser. Un geste rapide reste un défilement normal.
-- **Alternative sans glisser-déposer** : clic ou Entrée sur une intervention ouvre une fenêtre pour changer la date, l'heure de début ou l'équipe. La fin est recalculée et affichée.
-- Une intervention en cours ou terminée n'est pas déplaçable. Elle s'ouvre en consultation.
+- À la **souris**, le geste commence après 4 px de mouvement. Sur **téléphone**, dans la vue « Jour par ressource », appuyer 350 ms avant de glisser. Un geste rapide fait défiler la page.
+- Cliquer, toucher ou appuyer sur Entrée sur une intervention pour ouvrir la **fenêtre de modification**. Elle permet de changer la date et l'heure de début d'une intervention ponctuelle et affiche la fin recalculée. Pour les autres interventions, le changement d'équipe dépend des droits.
+- Seules les interventions planifiées sont déplaçables. Les autres statuts s'ouvrent en consultation.
 
 ### Contrôles
 
 | Contrôle | Effet |
 | --- | --- |
 | Chevauchement d'une personne de l'équipe cible | Bloquant. L'intervention reste à sa place. Aucun moyen de forcer |
+| Réaffectation d'une intervention ponctuelle | Bloquante. L'équipe affectée est conservée |
 | Binôme fixe vers employé seul | Bloquant : pas de passage en solo |
 | Changement de type d'équipe | Bloquant : règle non validée |
 | Hors de la plage 07:00 à 19:00 | Bloquant (paramètre d'affichage de la maquette, à confirmer) |
@@ -221,25 +223,24 @@ Les personnes concernées reçoivent une notification interne simulée.
 
 ### Accès à l'outil et pouvoir de décision
 
-| Rôle | Consulter le planning | Déplacer (heure, jour) | Réaffecter à une autre équipe |
-| --- | --- | --- | --- |
-| Direction (cogérants) | Oui | Oui | Oui (même type d'équipe) |
-| Secrétaire | Oui, accès confirmé | **Non défini** : fermé par défaut | **Non défini** : fermé par défaut |
-| Employés, contrôleuses | Non | Non | Non |
+| Rôle | Consulter le planning | Déplacer une intervention ponctuelle | Déplacer les autres interventions | Réaffecter les autres interventions |
+| --- | --- | --- | --- | --- |
+| Direction (cogérants) | Oui | Oui, avec la même équipe | Oui | Oui, vers une équipe du même type |
+| Secrétaire | Oui | Oui, avec la même équipe | Permission simulable, fermée par défaut | Permission simulable, fermée par défaut |
+| Employés, contrôleuses | Non | Non | Non | Non |
 
-- L'accès de la secrétaire à l'outil est confirmé. Ses droits de déplacement et de réaffectation ne le sont pas. Ils ne sont donc pas alignés sur ceux de la direction. L'écran le signale et ouvre les interventions en consultation.
-- Pour tester l'écran, deux cases de l'outil de démonstration simulent les permissions `planning:deplacer` et `planning:reaffecter`. Ce ne sont pas des décisions.
+- Pour les autres fréquences, dont l'entretien régulier, l'outil de démonstration permet de simuler les permissions de la secrétaire `planning:deplacer` et `planning:reaffecter`.
 - La règle est codée dans `EdysolDeplacement.droitsPlanning` et vérifiée deux fois : dans l'interface et dans le dépôt de démonstration. En production, elle devra être vérifiée par le serveur.
 - Les règles de validation par la direction restent celles déjà notées : responsable et procédure de validation des affectations encore à définir.
 - Le formulaire « Planifier une commande » reste disponible pour la secrétaire, comme dans la maquette V1 (« Secrétaire : planning et affectations »). Il faudra confirmer si cela reste valable.
 
 ### Enregistrement et retour arrière
 
-Le déplacement est enregistré dans le `localStorage` de ce navigateur. Si l'écriture échoue, la position, l'historique et les notifications d'avant sont rétablis, et un message l'explique. Une case « Faire échouer l'enregistrement du prochain déplacement » permet de le vérifier. Ce n'est pas une synchronisation entre appareils.
+Le déplacement est enregistré dans le `localStorage` de ce navigateur et reste visible après rechargement. Si l'écriture échoue, la position, l'historique et les notifications d'avant sont rétablis, et un message l'explique. Une case « Faire échouer le prochain enregistrement d’une affectation ou d’un déplacement » permet de le vérifier. Le stockage est propre à ce navigateur.
 
 ### Point à décider
 
-Le formulaire « Planifier une commande », antérieur à cette version, permet encore d'enregistrer une affectation malgré un conflit, après un second clic. Le glisser-déposer, lui, ne le permet pas. Il faudra choisir une seule règle.
+Le formulaire « Planifier une commande » permet d'enregistrer une nouvelle affectation malgré un conflit, après un second clic. Déplacer une intervention déjà planifiée exige un créneau libre, aussi bien par glisser-déposer que depuis la fenêtre de modification. La règle applicable à la création d'une affectation reste à confirmer.
 
 ## Règles métier respectées
 
