@@ -27,15 +27,16 @@
     const coche = (a, b) => (a === b ? 'checked' : '');
     const erreur = nom => `<p class="message-erreur" id="${p}-${nom}-erreur" hidden></p>`;
     if (n === 0) {
+      const prestation = E.idPrestationCanonique(v.prestation);
       const groupes = [...E.GROUPES_PRESTATIONS.map(g => ({ ...g, options: E.PRESTATIONS.filter(p => p.groupe === g.id) })), { id: 'autre', titre: 'Autre besoin', options: [E.DEMANDE_SPECIFIQUE] }];
       return `
         <fieldset class="groupe-choix" aria-describedby="${p}-prestation-erreur">
           <legend class="libelle">Prestation souhaitée <span class="obligatoire" aria-hidden="true">*</span></legend>
-          <p class="aide">Choisissez une seule entrée. Les contenus précis restent à définir avec ÉDYSOL ; le choix multiple n’est pas encore retenu.</p>
+          <p class="aide">Choisissez une seule prestation.</p>
           ${groupes.map(g => `<fieldset class="groupe-choix"><legend class="libelle">${esc(g.titre)}</legend><div class="choix-cartes">
             ${g.options.map(o => `
               <label class="choix-carte">
-                <input type="radio" name="prestation" value="${esc(o.id)}" ${coche(v.prestation, o.id)} required>
+                <input type="radio" name="prestation" value="${esc(o.id)}" ${coche(prestation, o.id)} required>
                 <span class="choix-carte__icone">${icone(o.icone)}</span>
                 <span class="choix-carte__texte"><strong>${esc(o.titre)}</strong><small>${esc(o.resume)}</small></span>
               </label>`).join('')}
@@ -63,7 +64,7 @@
             <option value="">Choisir une commune</option>
             ${E.COMMUNES.map(c => `<option ${v.commune === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}
           </select>
-          <p class="aide">Zone d’intervention à confirmer avec ÉDYSOL.</p>
+          <p class="aide">Zone d’intervention à confirmer avec EDYSOL.</p>
           ${erreur('commune')}
         </div>
         <div class="champ">
@@ -121,7 +122,7 @@
         </label>
         ${erreur('consentement')}
       </div>
-      <p class="notice notice--info"><span class="notice__icone">${icone('info')}</span><span>Le prix, le rendez-vous et les modalités de règlement sont confirmés avec ÉDYSOL. Aucun paiement n’est demandé en ligne.</span></p>`;
+      <p class="notice notice--info"><span class="notice__icone">${icone('info')}</span><span>Le prix, le rendez-vous et les modalités de règlement sont confirmés avec EDYSOL. Aucun paiement n’est demandé en ligne.</span></p>`;
   }
 
   /** Lit toutes les valeurs présentes dans le formulaire (les étapes non affichées sont conservées à part). */

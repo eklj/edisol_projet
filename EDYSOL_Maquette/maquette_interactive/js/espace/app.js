@@ -1,5 +1,5 @@
 /* =========================================================================
-   ÉDYSOL NC — Application des espaces internes (routeur et mise en page)
+   EDYSOL NC — Application des espaces internes (routeur et mise en page)
    Adresses : espace.html#/<espace>/<vue>/<paramètre>
      espaces : cogerance, secretariat, controleuse, employe
    Les anciens identifiants de la maquette V1 (#g-planning, #su-accueil…)
@@ -133,12 +133,12 @@
   function afficherAccueil() {
     if (vueCourante && vueCourante.rendu.detruire) { try { vueCourante.rendu.detruire(); } catch (e) { console.error(e); } }
     vueCourante = null;
-    document.title = 'Espaces internes · ÉDYSOL NC (maquette)';
+    document.title = 'Espaces internes · EDYSOL NC (maquette)';
     app.className = 'app app--accueil';
     app.innerHTML = `
       <main class="accueil-espaces" id="contenu">
         <div class="accueil-espaces__marque">
-          <a href="index.html" class="plaque-logo accueil-espaces__logo" aria-label="Retour au site public"><img src="assets/logo/edysol-logo.svg" alt="ÉDYSOL Prestige nettoyage" width="819" height="425"></a>
+          <a href="index.html" class="plaque-logo accueil-espaces__logo" aria-label="Retour au site public"><img src="assets/logo/edysol-logo.svg" alt="EDYSOL Prestige nettoyage" width="819" height="425"></a>
           <h1>Espaces internes</h1>
           <p>Choisissez un espace pour parcourir la maquette.</p>
           ${ui.notice('<strong>Sélecteur de démonstration.</strong> Il remplace l’écran de connexion : aucun compte, aucun mot de passe, aucune vérification des droits. Dans chaque espace, une liste permet de choisir la personne (par exemple Cogérant 1 ou Cogérant 2), chacune avec sa boîte de réception. Toutes les données sont fictives et restent dans ce navigateur.', 'demo', 'bouclier')}
@@ -195,7 +195,7 @@
       console.error(erreur);
       rendu = { titre: 'Erreur', html: ui.entetePage({ titre: 'Erreur d’affichage' }) + ui.notice(esc(erreur.message), 'erreur', 'alerte') };
     }
-    document.title = `${rendu.titre} · ${conf.libelle} · ÉDYSOL NC (maquette)`;
+    document.title = `${rendu.titre} · ${conf.libelle} · EDYSOL NC (maquette)`;
     const autresEspaces = Object.entries(ESPACES).map(([id, e]) => `<option value="${id}" ${id === route.espace ? 'selected' : ''}>${esc(e.libelle)}</option>`).join('');
 
     if (conf.type === 'bureau') {
@@ -204,7 +204,7 @@
         <a class="lien-evitement" href="#vue">Aller au contenu</a>
         <aside class="laterale" id="laterale" aria-label="Menu ${esc(conf.libelle)}">
           <div class="laterale__haut">
-            <a class="plaque-logo laterale__logo" href="#/" aria-label="Changer d’espace"><img src="assets/logo/edysol-logo.svg" alt="ÉDYSOL" width="819" height="425"></a>
+            <a class="plaque-logo laterale__logo" href="#/" aria-label="Changer d’espace"><img src="assets/logo/edysol-logo.svg" alt="EDYSOL" width="819" height="425"></a>
             <button type="button" class="bouton-icone laterale__fermer" data-action="fermer-menu" aria-label="Fermer le menu">${icone('fermer')}</button>
           </div>
           <p class="laterale__espace">${esc(conf.libelle)}</p>
@@ -237,7 +237,7 @@
       app.innerHTML = `
         <a class="lien-evitement" href="#vue">Aller au contenu</a>
         <header class="terrain-haut">
-          <a class="plaque-logo terrain-haut__logo" href="#/" aria-label="Changer d’espace"><img src="assets/logo/edysol-logo.svg" alt="ÉDYSOL" width="819" height="425"></a>
+          <a class="plaque-logo terrain-haut__logo" href="#/" aria-label="Changer d’espace"><img src="assets/logo/edysol-logo.svg" alt="EDYSOL" width="819" height="425"></a>
           <div class="terrain-haut__texte">
             <p class="terrain-haut__espace">Espace ${esc(conf.libelle.toLowerCase().replace(/s$/, ''))}</p>
             <label class="terrain-haut__personne">

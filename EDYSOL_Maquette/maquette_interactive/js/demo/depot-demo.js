@@ -174,7 +174,7 @@
     etat.sequenceCommande += 1;
     const id = `EDY-2026-${String(etat.sequenceCommande).padStart(3, '0')}`;
     const commande = {
-      id, statut: 'a-confirmer', prestation: d.prestation, commune: d.commune, creeLe: new Date().toISOString(), source,
+      id, statut: 'a-confirmer', prestation: Edysol.idPrestationCanonique(d.prestation), commune: d.commune, creeLe: new Date().toISOString(), source,
       client: { nom: d.nom.trim(), telephone: d.telephone.trim(), email: (d.email || '').trim(), type: d.typeClient || 'Particulier' },
       adresse: d.adresse.trim(), acces: (d.acces || '').trim(), description: d.description.trim(),
       dateSouhaitee: d.dateSouhaitee || '', creneau: d.creneau || 'Indifférent', frequence: d.frequence || Edysol.FREQUENCES[0],
@@ -228,9 +228,33 @@
 
   /** Enregistre une demande de rappel envoyée depuis la section Contact (simulation). */
   function demanderRappel(d) {
-    charger().demandesRappel.unshift({ id: nouvelId('R'), ...d, date: new Date().toISOString() });
-    notifier(['secretariat'], 'Demande de rappel', `${d.nom} (${d.telephone}) · ${d.objet}`, '');
-    sauver();
+    const nom = d.nom.trim();
+    const telephone = d.telephone.trim();
+    const email = (d.email || '').trim();
+    const objet = d.objet;
+    if (nom.length < 2 || telephone.replace(/\D/g, '').length < 6) {
+      return { ok: false, message: 'Renseignez votre nom et un numéro de téléphone valide.' };
+    }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return { ok: false, message: 'Adresse e-mail invalide.' };
+    }
+    if (!Object.hasOwn(Edysol.OBJETS_RAPPEL, objet)) {
+      return { ok: false, message: 'Choisissez un objet de contact.' };
+    }
+
+    const s = charger();
+    const sequence = s.sequence;
+    s.demandesRappel.unshift({ id: nouvelId('R'), nom, telephone, email, objet, date: new Date().toISOString() });
+    const contact = email ? `${telephone} · ${email}` : telephone;
+    notifier(['secretariat'], 'Demande de rappel', `${nom} (${contact}) · ${Edysol.OBJETS_RAPPEL[objet]}`, '');
+    // Si le navigateur refuse la sauvegarde, la demande et sa notification sont annulées ensemble.
+    if (!sauver(false)) {
+      s.demandesRappel.shift();
+      s.notifications.pop();
+      s.sequence = sequence;
+      return { ok: false, message: 'La demande n’a pas pu être enregistrée dans ce navigateur.' };
+    }
+    return { ok: true };
   }
 
   /**

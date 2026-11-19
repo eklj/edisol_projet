@@ -1,5 +1,5 @@
 /* =========================================================================
-   ÉDYSOL NC — Carte des véhicules (cogérance et secrétariat)
+   EDYSOL NC — Carte des véhicules (cogérance et secrétariat)
    Dépendance : Leaflet 1.9.4 (licence BSD-2), copié dans assets/vendor :
    aucune clé, aucun compte. Fond de carte : tuiles OpenStreetMap si Internet
    est disponible (attribution obligatoire) ; sinon fond schématique local.
@@ -416,7 +416,7 @@
     for (const [cle, nom] of Object.entries(noms)) {
       L.circleMarker(reperes[cle], { radius: 3, color: '#5d6d7a', fillOpacity: 1, interactive: false }).bindTooltip(nom, { permanent: true, direction: 'right', className: 'etiquette-repere' }).addTo(schema);
     }
-    carte.attributionControl.addAttribution('Fond schématique ÉDYSOL (repères approximatifs)');
+    carte.attributionControl.addAttribution('Fond schématique EDYSOL (repères approximatifs)');
     const note = vue.querySelector('#carte-fond');
     if (note) { note.hidden = false; note.textContent = message; }
   }

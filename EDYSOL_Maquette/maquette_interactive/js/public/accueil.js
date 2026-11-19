@@ -1,5 +1,5 @@
 /* =========================================================================
-   ÉDYSOL NC — Page d'accueil publique
+   EDYSOL NC — Page d'accueil publique
    Rôle : monter les trois carrousels (accueil, entreprise, prestations),
    les cartes de prestations, la galerie filtrable avec visionneuse et le
    formulaire de rappel (simulé : rien n'est transmis).
@@ -27,21 +27,23 @@
     surAgrandir: (i, bouton) => E.visionneuse.ouvrir(visuelsPrestations, i, bouton)
   });
 
-  // --- Cartes de prestations : forme de tuile du logo, illustration, lien vers le formulaire prérempli ---
+  // --- Cartes de prestations, avec lien de détail et actions de zoom et de demande indépendantes ---
   const cartes = document.getElementById('cartes-prestations');
   cartes.innerHTML = E.PRESTATIONS.map(p => {
     const v = E.visuelPrestation(p);
+    const id = encodeURIComponent(p.id);
     return `
-      <li class="carte-prestation tuile-${p.tuile} ${p.tuile % 2 ? 'carte-prestation--bleue' : 'carte-prestation--verte'}">
-        ${v ? `<button type="button" class="carte-prestation__media" data-visuel="${esc(v.id)}" aria-label="Agrandir l’illustration : ${esc(p.titre)}">
-          ${E.mediaPrestation(p, { tailles: '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw' })}
-        </button>` : `<div class="carte-prestation__media carte-prestation__media--attente">${E.mediaPrestation(p)}</div>`}
+      <li class="carte-prestation tuile-${p.tuile}${p.tuile % 2 ? '' : ' carte-prestation--verte'}${p.specialite ? ' carte-prestation--specialite' : ''}" data-prestation="${esc(p.id)}">
+        <div class="carte-prestation__media">
+          ${E.mediaPrestation(p, { tailles: p.specialite ? '(min-width: 640px) 50vw, 100vw' : '(min-width: 1180px) 25vw, (min-width: 640px) 50vw, 100vw' })}
+          ${v ? `<button type="button" class="bouton-icone carte-prestation__agrandir" data-visuel="${esc(v.id)}" aria-label="Agrandir l’illustration de la prestation ${esc(p.titre)}">${icone('agrandir')}</button>` : ''}
+        </div>
         <div class="carte-prestation__corps">
           <span class="carte-prestation__icone">${icone(p.icone)}</span>
-          <p class="carte-prestation__categorie">${esc(E.GROUPES_PRESTATIONS.find(g => g.id === p.groupe)?.titre || '')}</p>
-          <h3>${esc(p.titre)}</h3>
+          ${p.specialite ? '<span class="carte-prestation__statut">Spécialité EDYSOL</span>' : ''}
+          <h3><a class="carte-prestation__lien" href="prestation.html?prestation=${id}">${esc(p.titre)}${icone('droite')}</a></h3>
           <p>${esc(p.resume)}</p>
-          <a class="lien-fleche" href="commande.html?prestation=${esc(p.id)}">Demander cette prestation ${icone('droite')}</a>
+          <a class="lien-fleche carte-prestation__demande" href="commande.html?prestation=${id}">Demander cette prestation ${icone('droite')}</a>
         </div>
       </li>`;
   }).join('');
@@ -85,6 +87,10 @@
   // --- Formulaire de rappel : validation locale puis enregistrement SIMULÉ ---
   const form = document.getElementById('formulaire-rappel');
   const retour = form.querySelector('.formulaire-rappel__retour');
+  const { email: emailContact, horaires } = E.CONTACT;
+  document.getElementById('contact-email').innerHTML = `<a href="mailto:${esc(emailContact)}">${esc(emailContact)}</a>`;
+  document.getElementById('contact-horaires').textContent = horaires;
+  form.elements.objet.innerHTML = Object.entries(E.OBJETS_RAPPEL).map(([id, texte]) => `<option value="${esc(id)}">${esc(texte)}</option>`).join('');
 
   /** Affiche ou efface l'erreur d'un champ (texte relié par aria-describedby). */
   function erreurChamp(input, message) {
@@ -97,14 +103,28 @@
 
   form.addEventListener('submit', e => {
     e.preventDefault();
-    const nom = form.elements.nom, tel = form.elements.telephone;
+    retour.replaceChildren();
+    const { nom, telephone: tel, email, objet } = form.elements;
+    const adresse = email.value.trim();
     const eNom = nom.value.trim().length < 2 ? 'Indiquez votre nom.' : '';
     const eTel = tel.value.replace(/\D/g, '').length < 6 ? 'Indiquez un numéro (6 chiffres au minimum).' : '';
+    const eEmail = adresse && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adresse) ? 'Indiquez une adresse email valide.' : '';
     erreurChamp(nom, eNom);
     erreurChamp(tel, eTel);
-    if (eNom || eTel) { (eNom ? nom : tel).focus(); return; }
-    E.api.demanderRappel({ nom: nom.value.trim(), telephone: tel.value.trim(), objet: form.elements.objet.value });
-    retour.innerHTML = `<p class="notice notice--succes">${icone('valide')}<span><strong>Demande simulée.</strong> Elle apparaît dans les notifications de l’espace secrétariat de cette maquette. Aucun message n’a été envoyé.</span></p>`;
+    erreurChamp(email, eEmail);
+    if (eNom || eTel || eEmail) { (eNom ? nom : eTel ? tel : email).focus(); return; }
+
+    let resultat;
+    try {
+      resultat = E.api.demanderRappel({ nom: nom.value.trim(), telephone: tel.value.trim(), email: adresse, objet: objet.value });
+    } catch {
+      resultat = { ok: false, message: 'Le formulaire de rappel est indisponible.' };
+    }
+    if (!resultat.ok) {
+      retour.innerHTML = `<p class="notice notice--erreur">${icone('alerte')}<span>${esc(resultat.message)}</span></p>`;
+      return;
+    }
+    retour.innerHTML = `<p class="notice notice--succes">${icone('valide')}<span><strong>Demande simulée.</strong> Elle est enregistrée dans ce navigateur et apparaît dans les notifications du secrétariat de la maquette.</span></p>`;
     form.reset();
   });
 })(window);
