@@ -1,10 +1,10 @@
 /* =========================================================================
-   ÉDYSOL NC — Catalogue des visuels du site public
+   EDYSOL NC — Catalogue des visuels du site public
    Visuels générés : voir ressources-visuels.json ; les SVG restent conservés.
-   IMPORTANT : aucune photo de chantier ÉDYSOL autorisée n'a été fournie.
+   IMPORTANT : aucune photo de chantier EDYSOL autorisée n'a été fournie.
    - « illustration » : dessin vectoriel créé pour la maquette (provisoire).
    - « image-projet » : image présente dans l'archive (site _web/dist),
-     utilisée comme visuel d'ambiance ; ce n'est pas un chantier ÉDYSOL attesté.
+     utilisée comme visuel d'ambiance ; ce n'est pas un chantier EDYSOL attesté.
    Pour ajouter une vraie photo : renseigner src/srcset/largeur/hauteur/alt,
    type « photo-chantier », puis passer publicationAutorisee et
    confidentialiteVerifiee à true après accord écrit de l'entreprise
@@ -24,7 +24,7 @@
       sources: [{ type: 'image/webp', srcset: 'assets/images/edysol-interieur-640.webp 640w, assets/images/edysol-interieur-1024.webp 1024w, assets/images/edysol-interieur-1600.webp 1600w' }],
       largeur: 1600, hauteur: 900,
       alt: 'Une agente en tenue bleu marine passe la frange sur le carrelage d’un open space lumineux avec vue sur la mer.',
-      titre: 'Entretien des sols de bureaux',
+      titre: 'Nettoyage du carrelage d’un bureau',
       legende: 'Image d’ambiance reprise du site existant. À remplacer par une photo de chantier autorisée.',
       publicationAutorisee: false, confidentialiteVerifiee: false
     },
@@ -32,37 +32,37 @@
       id: 'aspiration', type: 'illustration-generee', categories: ['accueil', 'prestations', 'sols'], src: GEN + 'aspiration-1024.webp',
       sources: [{ type: 'image/webp', srcset: [640, 1024, 1600].map(l => GEN + 'aspiration-' + l + '.webp ' + l + 'w').join(', ') }], largeur: 1600, hauteur: 1000,
       alt: "Visuel d’illustration : une agente passe un aspirateur professionnel sur le sol d’un bureau lumineux.",
-      titre: 'Aspiration et entretien des sols', legende: 'Visuel d’illustration généré. Personnes et lieux fictifs ; aucun chantier ÉDYSOL réel représenté.'
+      titre: 'Aspiration dans un bureau', legende: 'Visuel d’illustration généré. Personnes et lieux fictifs ; aucun chantier EDYSOL réel représenté.'
     },
     {
       id: 'monobrosse', type: 'illustration-generee', categories: ['prestations', 'sols'], src: GEN + 'monobrosse-1024.webp',
       sources: [{ type: 'image/webp', srcset: [640, 1024, 1600].map(l => GEN + 'monobrosse-' + l + '.webp ' + l + 'w').join(', ') }], largeur: 1600, hauteur: 1000,
       alt: "Visuel d’illustration : un agent lave le carrelage d’un hall à la monobrosse, avec signalisation du sol humide.",
-      titre: 'Lavage mécanisé des sols', legende: 'Visuel d’illustration généré. Personnes et lieux fictifs ; aucun chantier ÉDYSOL réel représenté.'
+      titre: 'Machine d’entretien des sols', legende: 'Visuel d’illustration généré. Personnes et lieux fictifs ; aucun chantier EDYSOL réel représenté.'
     },
     {
       id: 'vitres', type: 'illustration-generee', categories: ['accueil', 'prestations', 'vitres'], src: GEN + 'vitres-1024.webp',
       sources: [{ type: 'image/webp', srcset: [640, 1024, 1600].map(l => GEN + 'vitres-' + l + '.webp ' + l + 'w').join(', ') }], largeur: 1600, hauteur: 1000,
       alt: "Visuel d’illustration : une agente nettoie une baie vitrée accessible à la raclette et au mouilleur.",
-      titre: 'Nettoyage des vitres', legende: 'Visuel d’illustration généré. Personnes et lieux fictifs ; aucun chantier ÉDYSOL réel représenté.'
+      titre: 'Nettoyage des vitres', legende: 'Visuel d’illustration généré. Personnes et lieux fictifs ; aucun chantier EDYSOL réel représenté.'
     },
     {
       id: 'bureaux', type: 'illustration-generee', categories: ['prestations', 'bureaux', 'entreprise'], src: GEN + 'bureaux-1024.webp',
       sources: [{ type: 'image/webp', srcset: [640, 1024, 1600].map(l => GEN + 'bureaux-' + l + '.webp ' + l + 'w').join(', ') }], largeur: 1600, hauteur: 1000,
       alt: "Visuel d’illustration : une agente gantée essuie un bureau à la microfibre verte.",
-      titre: 'Mobilier et postes de travail', legende: 'Visuel d’illustration généré. Personnes et lieux fictifs ; aucun chantier ÉDYSOL réel représenté.'
+      titre: 'Mobilier et postes de travail', legende: 'Visuel d’illustration généré. Personnes et lieux fictifs ; aucun chantier EDYSOL réel représenté.'
     },
     {
       id: 'equipe', type: 'illustration-generee', categories: ['entreprise', 'accueil'], src: GEN + 'equipe-1024.webp',
       sources: [{ type: 'image/webp', srcset: [640, 1024, 1600].map(l => GEN + 'equipe-' + l + '.webp ' + l + 'w').join(', ') }], largeur: 1600, hauteur: 1000,
       alt: "Visuel d’illustration : un binôme en tenue marine déplace un chariot de nettoyage dans un couloir.",
-      titre: 'Une équipe organisée', legende: 'Visuel d’illustration généré. Personnes et lieux fictifs ; aucun chantier ÉDYSOL réel représenté.'
+      titre: 'Une équipe organisée', legende: 'Visuel d’illustration généré. Personnes et lieux fictifs ; aucun chantier EDYSOL réel représenté.'
     },
     {
       id: 'domicile', type: 'illustration-generee', categories: ['prestations', 'domicile', 'entreprise'], src: GEN + 'domicile-1024.webp',
       sources: [{ type: 'image/webp', srcset: [640, 1024, 1600].map(l => GEN + 'domicile-' + l + '.webp ' + l + 'w').join(', ') }], largeur: 1600, hauteur: 1000,
       alt: "Visuel d’illustration : une agente entretient une table basse dans un salon lumineux.",
-      titre: 'Chez les particuliers', legende: 'Visuel d’illustration généré. Personnes et lieux fictifs ; aucun chantier ÉDYSOL réel représenté.'
+      titre: 'Chez les particuliers', legende: 'Visuel d’illustration généré. Personnes et lieux fictifs ; aucun chantier EDYSOL réel représenté.'
     }
   ];
 
@@ -107,8 +107,7 @@
     if (v) return baliseImage(v, options) + `<span class="pastille-provisoire">${esc(libelleStatut(v))}</span>`;
     const titre = prestation?.titre || 'Prestation à choisir';
     return `<div class="visuel-attente" role="img" aria-label="${esc(titre)} : illustration pertinente à fournir">
-      <span aria-hidden="true">${Edysol.icone('documents')}</span><strong>Illustration à fournir</strong>
-      <span>${esc(titre)}</span><small>Aucun chantier réel représenté</small></div>`;
+      <span aria-hidden="true">${Edysol.icone('documents')}</span><strong>Illustration à fournir</strong></div>`;
   }
 
   Object.assign(Edysol, { visuelPrestation, mediaPrestation, VISUELS, visuelsDe, libelleStatut, baliseImage });

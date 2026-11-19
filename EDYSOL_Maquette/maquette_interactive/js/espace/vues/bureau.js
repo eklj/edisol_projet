@@ -1,5 +1,5 @@
 /* =========================================================================
-   ÉDYSOL NC — Vues « bureau » : cogérance et secrétariat
+   EDYSOL NC — Vues « bureau » : cogérance et secrétariat
    Tableau de bord, commandes (liste, détail, nouvelle), clients, équipe,
    documents et aperçu du récapitulatif PDF.
    Chaque vue est une fonction (ctx) qui retourne { titre, html, apres }.
@@ -298,14 +298,14 @@
           actions: `<button type="button" class="bouton bouton--clair" data-imprimer>${icone('imprimer')}Imprimer l’aperçu</button>` })}
         ${ui.notice('Aperçu généré dans le navigateur à partir des données fictives. L’impression est locale : aucun fichier n’est envoyé.', 'demo')}
         <article class="document-pdf" aria-label="Aperçu du récapitulatif">
-          <header class="document-pdf__entete"><img src="assets/logo/edysol-logo.svg" alt="ÉDYSOL" width="819" height="425"><div><p class="document-pdf__type">Récapitulatif de commande</p><p class="document-pdf__ref">${esc(c.id)} · ${esc(ui.STATUTS[c.statut])}</p></div></header>
+          <header class="document-pdf__entete"><img src="assets/logo/edysol-logo.svg" alt="EDYSOL" width="819" height="425"><div><p class="document-pdf__type">Récapitulatif de commande</p><p class="document-pdf__ref">${esc(c.id)} · ${esc(ui.STATUTS[c.statut])}</p></div></header>
           ${ui.definitions([
             ['Client', c.client.nom + ' (' + c.client.type + ')'], ['Téléphone', c.client.telephone], ['Commune', c.commune], ['Adresse', c.adresse],
             ['Prestation', prestation(c.prestation)], ['Description', c.description],
             ['Date souhaitée', (c.dateSouhaitee ? E.formaterDate(c.dateSouhaitee) : 'Non précisée') + ', ' + c.creneau.toLowerCase()],
             ['Prix et règlement', 'À confirmer']
           ])}
-          <footer class="document-pdf__pied">Ce document récapitule une demande. Il ne constitue pas une facture. Exemple fictif · ÉDYSOL NC · ${esc(E.formaterHorodatage(new Date().toISOString()))}</footer>
+          <footer class="document-pdf__pied">Ce document récapitule une demande. Il ne constitue pas une facture. Exemple fictif · EDYSOL NC · ${esc(E.formaterHorodatage(new Date().toISOString()))}</footer>
         </article>`,
       apres(vue) { vue.querySelector('[data-imprimer]').addEventListener('click', () => racine.print()); }
     };

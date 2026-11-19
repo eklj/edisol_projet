@@ -1,5 +1,5 @@
 /* =========================================================================
-   ÉDYSOL NC — Styles du site public (accueil + parcours de commande)
+   EDYSOL NC — Styles partagés du site public
    Direction : grandes surfaces bleues et vertes du logo, photos en grand,
    coins « tuile » repris des quatre pictogrammes, filet jaune en accent.
    Conception mobile d'abord ; points de rupture à 640, 1024 et 1280 px.
@@ -8,7 +8,7 @@
 .conteneur { width: min(1240px, 100% - 32px); margin-inline: auto; }
 @media (min-width: 640px) { .conteneur { width: min(1240px, 100% - 64px); } }
 html.sans-defilement, html.sans-defilement body { overflow: hidden; }
-html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+html { --hauteur-entete: 86px; scroll-behavior: smooth; scroll-padding-top: calc(var(--hauteur-entete) + 12px); }
 
 /* ---------- Titres et textes ---------- */
 .surtitre { font-size: 13px; font-weight: 750; letter-spacing: .16em; text-transform: uppercase; color: var(--bleu-logo); margin-bottom: 12px; }
@@ -37,9 +37,12 @@ html { scroll-behavior: smooth; scroll-padding-top: 96px; }
 /* ---------- En-tête ---------- */
 .entete { position: sticky; top: 0; z-index: 50; background: #fff; border-bottom: 1px solid var(--ligne); transition: box-shadow var(--transition); }
 .entete.est-compact { box-shadow: var(--ombre-1); }
-.entete__barre { display: flex; align-items: center; gap: 16px; height: 76px; }
+.entete__barre {
+  display: flex; align-items: center; gap: 16px; height: var(--hauteur-entete);
+  width: min(1440px, 100% - clamp(32px, 4vw, 64px));
+}
 .entete__logo { display: inline-flex; flex: none; border-radius: 8px; transition: background-color var(--transition); }
-.entete__logo img { height: 54px; width: auto; }
+.entete__logo img { height: 70px; width: auto; }
 .entete__nav { display: none; margin-inline: auto; }
 .entete__nav ul { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0; }
 .entete__nav a {
@@ -58,8 +61,8 @@ html { scroll-behavior: smooth; scroll-padding-top: 96px; }
 .entete__burger { background: var(--bleu-50); }
 @media (min-width: 640px) { .entete__cta { display: inline-flex; } }
 @media (min-width: 1024px) {
-  .entete__barre { height: 84px; }
-  .entete__logo img { height: 60px; }
+  html { --hauteur-entete: 100px; }
+  .entete__logo img { height: 82px; }
   .entete__nav { display: block; }
   .entete__equipe { display: inline-flex; }
   .entete__burger { display: none; }
@@ -72,7 +75,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 96px; }
   padding: 16px 16px max(24px, env(safe-area-inset-bottom)); background: var(--bleu-900); color: #fff; overflow-y: auto;
 }
 .menu-mobile__haut { display: flex; justify-content: space-between; align-items: center; }
-.menu-mobile__logo { height: 56px; }
+.menu-mobile__logo { height: 70px; }
 .menu-mobile nav ul { list-style: none; margin: 0; padding: 0; }
 .menu-mobile nav a {
   display: flex; align-items: center; min-height: 60px; font-family: var(--police-titre); font-size: 28px; font-weight: 650;
@@ -190,11 +193,13 @@ html { scroll-behavior: smooth; scroll-padding-top: 96px; }
 
 /* L'entreprise */
 .grille-entreprise { display: grid; gap: 40px; align-items: start; }
-.organisation { list-style: none; padding: 0; margin: 28px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.organisation__item { display: flex; flex-direction: column; gap: 6px; padding: 18px; background: var(--bleu-tuile); color: #fff; font-size: 14.5px; line-height: 1.45; }
+.organisation { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 10px; }
+@media (min-width: 480px) { .organisation { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.organisation__item { display: grid; grid-template-columns: 24px minmax(0, 1fr); align-content: start; gap: 6px 10px; padding: 18px; background: var(--bleu-tuile); color: #fff; font-size: 14.5px; line-height: 1.45; }
 .organisation__item--vert { background: var(--vert-700); }
-.organisation__item b { font-family: var(--police-titre); font-size: 44px; line-height: 1; color: var(--jaune); }
+.organisation__item svg { width: 22px; height: 22px; color: var(--jaune); }
 .organisation__item strong { font-weight: 750; }
+.organisation__item p { grid-column: 2; }
 @media (min-width: 1024px) {
   .grille-entreprise { grid-template-columns: 1.05fr 1fr; gap: 72px; }
   .entreprise__visuels { position: sticky; top: 110px; }
@@ -207,20 +212,31 @@ html { scroll-behavior: smooth; scroll-padding-top: 96px; }
 .cartes-prestations { position: relative; list-style: none; padding: 0; margin: 56px 0 0; display: grid; gap: 18px; }
 @media (min-width: 640px) { .cartes-prestations { grid-template-columns: 1fr 1fr; } }
 @media (min-width: 1180px) { .cartes-prestations { grid-template-columns: repeat(4, 1fr); } }
-.carte-prestation { display: flex; flex-direction: column; overflow: hidden; background: #fff; color: var(--encre); box-shadow: var(--ombre-2); transition: box-shadow var(--transition-ample); }
+.carte-prestation { position: relative; display: flex; flex-direction: column; overflow: hidden; background: #fff; color: var(--encre); box-shadow: var(--ombre-2); transition: box-shadow var(--transition-ample); }
 .carte-prestation:has(:focus-visible) { box-shadow: var(--ombre-survol); }
-.carte-prestation__media { position: relative; display: block; padding: 0; border: 0; cursor: zoom-in; aspect-ratio: 16 / 10; overflow: hidden; background: var(--bleu-100); transition: filter var(--transition); }
+.carte-prestation--specialite { border-top: 4px solid var(--jaune); background: var(--bleu-50); }
+@media (min-width: 1180px) { .carte-prestation--specialite { grid-column: span 2; } }
+.carte-prestation__media { position: relative; display: block; aspect-ratio: 16 / 10; overflow: hidden; background: var(--bleu-100); }
+.carte-prestation--specialite .carte-prestation__media { aspect-ratio: 8 / 3; min-height: 132px; }
 .carte-prestation__media img { width: 100%; height: 100%; object-fit: cover; transition: transform 600ms ease; }
-button.carte-prestation__media:focus-visible { outline-offset: -5px; z-index: 1; }
+.carte-prestation__agrandir { position: absolute; z-index: 2; top: 10px; right: 10px; background: #fff; cursor: zoom-in; }
 .carte-prestation__media .pastille-provisoire { top: 10px; left: 10px; }
-.carte-prestation__corps { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 34px 20px 22px; flex: 1; }
+.carte-prestation__corps { display: flex; flex-direction: column; gap: 8px; padding: 0 20px 22px; flex: 1; }
 .carte-prestation__icone {
-  position: absolute; top: -26px; left: 20px; display: grid; place-items: center; width: 52px; height: 52px;
+  position: relative; margin-top: -26px; display: grid; place-items: center; width: 52px; height: 52px;
   border-radius: 6px 6px 6px 18px; color: #fff; background: var(--bleu-tuile); border: 3px solid #fff;
 }
 .carte-prestation--verte .carte-prestation__icone { background: var(--vert-700); border-radius: 6px 6px 18px 6px; }
 .carte-prestation__icone svg { width: 24px; height: 24px; }
 .carte-prestation h3 { font-size: 21px; font-weight: 700; }
+.carte-prestation--specialite h3 { font-size: clamp(24px, 2.2vw, 29px); }
+.carte-prestation__statut { align-self: flex-start; padding: 3px 9px; color: var(--bleu-950); background: var(--jaune-doux); border-radius: 5px; font-size: 13px; font-weight: 750; }
+.carte-prestation__lien { display: inline-flex; align-items: center; gap: 7px; color: var(--bleu-900); text-decoration: underline transparent; text-underline-offset: 4px; transition: text-decoration-color var(--transition); }
+.carte-prestation__lien svg { flex: none; width: 18px; height: 18px; transition: transform var(--transition); }
+/* Le titre couvre la carte. Les commandes de zoom et de demande restent utilisables au-dessus. */
+.carte-prestation__lien::after { content: ''; position: absolute; inset: 0; z-index: 1; }
+.carte-prestation__lien:is(:focus-visible, :active) { text-decoration-color: currentColor; }
+.carte-prestation__demande { position: relative; z-index: 2; align-self: flex-start; }
 .carte-prestation p { color: var(--texte-2); font-size: 15px; }
 .lien-fleche { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; min-height: 44px; font-weight: 700; color: var(--bleu-700); text-decoration: underline transparent; text-underline-offset: 4px; transition: color var(--transition), text-decoration-color var(--transition); }
 .lien-fleche svg { width: 18px; height: 18px; transition: transform var(--transition); }
@@ -303,6 +319,8 @@ button.carte-prestation__media:focus-visible { outline-offset: -5px; z-index: 1;
 .pied__logo { height: 86px; padding: 8px 12px; }
 .pied__marque p { margin-top: 14px; max-width: 34ch; }
 .pied__titre { font-size: 14px; text-transform: uppercase; letter-spacing: .14em; color: var(--jaune); margin-bottom: 12px; font-family: var(--police-texte); font-weight: 750; }
+.pied__contact { display: grid; gap: 6px; }
+.pied__contact a { width: fit-content; text-underline-offset: 4px; transition: text-decoration-color var(--transition); }
 .pied__liens { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
 .pied__liens a { display: inline-flex; min-height: 36px; align-items: center; text-decoration: none; }
 .pied__bas { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.12); font-size: 13px; color: #95acc3; }
@@ -346,10 +364,9 @@ button.carte-prestation__media:focus-visible { outline-offset: -5px; z-index: 1;
   transition: background-size var(--transition-ample);
 }
 :is(.coordonnees a, .pied__liens a):is(:focus-visible, :active) { background-size: 100% 2px; }
-.pied a[href^="tel:"] { text-underline-offset: 4px; transition: text-decoration-color var(--transition); }
-.pied a[href^="tel:"]:is(:focus-visible, :active) { text-decoration-color: var(--jaune); }
+.pied__contact a:is(:focus-visible, :active) { text-decoration-color: var(--jaune); }
 .entete__logo:active, .entete__equipe:active { background: var(--bleu-100); }
-:is(button.carte-prestation__media, .galerie__bouton, .filtre):active { filter: brightness(.87); }
+:is(.carte-prestation__agrandir, .galerie__bouton, .filtre):active { filter: brightness(.87); }
 
 @media (hover: hover) and (pointer: fine) {
   .entete__logo:hover, .entete__equipe:hover { background: var(--bleu-50); }
@@ -360,26 +377,26 @@ button.carte-prestation__media:focus-visible { outline-offset: -5px; z-index: 1;
   :is(.hero__media, .section--bleue) .carrousel__point:hover::before { background: var(--jaune); }
   :is(.hero__media, .section--bleue) .carrousel__commandes .bouton-icone:hover { background: rgba(255,255,255,.18); }
   .carrousel__agrandir:hover { background: #fff; }
-  .carte-prestation:has(:is(.lien-fleche, button.carte-prestation__media):hover) { box-shadow: var(--ombre-survol); }
-  .lien-fleche:hover { text-decoration-color: currentColor; }
+  .carte-prestation:has(:is(.lien-fleche, .carte-prestation__lien, .carte-prestation__agrandir):hover) { box-shadow: var(--ombre-survol); }
+  :is(.lien-fleche, .carte-prestation__lien):hover { text-decoration-color: currentColor; }
   .filtre:hover { border-color: var(--bleu-logo); }
   .filtre:hover:not(:focus-visible) { box-shadow: var(--ombre-1); }
   .galerie__bouton:hover:not(:focus-visible) { box-shadow: var(--ombre-2); }
   .galerie__bouton:hover .galerie__loupe { opacity: 1; }
   :is(.coordonnees a, .pied__liens a):hover { background-size: 100% 2px; }
-  .pied a[href^="tel:"]:hover { text-decoration-color: var(--jaune); }
+  .pied__contact a:hover { text-decoration-color: var(--jaune); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  button.carte-prestation__media:focus-visible img { transform: scale(1.04); }
+  .carte-prestation:has(:is(.carte-prestation__lien, .carte-prestation__agrandir):focus-visible) .carte-prestation__media img { transform: scale(1.04); }
   .galerie__bouton:focus-visible img { transform: scale(1.05); }
-  .lien-fleche:focus-visible svg { transform: translateX(3px); }
+  :is(.lien-fleche, .carte-prestation__lien):focus-visible svg { transform: translateX(3px); }
   .carrousel__point:is(:focus-visible, :active)::before { scale: 1 .7; }
   :is(.carrousel__prec, .visionneuse__nav--prec):focus-visible > svg { translate: -2px 0; }
   @media (hover: hover) and (pointer: fine) {
-    button.carte-prestation__media:hover img { transform: scale(1.04); }
+    .carte-prestation:has(:is(.carte-prestation__lien, .carte-prestation__agrandir):hover) .carte-prestation__media img { transform: scale(1.04); }
     .galerie__bouton:hover img { transform: scale(1.05); }
-    .lien-fleche:hover svg { transform: translateX(3px); }
+    :is(.lien-fleche, .carte-prestation__lien):hover svg { transform: translateX(3px); }
     .carrousel__point:hover::before { scale: 1.12 1; }
     .galerie__loupe { translate: 0 -4px; }
     .galerie__bouton:is(:hover, :focus-visible) .galerie__loupe { translate: 0 0; }

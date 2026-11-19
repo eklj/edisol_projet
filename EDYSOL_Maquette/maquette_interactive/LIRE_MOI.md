@@ -1,8 +1,8 @@
 > **Correctif EV-017 du 9 novembre 2026 :** catalogue partagé corrigé, images récentes conservées, choix unique maintenu. Voir [le tableau sourcé et les vérifications](CORRESPONDANCE_PRESTATIONS_EV017.md).
 
-# ÉDYSOL NC : maquette interactive
+# EDYSOL NC : maquette interactive
 
-Maquette navigable du site public et des espaces internes d'ÉDYSOL. Elle remplace un passage par Figma : tout se parcourt dans le navigateur.
+Maquette navigable du site public et des espaces internes d'EDYSOL. Elle remplace un passage par Figma : tout se parcourt dans le navigateur.
 
 > **Mode démonstration.** Les données sont fictives et restent dans le navigateur. Aucun message n'est envoyé. Aucun paiement n'est déclenché. Rien n'est publié.
 
@@ -30,8 +30,15 @@ Ouvrir ensuite <http://127.0.0.1:8000/>. Arrêter avec `Ctrl+C`.
 | Page | Adresse |
 | --- | --- |
 | Site public | `index.html` |
+| Fiche de prestation | `prestation.html?prestation=fin-chantier` |
 | Demande de prestation | `commande.html` |
 | Espaces internes | `espace.html` |
+
+Les fiches utilisent une page statique et l'identifiant de la prestation dans l'adresse. Le serveur Node et Cloudflare Workers servent ce même fichier directement, y compris après actualisation. Dans le dépôt, `wrangler.jsonc` pointe vers `EDYSOL_Maquette/maquette_interactive`.
+
+La fiche et le formulaire reconnaissent les anciens liens avec `prestation=lavage`. Ils utilisent la fiche et le choix canoniques `sols` pour **Décapage des sols**. Le catalogue partagé interprète aussi les anciennes demandes sans réécrire leur identifiant enregistré. `karcher` reste l'identifiant du **Nettoyage haute pression**.
+
+Le champ e-mail du formulaire de contact est facultatif, comme dans la demande de prestation. La démonstration enregistre la demande et sa notification dans le navigateur, avec une confirmation locale.
 
 ## Lancer les vérifications
 
@@ -42,7 +49,7 @@ cd maquette_interactive
 npm test
 ```
 
-`npm test` fonctionne avec l'archive de la maquette seule. Il lance trois séries :
+`npm test` fonctionne avec l'archive de la maquette seule. Il lance les séries suivantes :
 
 | Fichier | Contenu |
 | --- | --- |
@@ -51,6 +58,7 @@ npm test
 | `outils/tester_notifications.js` | Ordre de la boîte, lectures par personne, conditions de lecture |
 | `outils/tester_deplacement.js` | Déplacement d'intervention : durée conservée, maintien de l'équipe des ponctuelles, droits par rôle, conflits bloquants |
 | `outils/tester_geolocalisation.js` | Mesures GPS, état de communication, trajets avec interruptions, accès à la carte |
+| `outils/tester_catalogue.js` | Catalogue, anciens identifiants, préremplissage et enregistrement |
 
 La comparaison entre `js/metier/suivi_metier.js` et l'original V1 n'est possible que dans le dépôt complet. Hors du dépôt, le test affiche « NON VÉRIFIÉ » au lieu de l'ignorer.
 
@@ -84,10 +92,11 @@ Le bouton « Réinitialiser la démo » remet toutes les données fictives à z�
 
 ```text
 maquette_interactive/
-├── index.html, commande.html, espace.html   Pages
+├── index.html, prestation.html, commande.html, espace.html   Pages
 ├── css/
 │   ├── base.css        Couleurs, polices, boutons, champs, badges (commun)
 │   ├── public.css      Site public, carrousels, galerie, visionneuse
+│   ├── prestation.css Fiches de prestation
 │   ├── commande.css    Parcours de commande
 │   └── espace.css      Espaces internes (bureau et terrain)
 ├── js/
@@ -313,7 +322,7 @@ Aucune règle n'a été inventée pour les points suivants :
 
 - **Photos de chantiers.** Aucune photo autorisée n'était fournie. Les visuels sont des illustrations vectorielles créées pour la maquette. Chacune porte la pastille « Illustration provisoire ». L'image `edysol-interieur` vient du site existant. Elle porte la mention « Visuel d'ambiance · à remplacer ».
 - **Ajouter une vraie photo.** Renseigner `js/commun/visuels.js` avec le type `photo-chantier`. Passer `publicationAutorisee` et `confidentialiteVerifiee` à `true` après accord écrit.
-- **Catalogue des prestations — EV-017.** Les neuf offres Q1 et l’activité Kärcher Q27 sont désormais explicites. Les quatre entrées antérieures restent accessibles, sans classement définitif comme offres ou tâches. Voir `CORRESPONDANCE_PRESTATIONS_EV017.md` pour les sources, identifiants et périmètres à préciser.
+- **Catalogue des prestations.** Fin de chantier et fin de bail sont présentées comme spécialités. Décapage des sols réunit les anciennes entrées `sols` et `lavage`. Le nettoyage haute pression conserve l'identifiant `karcher`. Voir `CORRESPONDANCE_PRESTATIONS_EV017.md` pour l'historique des libellés et de leurs sources.
 - **Présentation de l'entreprise.** Histoire et valeurs à rédiger avec les cogérants.
 - **Coordonnées.** Téléphone et adresse viennent du site existant. E-mail et horaires sont à compléter.
 - **Textes légaux.** Consentement, mentions légales et politique de confidentialité à rédiger.

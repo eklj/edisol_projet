@@ -1,5 +1,5 @@
 /* =========================================================================
-   ÉDYSOL NC — Parcours de demande de prestation en 4 étapes
+   EDYSOL NC — Parcours de demande de prestation en 4 étapes
    Étapes : besoin, lieu, détails et date, coordonnées. Chaque étape est
    validée avant de passer à la suivante ; le résumé latéral se met à jour.
    Enregistrement SIMULÉ via Edysol.api (mode démo) : la commande apparaît
@@ -24,7 +24,7 @@
 
   // Valeurs saisies, conservées d'une étape à l'autre. Préremplissage possible via ?prestation=vitres.
   const parametre = new URLSearchParams(racine.location.search).get('prestation');
-  const valeurs = { prestation: E.prestationParId(parametre) ? parametre : undefined };
+  const valeurs = { prestation: E.prestationParId(parametre)?.id };
   // Les fichiers restent disponibles quand le client revient à une étape précédente.
   const medias = [];
   let occupe = false;

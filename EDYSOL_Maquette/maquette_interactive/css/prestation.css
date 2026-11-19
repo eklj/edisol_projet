@@ -1,0 +1,97 @@
+/* Fiches de prestation : socle public, espacements et coins des tuiles EDYSOL. */
+.fiche-prestation__entete {
+  padding-block: 16px clamp(36px, 6vw, 74px);
+  background: var(--bleu-900);
+  color: var(--blanc);
+}
+.fiche-prestation__entete h1 {
+  font-size: clamp(36px, 5.2vw, 72px);
+  font-weight: 750;
+  overflow-wrap: break-word;
+}
+.fiche-prestation__entete .bouton { margin-top: 24px; }
+.fiche-prestation__entete .chapeau { max-width: 46ch; }
+.fiche-prestation__navigation { margin-bottom: clamp(16px, 3vw, 34px); }
+.fiche-prestation__navigation ol {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #d5e4f2;
+}
+.fiche-prestation__navigation li { display: flex; align-items: center; gap: 8px; }
+.fiche-prestation__navigation svg { width: 14px; height: 14px; flex: none; }
+.fiche-prestation__navigation a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition: color var(--transition), text-decoration-color var(--transition);
+}
+.fiche-prestation__navigation a:is(:focus-visible, :active) { color: var(--blanc); text-decoration-color: var(--jaune); }
+.fiche-prestation__navigation [aria-current] { color: var(--blanc); }
+.fiche-prestation__grille { display: grid; align-items: center; gap: clamp(24px, 5vw, 68px); }
+.fiche-prestation__visuel { margin: 0; min-width: 0; }
+.fiche-prestation__media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  max-height: 460px;
+  overflow: hidden;
+  background: var(--bleu-100);
+  box-shadow: var(--ombre-2);
+}
+.fiche-prestation__media picture,
+.fiche-prestation__media img { display: block; width: 100%; height: 100%; }
+.fiche-prestation__media img { object-fit: cover; }
+.fiche-prestation__media .pastille-provisoire { top: 12px; left: 12px; }
+.fiche-prestation__visuel figcaption { color: #d5e4f2; font-size: 13px; margin-top: 10px; }
+.fiche-prestation__media--attente .visuel-attente {
+  background: radial-gradient(ellipse at top right, var(--vert-100), transparent 60%), var(--bleu-100);
+}
+.fiche-prestation__agrandir { position: absolute; bottom: 12px; right: 12px; box-shadow: var(--ombre-1); }
+.fiche-prestation__suite {
+  display: grid;
+  align-items: start;
+  gap: clamp(24px, 5vw, 64px);
+  padding-block: clamp(34px, 6vw, 80px);
+}
+.fiche-prestation__details { display: grid; gap: 18px; }
+.fiche-prestation__details section {
+  padding: 0 0 20px;
+  border-bottom: 1px solid var(--ligne);
+}
+.fiche-prestation__suite h2 { font-size: clamp(23px, 2.65vw, 35px); color: var(--bleu-900); }
+.fiche-prestation__suite p { margin-top: 10px; max-width: 70ch; color: var(--texte-2); }
+.fiche-prestation__retour { justify-self: start; padding-top: 0; margin-top: 0; }
+.fiche-prestation__demande {
+  padding: clamp(20px, 3.5vw, 32px);
+  background: var(--vert-100);
+  border-inline-start: 4px solid var(--vert-logo);
+}
+.fiche-prestation__demande .bouton { margin-top: 18px; }
+
+@media (min-width: 900px) {
+  .fiche-prestation__grille { grid-template-columns: minmax(0, 4fr) minmax(0, 5fr); }
+  .fiche-prestation__suite { grid-template-columns: minmax(0, 2fr) minmax(270px, 1fr); }
+}
+@media (max-width: 479px) {
+  .fiche-prestation__intro .bouton,
+  .fiche-prestation__demande .bouton { width: 100%; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .fiche-prestation__navigation a:hover { color: var(--blanc); text-decoration-color: var(--jaune); }
+}
+/* Le zoom du visuel indique l'action sans bouger la zone interactive. */
+@media (prefers-reduced-motion: no-preference) {
+  .fiche-prestation__media img { transition: transform var(--transition-ample); }
+  .fiche-prestation__media:has(.fiche-prestation__agrandir:focus-visible) img { transform: scale(1.025); }
+  @media (hover: hover) and (pointer: fine) {
+    .fiche-prestation__media:has(.fiche-prestation__agrandir:hover) img { transform: scale(1.025); }
+  }
+}

@@ -1,14 +1,14 @@
 /* =========================================================================
-   ÉDYSOL NC — Gabarit commun des pages publiques
+   EDYSOL NC — Gabarit commun des pages publiques
    Rôle : injecter l'en-tête (logo, navigation, menu mobile) et le pied de
    page, remplacer les attributs data-icone par des icônes SVG et gérer la
    barre d'action mobile. Une seule source pour toutes les pages publiques.
    ========================================================================= */
 (function (racine) {
   'use strict';
-  const { esc, icone, piegerFocus } = racine.Edysol;
+  const { CONTACT, esc, icone, piegerFocus } = racine.Edysol;
 
-  /** Liens de navigation : sur la page de commande, ils pointent vers l'accueil. */
+  /** Les liens de section pointent vers l'accueil depuis les autres pages. */
   function liens(page) {
     const base = page === 'accueil' ? '' : 'index.html';
     return [
@@ -24,8 +24,8 @@
     const page = entete.dataset.page;
     entete.innerHTML = `
       <div class="conteneur entete__barre">
-        <a class="entete__logo" href="index.html#accueil" aria-label="ÉDYSOL, retour à l’accueil">
-          <img src="assets/logo/edysol-logo.svg" alt="ÉDYSOL Prestige nettoyage" width="819" height="425">
+        <a class="entete__logo" href="index.html#accueil" aria-label="EDYSOL, retour à l’accueil">
+          <img src="assets/logo/edysol-logo.svg" alt="EDYSOL Prestige nettoyage" width="819" height="425">
         </a>
         <nav class="entete__nav" aria-label="Navigation principale">
           <ul>${liens(page).map(l => `<li><a href="${esc(l.href)}">${esc(l.texte)}</a></li>`).join('')}</ul>
@@ -46,7 +46,7 @@
         </nav>
         <div class="menu-mobile__actions">
           <a class="bouton bouton--principal" href="commande.html">${icone('commandes')}Demander une prestation</a>
-          <a class="bouton bouton--contour-clair" href="tel:+687453812">${icone('telephone')}Appeler le 45 38 12</a>
+          <a class="bouton bouton--contour-clair" href="${esc(CONTACT.telephoneLien)}">${icone('telephone')}Appeler le ${esc(CONTACT.telephoneAffiche)}</a>
           <a class="bouton bouton--discret menu-mobile__equipe" href="espace.html">${icone('utilisateur')}Espace équipe</a>
         </div>
       </div>`;
@@ -76,24 +76,29 @@
     // Si l'écran s'élargit, le menu mobile se ferme.
     racine.matchMedia('(min-width: 1024px)').addEventListener('change', e => { if (e.matches && !menu.hidden) fermer(false); });
 
-    // En-tête compact lors du défilement.
+    // L'ombre distingue l'en-tête fixe du contenu pendant le défilement.
     const majOmbre = () => entete.classList.toggle('est-compact', racine.scrollY > 10);
     racine.addEventListener('scroll', majOmbre, { passive: true });
     majOmbre();
   }
 
-  /** Construit le pied de page avec les coordonnées présentes dans l'archive. */
-  function construirePied(pied) {
-    const c = racine.Edysol.CONTACT;
+  /** Sur l'accueil, la localisation reste régionale. L'adresse postale est disponible sur les autres pages. */
+  function construirePied(pied, page) {
+    const c = CONTACT;
     pied.innerHTML = `
       <div class="conteneur pied__grille">
         <div class="pied__marque">
-          <span class="plaque-logo pied__logo"><img src="assets/logo/edysol-logo.svg" alt="ÉDYSOL Prestige nettoyage" width="819" height="425" loading="lazy"></span>
+          <span class="plaque-logo pied__logo"><img src="assets/logo/edysol-logo.svg" alt="EDYSOL Prestige nettoyage" width="819" height="425" loading="lazy"></span>
           <p>Entretien, nettoyage et services en Nouvelle-Calédonie.</p>
         </div>
         <div>
           <h2 class="pied__titre">Nous joindre</h2>
-          <p><a href="${c.telephoneLien}">${esc(c.telephoneAffiche)}</a><br>${c.adresse.map(esc).join('<br>')}</p>
+          <div class="pied__contact">
+            <a href="${esc(c.telephoneLien)}">${esc(c.telephoneAffiche)}</a>
+            ${c.email ? `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>` : ''}
+            ${c.horaires ? `<p>${esc(c.horaires)}</p>` : ''}
+            ${page === 'accueil' ? '' : `<p>${c.adresse.map(esc).join('<br>')}</p>`}
+          </div>
         </div>
         <div>
           <h2 class="pied__titre">Navigation</h2>
@@ -105,7 +110,7 @@
         </div>
       </div>
       <div class="conteneur pied__bas">
-        <span>© ${new Date().getFullYear()} ÉDYSOL NC</span>
+        <span>© ${new Date().getFullYear()} EDYSOL NC</span>
         <span>Maquette de démonstration · mentions légales et politique de confidentialité à rédiger</span>
       </div>`;
   }
@@ -133,7 +138,7 @@
   const entete = document.getElementById('entete-site');
   const pied = document.getElementById('pied-site');
   if (entete) construireEntete(entete);
-  if (pied) construirePied(pied);
+  if (pied) construirePied(pied, entete?.dataset.page);
   injecterIcones();
   activerBarreMobile();
   racine.Edysol.injecterIcones = injecterIcones;

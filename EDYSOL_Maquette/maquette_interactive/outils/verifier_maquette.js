@@ -1,5 +1,5 @@
 /* =========================================================================
-   ÉDYSOL NC — Vérification automatique de la maquette dans un navigateur
+   EDYSOL NC — Vérification automatique de la maquette dans un navigateur
    Prérequis : Playwright (npm install, puis npx playwright install chromium).
    Lancer : npm run verifier   (ou node outils/verifier_maquette.js [--captures])
    Contrôles : erreurs JavaScript, débordement horizontal (téléphone et
@@ -97,11 +97,74 @@ async function verifier(nom, action) { await action(); controles++; console.log(
       assert.equal(await p.locator('dialog.visionneuse[open]').count(), 0);
       assert.equal(await p.evaluate(() => document.activeElement.dataset.index), '2');
     });
-    await verifier('Formulaire de rappel simulé', async () => {
+    await verifier('Accueil : présentation familiale, localisation et spécialités', async () => {
+      assert.equal(await p.textContent('#accueil .surtitre'), 'Nouvelle-Calédonie');
+      assert.doesNotMatch(await p.locator('body').innerText(), /Basée à Normandie|Nouméa|ÉDYSOL/);
+      assert.match(await p.textContent('#entreprise .chapeau'), /entreprise familiale/i);
+      assert.match(await p.textContent('#entreprise'), /contrôleuses/i);
+      assert.match(await p.textContent('#entreprise'), /formation/i);
+      const specialites = await p.locator('.carte-prestation--specialite').evaluateAll(cartes => cartes.map(carte => carte.dataset.prestation));
+      assert.deepEqual(specialites, ['fin-chantier', 'fin-bail']);
+    });
+    await verifier('Formulaire de contact : adresses, objets et e-mail validé en simulation', async () => {
+      assert.equal(await p.locator('#contact-email a').getAttribute('href'), 'mailto:contact@edysol.nc');
+      assert.equal(await p.textContent('#contact-horaires'), 'Du lundi au vendredi, de 07h30 à 12h00 et de 13h00 à 16h30.');
+      const objets = await p.locator('#rappel-objet option').evaluateAll(options => options.map(o => [o.value, o.textContent.trim()]));
+      assert.deepEqual(objets, [['rendez-vous', 'Prendre rendez-vous'], ['question-prestation', 'Question sur une prestation']]);
+      assert.equal(await p.getAttribute('#rappel-email', 'type'), 'email');
       await p.fill('#rappel-nom', 'Test Rappel');
       await p.fill('#rappel-tel', '00 00 00');
+      await p.fill('#rappel-email', 'invalide');
+      await p.click('#formulaire-rappel button[type=submit]');
+      assert.ok(await p.isVisible('#rappel-email-erreur'));
+      assert.equal(await p.evaluate(() => Edysol.api.charger().demandesRappel.length), 0);
+      await p.fill('#rappel-email', 'test@example.invalid');
+      await p.selectOption('#rappel-objet', 'question-prestation');
       await p.click('#formulaire-rappel button[type=submit]');
       assert.match(await p.textContent('.formulaire-rappel__retour'), /simulée/);
+      await p.reload();
+      const [rappel, notification] = await p.evaluate(() => {
+        const etat = Edysol.api.charger();
+        return [etat.demandesRappel[0], etat.notifications.at(-1)];
+      });
+      assert.deepEqual([rappel.objet, rappel.email], ['question-prestation', 'test@example.invalid']);
+      assert.match(notification.texte, /test@example\.invalid.*Question sur une prestation/);
+    });
+    await verifier('Formulaire de contact : e-mail facultatif et sauvegarde refusée sans doublon', async () => {
+      await p.evaluate(() => Edysol.api.simulerEchecEnregistrement(true));
+      await p.fill('#rappel-nom', 'Test Sans Email');
+      await p.fill('#rappel-tel', '00 00 00');
+      await p.click('#formulaire-rappel button[type=submit]');
+      assert.match(await p.textContent('.formulaire-rappel__retour'), /pas pu être enregistrée/);
+      assert.equal(await p.evaluate(() => Edysol.api.charger().demandesRappel.length), 1);
+      await p.click('#formulaire-rappel button[type=submit]');
+      assert.equal(await p.evaluate(() => Edysol.api.charger().demandesRappel[0].email), '');
+    });
+    await verifier('Chaque carte mène à sa fiche avec les actions de retour et de demande', async () => {
+      const prestations = await p.evaluate(() => Edysol.PRESTATIONS.map(({ id, titre }) => ({ id, titre })));
+      const cartes = p.locator('.carte-prestation[data-prestation]');
+      assert.equal(await cartes.count(), prestations.length);
+      for (const { id } of prestations) {
+        assert.equal(await cartes.filter({ has: p.locator(`a[href="prestation.html?prestation=${id}"]`) }).count(), 1);
+      }
+      for (const { id, titre } of prestations) {
+        const lien = base + 'prestation.html?prestation=' + id;
+        const reponse = await p.goto(lien);
+        assert.equal(reponse.status(), 200);
+        assert.equal(await p.textContent('#prestation-titre'), titre);
+        assert.ok(await p.locator('.fiche-prestation__details section').count());
+        assert.equal(await p.getAttribute('.fiche-prestation__retour', 'href'), 'index.html#prestations');
+        assert.equal(await p.locator(`main a[href="commande.html?prestation=${id}"]`).count() > 0, true);
+      }
+    });
+    await verifier('Ancien lien lavage : fiche et sélection canoniques du décapage', async () => {
+      await p.goto(base + 'prestation.html?prestation=lavage');
+      await p.reload();
+      assert.equal(await p.textContent('#prestation-titre'), 'Décapage des sols');
+      assert.ok(await p.locator('main a[href="commande.html?prestation=sols"]').count());
+      await p.goto(base + 'commande.html?prestation=lavage');
+      assert.equal(await p.locator('input[name=prestation]:checked').inputValue(), 'sols');
+      assert.equal(await p.locator('input[name=prestation][value=lavage]').count(), 0);
     });
 
     // Réduction des animations : aucun défilement automatique.
