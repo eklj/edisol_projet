@@ -1,0 +1,112 @@
+{
+  "date": "2026-11-19",
+  "timezone": "Pacific/Noumea",
+  "repository": "https://github.com/eklj/edisol_projet",
+  "reference_branch": "main",
+  "reference_commit": "c487ed1bb86886b17b48fc8c4e30264b92c685cb",
+  "reference_confirmation": "GitHub get_repo et git ls-remote --symref origin HEAD",
+  "local_documentation_branch": "docs/guide-n8n-edysol",
+  "source_inventory": [
+    {
+      "path": "N8N/Projet_Automatisation_Commandes_WhatsApp_n8n_EvolutionAPI.pdf",
+      "size": 92367,
+      "sha256": "90e472fae2717360c2b82cb3707a0f74c6482cb359a7ba52a765739f7a229803",
+      "git_blob": "e60edb9b2d5de8e74d3ada81fc171e0d17b983d7"
+    },
+    {
+      "path": "N8N/Comment_l_automatisation_route_vos_commandes.mp4",
+      "size": 5974768,
+      "sha256": "8e17eb4bcecd56e4fcb91c66dba4931be2a8a1912293b0f6045d771b03111246",
+      "git_blob": "f2cd53dbb0178bceb6c64191ab4e3a4abbcdb8e2"
+    }
+  ],
+  "environment": {
+    "python": "3.12.14",
+    "node": "v24.22.3",
+    "n8n": "2.48.5",
+    "n8n_node_engine": ">=24.0.0",
+    "docker_available": false
+  },
+  "verification": {
+    "npm_install": {
+      "command": "npm install --prefix /tmp/edysol-n8n-runtime n8n@2.48.5 --no-audit --no-fund --fetch-retries=0 --fetch-timeout=30000",
+      "exit_code": 0,
+      "packages_added": 2258
+    },
+    "workflow_import": {
+      "command": "n8n import:workflow --input=.../N8N/exemples/workflow_test_local.json",
+      "exit_code": 0
+    },
+    "workflow_publish": {
+      "command": "n8n publish:workflow --id=EdysolTestLocal01",
+      "exit_code": 0
+    },
+    "readiness_http": 200,
+    "http_scenarios": [
+      {
+        "name": "valide",
+        "status": 200
+      },
+      {
+        "name": "invalide",
+        "status": 422
+      },
+      {
+        "name": "reessai-identique",
+        "status": 200
+      }
+    ],
+    "original_saved_executions": {
+      "count": 3,
+      "statuses": [
+        "success",
+        "success",
+        "success"
+      ],
+      "scope": "inclut refus HTTP 422 traite normalement"
+    },
+    "restoration": {
+      "n8n_version": "2.48.5",
+      "method": "copie SQLite a froid vers dossier/port distincts, meme cle, depublication CLI avant lancement",
+      "initial_workflows_restored": 1,
+      "original_executions": 3,
+      "restored_executions_after_checks": 4,
+      "workflow_state_after_unpublish": [
+        [
+          0,
+          null
+        ]
+      ],
+      "readiness_http": 200,
+      "expected_unpublished_webhook_http": 404,
+      "first_observed_unpublished_webhook_http": 422,
+      "observed_after_index_ready_http": 404,
+      "response": {
+        "code": 404,
+        "message": "The requested webhook POST edysol-test-local is not registered."
+      },
+      "route_disabled_verified": true,
+      "docker_restoration_tested": false,
+      "credentials_restoration_tested": false,
+      "outbound_integrations_configured": false
+    },
+    "initial_cross_command_http_attempt": "connexion refusee, reprise dans le meme processus supervise reussie",
+    "docker_compose_execution": "NON_TESTE_DOCKER_ABSENT",
+    "microsoft_sharepoint": "NON_TESTE_AUCUN_COMPTE_CONFIGURE",
+    "whatsapp_evolution": "NON_TESTE_AUCUN_SERVICE_CONFIGURE",
+    "business_api_and_multi_device": "A_CONSTRUIRE_ET_VERIFIER",
+    "browser_ui": "NON_TESTEE"
+  },
+  "test_workflow_scope": "reception HTTP et projection fictive sans dedoublonnage durable",
+  "product_application_modified": false,
+  "git_commit_created": false,
+  "git_push": false,
+  "external_messages_sent": false,
+  "documentation_checks": {
+    "local_links": "OK",
+    "json": "OK",
+    "yaml": "Syntaxe YAML analysee avec PyYAML, pas de validation Docker Compose executee",
+    "original_pdf_and_video_hashes": "OK",
+    "source_product_diff": "empty"
+  }
+}

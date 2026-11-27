@@ -1,0 +1,19 @@
+# Copie de restauration isolée. Aucun port publié, aucun réseau externe.
+services:
+  n8n:
+    image: n8nio/n8n:${N8N_VERSION:?Retrouver la version de la sauvegarde}
+    network_mode: none
+    environment:
+      TZ: Pacific/Noumea
+      GENERIC_TIMEZONE: Pacific/Noumea
+      N8N_PORT: 5678
+      N8N_LISTEN_ADDRESS: 127.0.0.1
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:?Retrouver la cle de la sauvegarde}
+      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+      EXECUTIONS_DATA_PRUNE: "false"
+    volumes:
+      - restauration_data:/home/node/.n8n
+volumes:
+  restauration_data:

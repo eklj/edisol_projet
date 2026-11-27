@@ -1,0 +1,25 @@
+{
+  "n8n_version": "2.48.5",
+  "method": "copie SQLite a froid vers dossier/port distincts, meme cle, depublication CLI avant lancement",
+  "initial_workflows_restored": 1,
+  "original_executions": 3,
+  "restored_executions_after_checks": 4,
+  "workflow_state_after_unpublish": [
+    [
+      0,
+      null
+    ]
+  ],
+  "readiness_http": 200,
+  "expected_unpublished_webhook_http": 404,
+  "first_observed_unpublished_webhook_http": 422,
+  "observed_after_index_ready_http": 404,
+  "response": {
+    "code": 404,
+    "message": "The requested webhook POST edysol-test-local is not registered."
+  },
+  "route_disabled_verified": true,
+  "docker_restoration_tested": false,
+  "credentials_restoration_tested": false,
+  "outbound_integrations_configured": false
+}

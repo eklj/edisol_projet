@@ -1,0 +1,68 @@
+[
+  {
+    "scenario": "valide",
+    "http": 200,
+    "body": {
+      "simulation": true,
+      "id_evenement": "EVT-DEMO-001",
+      "demande_id": "DEMO-001",
+      "etat_demande": "recue_non_decidee",
+      "prestation": "Nettoyage de bureaux - exemple fictif",
+      "date_demandee": "2026-11-20",
+      "flexibilite": "flexible",
+      "notifications_fictives": [
+        {
+          "destinataire": "COMPTE-DEMO-SECRETARIAT",
+          "lue": false
+        },
+        {
+          "destinataire": "COMPTE-DEMO-DIRECTION-1",
+          "lue": false
+        },
+        {
+          "destinataire": "COMPTE-DEMO-DIRECTION-2",
+          "lue": false
+        }
+      ],
+      "envoi_externe": false,
+      "dedoublonnage_durable": false
+    }
+  },
+  {
+    "scenario": "invalide",
+    "http": 422,
+    "body": {
+      "simulation": true,
+      "erreur": "EVENEMENT_DEMO_INVALIDE"
+    }
+  },
+  {
+    "scenario": "reessai-identique",
+    "http": 200,
+    "body": {
+      "simulation": true,
+      "id_evenement": "EVT-DEMO-001",
+      "demande_id": "DEMO-001",
+      "etat_demande": "recue_non_decidee",
+      "prestation": "Nettoyage de bureaux - exemple fictif",
+      "date_demandee": "2026-11-20",
+      "flexibilite": "flexible",
+      "notifications_fictives": [
+        {
+          "destinataire": "COMPTE-DEMO-SECRETARIAT",
+          "lue": false
+        },
+        {
+          "destinataire": "COMPTE-DEMO-DIRECTION-1",
+          "lue": false
+        },
+        {
+          "destinataire": "COMPTE-DEMO-DIRECTION-2",
+          "lue": false
+        }
+      ],
+      "envoi_externe": false,
+      "dedoublonnage_durable": false
+    }
+  }
+]

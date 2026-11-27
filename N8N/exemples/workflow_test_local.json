@@ -1,0 +1,86 @@
+{
+  "id": "EdysolTestLocal01",
+  "name": "EDYSOL - Test local reception fictive",
+  "active": false,
+  "nodes": [
+    {
+      "id": "reception",
+      "name": "Reception locale",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "edysol-test-local-reception",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "edysol-test-local",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "controle",
+      "name": "Controle et simulation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Parcours pédagogique local : contrôle de forme et projection de destinataires fictifs.\n// Aucun enregistrement métier, envoi externe ou contrôle d'identité de production.\nconst donnees = $input.first().json.body;\nconst valide = donnees && typeof donnees === 'object'\n  && typeof donnees.id_evenement === 'string' && donnees.id_evenement.startsWith('EVT-DEMO-')\n  && donnees.type === 'demande.recue'\n  && typeof donnees.demande_id === 'string' && donnees.demande_id.startsWith('DEMO-')\n  && typeof donnees.prestation === 'string' && donnees.prestation.trim().length > 0\n  && ['flexible', 'imposee'].includes(donnees.flexibilite);\nif (!valide) {\n  return [{ json: { code_http: 422, resultat: { simulation: true, erreur: 'EVENEMENT_DEMO_INVALIDE' } } }];\n}\nconst destinataires = ['COMPTE-DEMO-SECRETARIAT', 'COMPTE-DEMO-DIRECTION-1', 'COMPTE-DEMO-DIRECTION-2'];\nreturn [{ json: {\n  code_http: 200,\n  resultat: {\n    simulation: true,\n    id_evenement: donnees.id_evenement,\n    demande_id: donnees.demande_id,\n    etat_demande: 'recue_non_decidee',\n    prestation: donnees.prestation.trim(),\n    date_demandee: donnees.date_demandee || null,\n    flexibilite: donnees.flexibilite,\n    notifications_fictives: destinataires.map(compte => ({ destinataire: compte, lue: false })),\n    envoi_externe: false,\n    dedoublonnage_durable: false\n  }\n} }];\n"
+      }
+    },
+    {
+      "id": "reponse",
+      "name": "Reponse de test",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        520,
+        0
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.resultat }}",
+        "options": {
+          "responseCode": "={{ $json.code_http }}"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Reception locale": {
+      "main": [
+        [
+          {
+            "node": "Controle et simulation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Controle et simulation": {
+      "main": [
+        [
+          {
+            "node": "Reponse de test",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Pacific/Noumea",
+    "saveDataSuccessExecution": "all",
+    "saveDataErrorExecution": "all"
+  },
+  "pinData": {},
+  "tags": []
+}

@@ -1,0 +1,8 @@
+{
+  "id_evenement": "EVT-DEMO-001",
+  "type": "demande.recue",
+  "demande_id": "DEMO-001",
+  "prestation": "Nettoyage de bureaux - exemple fictif",
+  "date_demandee": "2026-11-20",
+  "flexibilite": "flexible"
+}
