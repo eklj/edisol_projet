@@ -74,9 +74,14 @@
   --police-titre: "Outfit", "Inter", Arial, sans-serif;
   --police-texte: "Inter", Arial, sans-serif;
 
-  /* Rayons inspirés des quatre tuiles du logo (un seul coin arrondi) */
-  --rayon: 14px;
+  /* Des petits états aux grands panneaux, avec un coin accentué pour les tuiles du logo. */
+  --rayon-fin: 4px;
+  --rayon-petit: 8px;
+  --rayon-controle: 12px;
+  --rayon: 16px;
+  --rayon-panneau: 24px;
   --rayon-tuile: 34px;
+  --rayon-capsule: 999px;
   --ombre-1: 0 1px 2px rgba(6, 31, 56, .06), 0 2px 8px rgba(6, 31, 56, .06);
   --ombre-2: 0 10px 30px rgba(6, 31, 56, .14);
   --ombre-survol: 0 14px 36px rgba(6, 31, 56, .2);
@@ -101,22 +106,22 @@ h1, h2, h3, h4 { font-family: var(--police-titre); line-height: 1.12; margin: 0;
 p { margin: 0; }
 a { color: inherit; }
 button, input, select, textarea { font: inherit; color: inherit; }
+:where(a, button, summary, [tabindex="0"]) { border-radius: var(--rayon-petit); }
 [hidden] { display: none !important; }
 
 /* Lien d'évitement pour la navigation au clavier */
 .lien-evitement {
   position: absolute; left: 12px; top: -60px; z-index: 1000;
   background: var(--jaune); color: var(--bleu-950); padding: 10px 16px;
-  border-radius: 8px; font-weight: 700; text-decoration: none;
+  border-radius: var(--rayon-controle); font-weight: 700; text-decoration: none;
 }
 .lien-evitement:focus { top: 12px; }
 
-/* Focus visible et homogène : anneau jaune + contour bleu pour tout fond */
+/* L’anneau suit la forme du contrôle, même pour les boutons circulaires. */
 :focus-visible {
   outline: 3px solid var(--jaune);
   outline-offset: 2px;
   box-shadow: 0 0 0 6px var(--bleu-800);
-  border-radius: 6px;
 }
 
 /* Les titres reçoivent le focus par programme (changement de vue) : pas d'anneau visible */
@@ -131,7 +136,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .bouton {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   min-height: var(--cible-tactile); padding: 12px 22px;
-  border: 2px solid transparent; border-radius: 12px;
+  border: 2px solid transparent; border-radius: var(--rayon-controle);
   font-weight: 700; font-size: 15.5px; line-height: 1.2; text-decoration: none; cursor: pointer;
   transition: background-color var(--transition), color var(--transition), border-color var(--transition), box-shadow var(--transition), filter var(--transition);
   -webkit-tap-highlight-color: rgba(33, 97, 161, .24);
@@ -143,7 +148,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .bouton--contour-clair { background: transparent; color: #fff; border-color: rgba(255,255,255,.55); --bouton-fond-survol: rgba(255,255,255,.1); }
 .bouton--discret { background: transparent; color: var(--bleu-800); padding-inline: 12px; --bouton-fond-survol: var(--bleu-100); }
 .bouton--danger { background: var(--erreur); color: #fff; --bouton-fond-survol: #962018; }
-.bouton--petit { min-height: 40px; padding: 8px 14px; font-size: 14px; border-radius: 10px; }
+.bouton--petit { min-height: 40px; padding: 8px 14px; font-size: 14px; border-radius: var(--rayon-petit); }
 .bouton svg { width: 20px; height: 20px; flex: none; }
 
 /* Bouton rond à icône (carrousels, fermeture) */
@@ -183,7 +188,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .obligatoire { color: var(--erreur); font-weight: 700; }
 .saisie, .champ input:not([type="checkbox"]):not([type="radio"]), .champ select, .champ textarea {
   width: 100%; min-height: var(--cible-tactile);
-  padding: 11px 14px; border: 1.5px solid #b9c7d3; border-radius: 10px; background: #fff;
+  padding: 11px 14px; border: 1.5px solid #b9c7d3; border-radius: var(--rayon-controle); background: #fff;
   font-size: 16px; /* 16 px : évite le zoom automatique sur téléphone */
   transition: border-color var(--transition), box-shadow var(--transition);
 }
@@ -196,13 +201,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .champ > label.case { font-weight: 500; }
 
 /* Pièces du chantier : grille partagée entre formulaire et dossiers autorisés. */
-.medias-chantier { min-width: 0; display: grid; gap: 10px; border: 1px solid var(--ligne); border-radius: 12px; padding: 14px; }
+.medias-chantier { min-width: 0; display: grid; gap: 10px; border: 1px solid var(--ligne); border-radius: var(--rayon); padding: 14px; }
 .medias-chantier legend { font-weight: 700; padding-inline: 4px; }
 .medias-chantier .aide { margin: 0; color: var(--texte-2); font-size: 13.5px; }
-.medias-chantier input[type="file"] { width: 100%; max-width: 100%; font: inherit; font-size: 14px; }
+.medias-chantier input[type="file"] { width: 100%; max-width: 100%; font: inherit; font-size: 14px; border-radius: var(--rayon-petit); }
 .medias-chantier input::file-selector-button {
   margin-inline-end: 10px; padding: 9px 12px; cursor: pointer;
-  border: 1px solid var(--bleu-200); border-radius: 8px; background: var(--bleu-50); color: var(--bleu-800);
+  border: 1px solid var(--bleu-200); border-radius: var(--rayon-petit); background: var(--bleu-50); color: var(--bleu-800);
   font: inherit; font-weight: 650; transition: background-color var(--transition), border-color var(--transition);
 }
 .medias-chantier input:focus-visible::file-selector-button { border-color: var(--bleu-logo); }
@@ -210,16 +215,33 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .medias-chantier__capture { display: none; gap: 8px; flex-wrap: wrap; }
 @media (max-width: 767px), (pointer: coarse) { .medias-chantier__capture { display: flex; } }
 .medias-chantier__liste { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 10px; }
-.medias-chantier__carte { min-width: 0; display: grid; align-content: start; gap: 6px; padding: 8px; border: 1px solid var(--ligne); border-radius: 10px; }
-.medias-chantier__carte :is(img, video) { width: 100%; height: 140px; object-fit: contain; background: var(--fond); border-radius: 6px; }
+.medias-chantier__carte { min-width: 0; display: grid; align-content: start; gap: 6px; padding: 8px; border: 1px solid var(--ligne); border-radius: var(--rayon); }
+.medias-chantier__carte :is(img, video) { width: 100%; height: 140px; object-fit: contain; background: var(--fond); border-radius: var(--rayon-petit); }
 .medias-chantier__nom { overflow-wrap: anywhere; font-size: 14px; font-weight: 650; }
 #commande-erreur-envoi:empty, #medias-erreurs:empty { margin: 0; }
 .case { display: flex; gap: 12px; align-items: flex-start; font-size: 14.5px; cursor: pointer; }
 .case input { width: 22px; height: 22px; margin-top: 1px; accent-color: var(--bleu-tuile); flex: none; cursor: inherit; }
 
+/* La case reste un contrôle HTML natif. Le rendu est arrondi, sauf en mode couleurs forcées. */
+@media (forced-colors: none) {
+  .case input[type="checkbox"] {
+    appearance: none; display: inline-grid; place-content: center;
+    border: 1.5px solid #b9c7d3; border-radius: var(--rayon-fin); background-color: #fff;
+  }
+  .case input[type="checkbox"]:is(:checked, :indeterminate) { background-color: var(--bleu-tuile); border-color: var(--bleu-tuile); }
+  .case input[type="checkbox"]:checked::before {
+    content: ""; width: 11px; height: 6px;
+    border: solid #fff; border-width: 0 0 2px 2px; transform: translateY(-1px) rotate(-45deg);
+  }
+  .case input[type="checkbox"]:indeterminate::before {
+    content: ""; width: 10px; height: 2px; border: 1px solid #fff; transform: none;
+  }
+  .case input[type="checkbox"]:disabled { opacity: .55; cursor: not-allowed; }
+}
+
 /* --- Badges d'état : la couleur n'est jamais le seul indicateur (libellé toujours présent) --- */
 .badge {
-  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: var(--rayon-capsule);
   font-size: 12.5px; font-weight: 700; line-height: 1.5; white-space: nowrap;
   background: var(--bleu-100); color: var(--bleu-800);
 }
@@ -235,27 +257,27 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* Pastille « visuel provisoire » posée sur les illustrations */
 .pastille-provisoire {
   position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+  padding: 5px 10px; border-radius: var(--rayon-capsule); font-size: 12px; font-weight: 700;
   background: rgba(6, 31, 56, .82); color: #fff; backdrop-filter: blur(4px);
 }
 .pastille-provisoire::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--jaune); }
 
 /* Filet jaune, rappel de la barre du logo sous « EDYSOL » */
-.filet { display: block; width: 64px; height: 5px; border-radius: 3px; background: var(--jaune); }
+.filet { display: block; width: 64px; height: 5px; border-radius: var(--rayon-fin); background: var(--jaune); }
 
-/* Formes de tuiles du logo : un coin arrondi différent selon la position */
-.tuile-1 { border-radius: 6px 6px 6px var(--rayon-tuile); }
-.tuile-2 { border-radius: 6px 6px var(--rayon-tuile) 6px; }
-.tuile-3 { border-radius: var(--rayon-tuile) 6px 6px 6px; }
-.tuile-4 { border-radius: 6px var(--rayon-tuile) 6px 6px; }
+/* Chaque tuile conserve le coin accentué du logo, avec des arrondis réguliers ailleurs. */
+.tuile-1 { border-radius: var(--rayon) var(--rayon) var(--rayon) var(--rayon-tuile); }
+.tuile-2 { border-radius: var(--rayon) var(--rayon) var(--rayon-tuile) var(--rayon); }
+.tuile-3 { border-radius: var(--rayon-tuile) var(--rayon) var(--rayon) var(--rayon); }
+.tuile-4 { border-radius: var(--rayon) var(--rayon-tuile) var(--rayon) var(--rayon); }
 
 /* Plaque blanche pour le logo : le logo garde ses couleurs sur fond foncé */
-.plaque-logo { display: inline-flex; background: #fff; border-radius: 10px; padding: 6px 10px; }
+.plaque-logo { display: inline-flex; background: #fff; border-radius: var(--rayon-controle); padding: 6px 10px; }
 .plaque-logo img { height: 100%; width: auto; }
 
 /* Notice de démonstration */
 .notice {
-  display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 12px;
+  display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: var(--rayon);
   background: var(--jaune-doux); color: #4a3c00; font-size: 14.5px; border: 1px solid #efd96a;
 }
 .notice--info { background: var(--bleu-50); color: var(--bleu-800); border-color: var(--bleu-200); }
@@ -286,11 +308,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @media (min-width: 640px) { .choix-cartes { grid-template-columns: 1fr 1fr; } }
 .choix-carte {
   position: relative; display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; min-height: 64px;
-  border: 1.5px solid var(--ligne); border-radius: 12px; background: #fff; cursor: pointer;
+  border: 1.5px solid var(--ligne); border-radius: var(--rayon); background: #fff; cursor: pointer;
   transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
 }
 .choix-carte input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.choix-carte__icone { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 6px 6px 6px 16px; background: var(--bleu-100); color: var(--bleu-tuile); transition: background-color var(--transition), color var(--transition), translate var(--transition); }
+.choix-carte__icone { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: var(--rayon-petit) var(--rayon-petit) var(--rayon-petit) var(--rayon); background: var(--bleu-100); color: var(--bleu-tuile); transition: background-color var(--transition), color var(--transition), translate var(--transition); }
 .choix-carte__icone svg { width: 22px; height: 22px; }
 .choix-carte__texte { display: grid; gap: 2px; }
 .choix-carte__texte strong { font-size: 15.5px; }
@@ -310,7 +332,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .segment { position: relative; }
 .segment input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .segment span {
-  display: inline-flex; align-items: center; min-height: 46px; padding: 10px 16px; border-radius: 10px;
+  display: inline-flex; align-items: center; min-height: 46px; padding: 10px 16px; border-radius: var(--rayon-controle);
   border: 1.5px solid var(--ligne); background: #fff; font-weight: 600; font-size: 15px; cursor: pointer;
   transition: background-color var(--transition), border-color var(--transition), color var(--transition), box-shadow var(--transition);
 }
@@ -337,6 +359,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 /* Emplacement partagé entre cartes et résumé ; aucune image sans rapport avec l'activité. */
-.visuel-attente { width:100%; height:100%; min-height:150px; padding:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; background:var(--bleu-100); color:var(--bleu-800); overflow:hidden; }
+.visuel-attente { width:100%; height:100%; min-height:150px; padding:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; background:var(--bleu-100); color:var(--bleu-800); border-radius:inherit; overflow:hidden; }
 .visuel-attente svg { width:32px; height:32px; }
 .visuel-attente strong { font-size:16px; }

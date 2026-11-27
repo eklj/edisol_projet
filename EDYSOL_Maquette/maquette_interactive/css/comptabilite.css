@@ -3,7 +3,7 @@
   padding: clamp(16px, 2.5vw, 30px);
   border: 1px solid var(--ligne);
   border-top: 4px solid var(--vert-700);
-  border-radius: 16px 16px 16px 30px;
+  border-radius: var(--rayon-panneau);
   background: #fff;
 }
 
@@ -40,7 +40,7 @@
   height: 100%;
   padding: clamp(16px, 2.3vw, 24px);
   border: 1px solid var(--ligne);
-  border-radius: 14px 14px 14px 28px;
+  border-radius: var(--rayon);
   background: #fff;
   box-shadow: var(--ombre-1);
   text-decoration: none;
@@ -53,7 +53,7 @@
   place-items: center;
   width: 48px;
   height: 48px;
-  border-radius: 9px 9px 9px 17px;
+  border-radius: var(--rayon-controle);
   background: var(--bleu-100);
   color: var(--bleu-800);
 }
@@ -103,6 +103,9 @@
 .compta-saisie { display: grid; gap: 16px; align-items: start; }
 .compta-formulaire > .bouton { justify-self: start; }
 .compta-formulaire [role="status"]:empty { display: none; }
+/* Le contour du message et celui de l'avis arrondi restent alignés au clavier. */
+.compta-formulaire [role="status"] { border-radius: var(--rayon); }
+.compta-resultats h2[tabindex] { border-radius: var(--rayon-fin); }
 .compta-formulaire [role="status"]:focus,
 .compta-resultats h2:focus { outline: 2px solid var(--bleu-logo); outline-offset: 3px; }
 .compta-formulaire :is(input, select, [role="status"]),
