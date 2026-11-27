@@ -1,7 +1,7 @@
-/* Fiches de prestation : socle public, espacements et coins des tuiles EDYSOL. */
+/* Fiches de prestation : espacements et styles propres à ces pages. */
 .fiche-prestation__entete {
   padding-block: 16px clamp(36px, 6vw, 74px);
-  border-radius: var(--rayon-panneau);
+  border-radius: var(--rayon);
   background: var(--bleu-900);
   color: var(--blanc);
 }
@@ -31,7 +31,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  border-radius: var(--rayon-petit);
+  border-radius: var(--rayon);
   text-decoration-color: transparent;
   text-underline-offset: 4px;
   transition: color var(--transition), text-decoration-color var(--transition);
@@ -50,7 +50,7 @@
 }
 .fiche-prestation__media picture,
 .fiche-prestation__media img { display: block; width: 100%; height: 100%; }
-.fiche-prestation__media img { object-fit: cover; }
+.fiche-prestation__media img { object-fit: cover; border-radius: var(--rayon); }
 .fiche-prestation__media .pastille-provisoire { top: 12px; left: 12px; }
 .fiche-prestation__visuel figcaption { color: #d5e4f2; font-size: 13px; margin-top: 10px; }
 .fiche-prestation__media--attente .visuel-attente {

@@ -3,7 +3,7 @@
   padding: clamp(16px, 2.5vw, 30px);
   border: 1px solid var(--ligne);
   border-top: 4px solid var(--vert-700);
-  border-radius: var(--rayon-panneau);
+  border-radius: var(--rayon);
   background: #fff;
 }
 
@@ -53,7 +53,7 @@
   place-items: center;
   width: 48px;
   height: 48px;
-  border-radius: var(--rayon-controle);
+  border-radius: var(--rayon);
   background: var(--bleu-100);
   color: var(--bleu-800);
 }
@@ -105,7 +105,7 @@
 .compta-formulaire [role="status"]:empty { display: none; }
 /* Le contour du message et celui de l'avis arrondi restent alignés au clavier. */
 .compta-formulaire [role="status"] { border-radius: var(--rayon); }
-.compta-resultats h2[tabindex] { border-radius: var(--rayon-fin); }
+.compta-resultats h2[tabindex] { border-radius: var(--rayon); }
 .compta-formulaire [role="status"]:focus,
 .compta-resultats h2:focus { outline: 2px solid var(--bleu-logo); outline-offset: 3px; }
 .compta-formulaire :is(input, select, [role="status"]),
